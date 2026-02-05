@@ -90,3 +90,4 @@ responseSchema: {
 
 Notes:
 - Keep `responseMimeType: "application/json"` and a stable `responseSchema` when changing prompts — downstream code calls `JSON.parse(response.text)` and maps to `types.ts`.
+
