@@ -87,8 +87,8 @@ const App: React.FC = () => {
       setState(p => ({ ...p, status: WorkflowStatus.COMPLETED, results, thinkingProcess: `Pipeline complete.\n[AGENT 3] ${t3}` }));
       setActiveTab('reports');
     } catch (err) {
-      console.error(err);
-      setState(p => ({ ...p, status: WorkflowStatus.FAILED, thinkingProcess: '[ERROR] Workflow aborted.' }));
+      const message = err instanceof Error ? err.message : String(err);
+      setState(p => ({ ...p, status: WorkflowStatus.FAILED, thinkingProcess: '[ERROR] Workflow aborted.', error: message }));
     }
   };
 
@@ -187,7 +187,10 @@ const App: React.FC = () => {
       <main className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-white border-b px-8 flex items-center justify-between">
           <h2 className="font-bold text-slate-700">{activeTab.toUpperCase()}</h2>
-          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 py-1 bg-slate-50 rounded-full border">Status: {state.status}</div>
+          <div className="flex items-center gap-3">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 py-1 bg-slate-50 rounded-full border">Status: {state.status}</div>
+            {state.error && <div title={state.error} className="text-xs text-rose-600 font-bold">⚠️ {state.error}</div>}
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 scroll-smooth">
@@ -361,7 +364,7 @@ const App: React.FC = () => {
                       {res.status === 'FAIL' && !res.githubIssueUrl && (
                         <button onClick={() => handleGithubIssue(res)} disabled={githubCreatingId === res.testCaseId} className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg">{githubCreatingId === res.testCaseId ? '...' : 'Report'}</button>
                       )}
-                      {res.githubIssueUrl && <a href={res.githubIssueUrl} target="_blank" className="text-emerald-600 text-xs font-bold underline">Linked Issue</a>}
+                      {res.githubIssueUrl && <a href={res.githubIssueUrl} target="_blank" rel="noopener noreferrer" className="text-emerald-600 text-xs font-bold underline">Linked Issue</a>}
                     </div>
                     <pre className="bg-slate-950 text-emerald-400 p-4 rounded-xl text-xs mono max-h-32 overflow-y-auto">{res.logs}</pre>
                   </div>
@@ -389,16 +392,41 @@ const App: React.FC = () => {
   );
 };
 
-const NavBtn = ({ icon, label, active, onClick, disabled }: any) => (
+interface NavBtnProps {
+  icon?: React.ReactNode;
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+export const NavBtn: React.FC<NavBtnProps> = ({ icon, label, active = false, onClick, disabled = false }) => (
   <button onClick={onClick} disabled={disabled} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${active ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'} ${disabled ? 'opacity-25' : ''}`}>
     {icon} {label}
   </button>
 );
 
-const StatCard = ({ label, value, color }: any) => (
+type StatCardColor = 'indigo' | 'emerald' | 'rose' | 'slate' | 'cyan' | 'amber';
+
+interface StatCardProps {
+  label: string;
+  value: string;
+  color?: StatCardColor;
+}
+
+const colorClassMap: Record<StatCardColor, string> = {
+  indigo: 'text-indigo-600',
+  emerald: 'text-emerald-600',
+  rose: 'text-rose-600',
+  slate: 'text-slate-600',
+  cyan: 'text-cyan-600',
+  amber: 'text-amber-600',
+};
+
+export const StatCard: React.FC<StatCardProps> = ({ label, value, color = 'indigo' }) => (
   <div className="bg-white p-6 rounded-2xl border border-slate-200 text-center space-y-1">
     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label}</p>
-    <p className={`text-3xl font-black text-${color}-600`}>{value}</p>
+    <p className={`text-3xl font-black ${colorClassMap[color]}`}>{value}</p>
   </div>
 );
 
