@@ -39,7 +39,7 @@ Transitions: All hover/focus changes smooth
 
 ## 🔗 Links to Enhanced Elements
 
-**File**: [App.tsx](https://github.com/darshil0/qa-nexus-autonomous/blob/main/App.tsx)
+**File**: [src/App.tsx](../src/App.tsx)
 
 **Key Sections**:
 - Lines ~200-220: Jira Sync (input + Fetch button)
@@ -91,31 +91,31 @@ Transitions: All hover/focus changes smooth
 
 - [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) - Detailed technical specs
 - [UI_ENHANCEMENTS.md](./UI_ENHANCEMENTS.md) - Implementation guide
-- [.github/copilot-instructions.md](./.github/copilot-instructions.md) - UI guidelines
+- [.github/copilot-instructions.md](../.github/copilot-instructions.md) - UI guidelines
 
 ## 💾 Git Details
 
 | Info | Value |
 |------|-------|
-| Commit Hash | f1eb2b7 |
+| Commit Hash | 5e99997 |
 | Branch | main |
 | Files Changed | 1 (App.tsx) |
 | Lines Added | 51 |
 | Lines Removed | 6 |
-| Date | Feb 4, 2024 |
+| Date | February 4, 2026 |
 
 ## ✅ Verification
 
 **Check enhancements are working**:
 ```bash
 # Search for focus states
-grep -n "focus:ring-2" App.tsx
+grep -n "focus:ring-2" src/App.tsx
 
 # Search for Loader2
-grep -n "Loader2" App.tsx
+grep -n "Loader2" src/App.tsx
 
 # Search for aria attributes
-grep -n "aria-busy\|aria-describedby" App.tsx
+grep -n "aria-busy\|aria-describedby" src/App.tsx
 ```
 
 ## 🎓 Learning Resources
@@ -149,7 +149,7 @@ grep -n "aria-busy\|aria-describedby" App.tsx
 For questions about the enhancements:
 1. See documentation files (listed above)
 2. Check git history: `git log --oneline | head -5`
-3. View full diff: `git show f1eb2b7`
+3. View full diff: `git show 5e99997`
 4. Contact: GitHub Copilot
 
 ---

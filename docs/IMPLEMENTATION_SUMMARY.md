@@ -4,7 +4,7 @@
 Successfully applied comprehensive accessibility and UX enhancements to the QA Nexus App.tsx component, focusing on keyboard navigation, screen reader support, visual feedback, and error handling.
 
 ## Commit Details
-- **Hash**: `f1eb2b7`
+- **Hash**: `5e99997`
 - **Branch**: main
 - **Repository**: https://github.com/darshil0/qa-nexus-autonomous
 - **Date**: 2026-02-04
@@ -185,8 +185,6 @@ Linked via: `aria-describedby="requirements-help"`
 ## Related Documentation
 - `.github/copilot-instructions.md` - Contains comprehensive UI/UX guidelines
 - `UI_ENHANCEMENTS.md` - Detailed implementation guide with code examples
-- `ui-utils.tsx` - Reusable accessible React components
-- `ui-styles.css` - Global accessibility CSS patterns
 
 ## Next Steps (Optional Enhancements)
 1. Add more granular error states and validation messages

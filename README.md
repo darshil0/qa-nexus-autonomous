@@ -49,7 +49,7 @@ npm run preview
 ```
 qa-nexus-autonomous/
 ├── src/                          # Application source code
-│   ├── App.tsx                   # Main React component (338 lines)
+│   ├── App.tsx                   # Main React component (409 lines)
 │   ├── index.tsx                 # React entry point
 │   ├── constants.ts              # Agent models and system instructions
 │   ├── types.ts                  # TypeScript interfaces and types
@@ -64,7 +64,7 @@ qa-nexus-autonomous/
 │   ├── BEFORE_AFTER_COMPARISON.md # Visual code examples
 │   ├── IMPLEMENTATION_SUMMARY.md # Technical specifications
 │   ├── UI_ENHANCEMENTS.md       # Accessibility guide
-│   └── (6 more guides)
+│   └── (4 more guides)
 │
 ├── public/                       # Static assets (reserved)
 ├── .github/                      # GitHub configuration
