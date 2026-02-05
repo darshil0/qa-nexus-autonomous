@@ -1,0 +1,48 @@
+name: ESLint
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      auto_fix:
+        description: 'If true, runs eslint --fix and commits changes'
+        required: false
+        default: 'false'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm ci
+      - name: Run ESLint
+        run: npm run lint
+
+  autofix:
+    needs: lint
+    if: "github.event_name == 'workflow_dispatch' && github.event.inputs.auto_fix == 'true'"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm ci
+      - name: Run ESLint autofix
+        run: npm run lint:fix
+      - name: Commit autofixes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "chore(lint): apply ESLint autofixes via workflow"
+          add: "src/**"
