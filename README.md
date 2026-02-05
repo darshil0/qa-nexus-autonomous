@@ -6,8 +6,9 @@ A sophisticated multi-agent QA automation system powered by Google Gemini AI. QA
 
 QA Nexus Autonomous demonstrates advanced AI orchestration by combining multiple specialized agents into a cohesive workflow. The system analyzes requirements, generates comprehensive test cases, and simulates test execution—all powered by state-of-the-art language models.
 
-**Version**: 2.0.0
-**Status**: Production Ready
+**Version**: 2.0.1  
+**Status**: Production Ready  
+**Last Updated**: February 5, 2026
 
 ## Key Features
 
@@ -114,7 +115,7 @@ qa-nexus-autonomous/
 │   └── services/
 │       └── geminiService.ts       # Gemini API integration layer
 │
-├── docs/                          # Documentation (future)
+├── docs/                          # Project documentation
 ├── public/                        # Static assets
 ├── .github/                       # GitHub configuration
 ├── index.html                     # HTML entry point
@@ -125,8 +126,11 @@ qa-nexus-autonomous/
 ├── postcss.config.js              # PostCSS configuration
 ├── .eslintrc.cjs                  # ESLint configuration
 ├── .eslintignore                  # ESLint ignore patterns
+├── .gitignore                     # Git ignore patterns
+├── .env                           # Environment variables (create this)
 ├── vitest.config.ts               # Vitest configuration
 ├── package.json                   # Dependencies and scripts
+├── CHANGELOG.md                   # Version history
 └── README.md                      # This file
 ```
 
@@ -218,22 +222,36 @@ import { reviewRequirements } from '../../../services/geminiService';
 import { reviewRequirements } from '@/services/geminiService';
 ```
 
+### Configuration Files
+
+All configuration files follow standard naming conventions:
+- **`.env`** - Environment variables (you create this)
+- **`.eslintrc.cjs`** - ESLint rules and settings
+- **`.eslintignore`** - Files to exclude from linting
+- **`.gitignore`** - Files to exclude from version control
+- **`postcss.config.js`** - PostCSS plugin configuration
+- **`tailwind.config.js`** - Tailwind CSS theme customization
+- **`tsconfig.json`** - Main TypeScript configuration
+- **`tsconfig.node.json`** - TypeScript for build tooling
+- **`vite.config.ts`** - Vite build and dev server settings
+- **`vitest.config.ts`** - Test runner configuration
+
 ## Development
 
 ### Setting Up for Development
 
 1. Install Node.js 18+
 2. Clone the repository
-3. Run `npm install --legacy-peer-deps` (for React 19 compatibility)
+3. Run `npm install` (use `--legacy-peer-deps` if needed for React 19)
 4. Create `.env` with your API keys
 5. Run `npm run dev`
 
 ### Code Quality
 
 - **TypeScript**: Full strict mode enabled for type safety
-- **ESLint**: Enforces consistent code style
-- **Prettier**: Integrated for code formatting (via ESLint)
-- **Vitest**: Unit testing framework for functions and components
+- **ESLint**: Enforces consistent code style with auto-fix support
+- **Testing**: Vitest framework for unit and integration tests
+- **Type Checking**: Comprehensive TypeScript coverage
 
 ### Adding New Features
 
@@ -242,6 +260,9 @@ import { reviewRequirements } from '@/services/geminiService';
 3. Export types from `/src/types.ts`
 4. Update `/src/constants.ts` if needed
 5. Write tests in `/src/__tests__/`
+6. Run `npm run lint:fix` to ensure code quality
+7. Run `npm run typecheck` to verify TypeScript
+8. Run `npm test` to verify all tests pass
 
 ## Performance
 
@@ -293,6 +314,9 @@ npm run test:watch
 
 # Run specific test file
 npm test -- src/__tests__/geminiService.spec.ts
+
+# Run tests with coverage
+npm test -- --coverage
 ```
 
 ## Troubleshooting
@@ -301,10 +325,20 @@ npm test -- src/__tests__/geminiService.spec.ts
 
 | Issue | Solution |
 |-------|----------|
-| API key error | Verify `VITE_GEMINI_API_KEY` in `.env` |
-| Port 3000 in use | Change port in `vite.config.ts` |
+| API key error | Verify `VITE_GEMINI_API_KEY` in `.env` file |
+| Port 3000 in use | Change port in `vite.config.ts` or kill process using port |
 | Module not found | Run `npm install` and restart dev server |
 | TypeScript errors in IDE | Restart TypeScript server in your editor |
+| ESLint not working | Ensure `.eslintrc.cjs` exists (not `_eslintrc.cjs`) |
+| Build fails | Check all config files use correct naming (dots, not underscores) |
+
+### Configuration File Issues
+
+If your build tools aren't working:
+1. Verify all config files use dots (`.`) not underscores (`_`)
+2. Check file names match exactly: `.env`, `.eslintrc.cjs`, `vite.config.ts`, etc.
+3. Run `npm run lint` to verify ESLint configuration
+4. Run `npm run typecheck` to verify TypeScript configuration
 
 ## Future Enhancements
 
@@ -312,10 +346,10 @@ npm test -- src/__tests__/geminiService.spec.ts
 - Multi-project management
 - Custom AI model selection
 - Result export (PDF, JSON, CSV)
-- CI/CD pipeline integration
+- CI/CD pipeline integration with GitHub Actions
 - Collaboration features
 - Advanced filtering and search
-- Performance optimization
+- Performance optimization and caching
 
 ## Contributing
 
@@ -324,8 +358,17 @@ Contributions are welcome! Please:
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+4. Run linting and tests (`npm run ci`)
+5. Push to branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+### Code Standards
+
+- Follow TypeScript strict mode guidelines
+- Ensure ESLint passes without warnings
+- Write tests for new features
+- Update documentation as needed
+- Use conventional commit messages
 
 ## License
 
@@ -334,6 +377,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Support
 
 For issues, questions, or feature requests, please open an issue on GitHub.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes.
 
 ---
 

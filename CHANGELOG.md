@@ -5,31 +5,45 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
-
-- ESLint configuration (`.eslintrc.cjs` and `.eslintignore`) and a `lint:fix` script to enable autofix runs
-- Required ESLint plugins (`eslint-plugin-react`, `eslint-plugin-react-hooks`) to `devDependencies`
-- `ESLint` GitHub Actions workflow that runs lint checks on pushes and PRs; supports an optional `auto_fix` workflow_dispatch input to run `eslint --fix` and commit autofixes
-- GitHub Actions workflow to run type-checks and tests on PRs (`.github/workflows/ci.yml`)
-- Unit tests (Vitest + Testing Library) for `NavBtn`, `StatCard`, and `geminiService`
-- Parsing-variation tests to validate behavior when AI responses are empty or malformed for `reviewRequirements`, `generateTestCases`, and `executeTests` (tests live in `src/__tests__/geminiService.parse.spec.ts`)
-- `test`, `typecheck`, `lint`, `lint:fix`, and `ci` scripts to `package.json`
-- Note to `README.md` advising to install devDependencies (e.g., `@types/node`, Vitest types) and restart the editor/TS server to resolve IDE type errors
-
-### Changed
-
-- Replaced `any`-typed component props with explicit interfaces for `NavBtn` and `StatCard` to improve maintainability and editor tooling
-- Exported `setAiClient` in `src/services/geminiService.ts` to allow injecting a mock AI client in tests
+## [2.0.1] - 2026-02-05
 
 ### Fixed
 
-- Type-safety improvements for component props
-- Added runtime guard for missing Gemini API key and defensive parsing of model responses in `src/services/geminiService.ts` to avoid silent failures
-- Workflow failures now set `state.error` and show a concise UI indicator instead of only logging to the console
-- External links now include `rel="noopener noreferrer"` for security
-- Removed unused icon imports and unused React `useRef` to reduce noise and bundle size
+#### Critical Configuration Issues
+- **File Naming Conventions**: Fixed all configuration files to use standard naming conventions
+  - Renamed `_env` → `.env`
+  - Renamed `_eslintignore` → `.eslintignore`
+  - Renamed `_eslintrc.cjs` → `.eslintrc.cjs`
+  - Renamed `_gitignore` → `.gitignore`
+  - Renamed `postcss_config.js` → `postcss.config.js`
+  - Renamed `tailwind_config.js` → `tailwind.config.js`
+  - Renamed `tsconfig_node.json` → `tsconfig.node.json`
+  - Renamed `vite_config.ts` → `vite.config.ts`
+  - Renamed `vitest_config.ts` → `vitest.config.ts`
+
+#### Code Quality Improvements
+- Added missing semicolons in `postcss.config.js` and `tailwind.config.js`
+- Enhanced `tsconfig.node.json` to include all configuration files (`vite.config.ts`, `vitest.config.ts`, `postcss.config.js`, `tailwind.config.js`)
+- Improved TypeScript type-checking coverage for build configuration files
+
+### Changed
+
+- Updated README.md with:
+  - Version bump to 2.0.1
+  - Configuration files section explaining proper naming conventions
+  - Enhanced troubleshooting section for configuration issues
+  - Added code standards section to contributing guidelines
+  - Updated project structure to show correct file names
+
+### Impact
+
+These fixes ensure:
+- ✅ ESLint now runs correctly (previously couldn't find `.eslintrc.cjs`)
+- ✅ Git ignore rules are properly applied
+- ✅ Environment variables are correctly loaded from `.env`
+- ✅ All build tools can find their configuration files
+- ✅ TypeScript properly type-checks all configuration files
+- ✅ PostCSS and Tailwind CSS process correctly
 
 ## [2.0.0] - 2026-02-05
 
@@ -234,9 +248,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Information
 
-**Current Version**: 2.0.0
-**Release Date**: 2026-02-05
-**Status**: Production Ready
+**Current Version**: 2.0.1  
+**Release Date**: February 5, 2026  
+**Status**: Production Ready  
 **License**: MIT
 
 ### Supported Node Versions
@@ -259,15 +273,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 
-None - Initial production release.
+**v2.0.1**:
+- None - This is a patch release fixing configuration issues
+
+**v2.0.0**:
+- Project structure reorganization (source files moved to `src/`)
+- Path alias changes (now using `@/` for src imports)
+- Configuration file naming conventions standardized
 
 ### Migration Guide
 
-Not applicable for initial release.
+#### Migrating from 2.0.0 to 2.0.1
+
+1. Rename all configuration files to use proper conventions:
+   - `_env` → `.env`
+   - `_eslintrc.cjs` → `.eslintrc.cjs`
+   - `postcss_config.js` → `postcss.config.js`
+   - `tailwind_config.js` → `tailwind.config.js`
+   - `vite_config.ts` → `vite.config.ts`
+   - etc.
+
+2. Verify build tools work:
+   ```bash
+   npm run lint        # Should now work
+   npm run typecheck   # Should pass
+   npm run dev         # Should start
+   ```
 
 ---
 
-## Planned Features (v2.1.0+)
+## Planned Features (v2.2.0+)
 
 - Database integration for workflow history
 - Multi-project management dashboard
@@ -284,6 +319,7 @@ Not applicable for initial release.
 
 ## Known Issues
 
+### v2.0.1
 None currently identified.
 
 ### Reporting Issues
@@ -306,7 +342,8 @@ See README.md for detailed contribution guidelines.
 2. Create a feature branch from `main`
 3. Make your changes with clear commit messages
 4. Ensure all tests pass: `npm run ci`
-5. Submit a pull request with description of changes
+5. Run linting: `npm run lint:fix`
+6. Submit a pull request with description of changes
 
 ### Code Standards
 
@@ -315,6 +352,7 @@ See README.md for detailed contribution guidelines.
 - All functions must be typed
 - Components must be documented
 - Tests required for new features
+- Use conventional commit messages
 
 ---
 
@@ -349,7 +387,7 @@ Built with cutting-edge technologies:
 ## Documentation
 
 All documentation is comprehensive and up-to-date:
-- `README.md` - Main entry point (343 lines)
+- `README.md` - Main entry point (updated for v2.0.1)
 - `docs/AGENT.md` - Developer reference (940 lines)
 - `docs/README_DOCUMENTATION.md` - Documentation index
 - `docs/QUICK_REFERENCE.md` - Quick overview
@@ -359,6 +397,7 @@ All documentation is comprehensive and up-to-date:
 - `docs/UI_ENHANCEMENTS.md` - Accessibility guide
 - `docs/Walkthrough.md` - UI workflows
 - `PROJECT_STRUCTURE.md` - Directory organization
+- `CHANGELOG.md` - This file
 
 ---
 
@@ -368,8 +407,9 @@ See [README.md](README.md) for contribution guidelines and [docs/AGENT.md](docs/
 
 ## Roadmap
 
-See [README.md](README.md#roadmap) for planned features and improvements.
+See [README.md](README.md#future-enhancements) for planned features and improvements.
 
 ---
 
-**Last Updated**: 2026-02-05
+**Last Updated**: February 5, 2026  
+**Version**: 2.0.1
