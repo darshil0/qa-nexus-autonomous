@@ -205,6 +205,9 @@ All UI components meet **WCAG 2.1 AA standards**:
 Run these after installing dependencies (`npm install`):
 
 ```bash
+# Install dependencies (includes @types packages such as @types/node and vitest types)
+npm install
+
 # Run lint (report only)
 npm run lint
 
