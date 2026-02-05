@@ -12,6 +12,11 @@ if (apiKey) {
   console.warn('GENAI API key is not set. Gemini client will not be initialized and calls will throw unless a key is provided.');
 }
 
+// For testing and advanced usage, allow swapping the underlying AI client
+export const setAiClient = (client: GoogleGenAI | undefined) => {
+  ai = client;
+};
+
 /**
  * Simulated Jira Service
  * In a real scenario, this would call your backend API which interacts with Jira.

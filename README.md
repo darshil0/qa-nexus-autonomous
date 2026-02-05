@@ -198,6 +198,33 @@ All UI components meet **WCAG 2.1 AA standards**:
 
 ```bash
 # 1. Start dev server
+```
+
+### Developer commands
+
+Run these after installing dependencies (`npm install`):
+
+```bash
+# Install dependencies (includes @types packages such as @types/node and vitest types)
+npm install
+
+# Run lint (report only)
+npm run lint
+
+# Run autofix (tries to fix issues)
+npm run lint:fix
+
+# Type-check only
+npm run typecheck
+
+# Run unit tests
+npm run test
+```
+
+CI: A GitHub Actions workflow (`.github/workflows/ci.yml`) is configured to run type-checks and tests on pull requests to `main`.
+
+Note: If your editor reports missing type definitions (for example, "Cannot find type definition file for 'vitest'" or for Node), run `npm install` to install devDependencies (e.g., `@types/node`, Vitest types), then restart your editor or the TypeScript server to pick up the types.
+
 npm run dev
 
 # 2. Test keyboard navigation
