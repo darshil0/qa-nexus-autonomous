@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Type-safety: Replaced `any`-typed component props with explicit interfaces for `NavBtn` and `StatCard` to improve maintainability and editor tooling.
+- Safety: Added runtime guard for missing Gemini API key and defensive parsing of model responses in `src/services/geminiService.ts` to avoid silent failures.
+- Reliability: Workflow failures now set `state.error` and show a concise UI indicator instead of only logging to the console.
+- Accessibility/Security: External links now include `rel="noopener noreferrer"`.
+- Tests: Added unit tests (Vitest + Testing Library) for `NavBtn`, `StatCard`, and `geminiService`.
+- CI: Added a GitHub Actions workflow to run type-checks and tests on PRs.
+- Scripts: Added `test`, `typecheck`, `lint`, and `ci` scripts to `package.json`.
+
+
 ## [2.0.0] - 2026-02-04
 
 ### Added
