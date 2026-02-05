@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { setAiClient, reviewRequirements, generateTestCases, executeTests } from '../services/geminiService';
 import { test, expect, beforeEach } from 'vitest';
 

@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { fetchJiraRequirement, reviewRequirements } from '../services/geminiService';
 import { test, expect } from 'vitest';
 
