@@ -1,5 +1,6 @@
-node_modules/
-dist/
-build/
-.env
-coverage/
+node_modules
+dist
+build
+.vite
+*.config.ts
+*.config.js
