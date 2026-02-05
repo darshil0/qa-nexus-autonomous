@@ -198,6 +198,26 @@ All UI components meet **WCAG 2.1 AA standards**:
 
 ```bash
 # 1. Start dev server
+```
+
+### Developer commands
+
+Run these after installing dependencies (`npm install`):
+
+```bash
+# Run lint (report only)
+npm run lint
+
+# Run autofix (tries to fix issues)
+npm run lint:fix
+
+# Type-check only
+npm run typecheck
+
+# Run unit tests
+npm run test
+```
+
 npm run dev
 
 # 2. Test keyboard navigation
