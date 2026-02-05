@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   ClipboardCheck, 
   FileEdit, 
@@ -10,19 +10,11 @@ import {
   BrainCircuit,
   ChevronRight,
   RefreshCw,
-  Plus, 
-  ExternalLink,
-  Search,
-  Hash,
-  ArrowUpRight,
   X,
-  Link as LinkIcon,
-  Activity,
   Terminal,
   BarChart3,
   Github,
   Database,
-  CloudLightning,
   Workflow,
   ArrowRight,
   Map as MapIcon,
