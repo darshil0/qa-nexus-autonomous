@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tests (parsing variations): Added parsing-variation tests to validate behavior when AI responses are empty or malformed for `reviewRequirements`, `generateTestCases`, and `executeTests` (tests live in `src/__tests__/geminiService.parse.spec.ts`).
 - Testing utility: Exported `setAiClient` in `src/services/geminiService.ts` to allow injecting a mock AI client in tests.
 - Linting: Added ESLint configuration (`.eslintrc.cjs` and `.eslintignore`) and a `lint:fix` script to enable autofix runs. Added required ESLint plugins (`eslint-plugin-react`, `eslint-plugin-react-hooks`) to `devDependencies`.
+- Docs: Added note to `README.md` advising to install devDependencies (e.g., `@types/node`, Vitest types) and restart the editor/TS server to resolve IDE type errors.
 - CI: Added a GitHub Actions workflow to run type-checks and tests on PRs (`.github/workflows/ci.yml`).
 - Scripts: Added `test`, `typecheck`, `lint`, `lint:fix`, and `ci` scripts to `package.json`.
 - Maintenance: Performed manual lint cleanups (removed unused icon imports and unused React `useRef`) to reduce noise and bundle size.
