@@ -197,8 +197,32 @@ const App: React.FC = () => {
                 <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
                   <h3 className="text-sm font-bold flex items-center gap-2"><Database size={16} /> Jira Sync</h3>
                   <div className="flex gap-2">
-                    <input value={jiraIssueInput} onChange={e => setJiraIssueInput(e.target.value)} placeholder="Ticket ID" className="flex-1 px-4 py-2 bg-slate-50 border rounded-lg text-sm" />
-                    <button onClick={handleJiraFetch} disabled={isJiraLoading} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold">{isJiraLoading ? '...' : 'Fetch'}</button>
+                    <label htmlFor="jira-ticket" className="sr-only">Jira Ticket ID</label>
+                    <input 
+                      id="jira-ticket"
+                      value={jiraIssueInput} 
+                      onChange={e => setJiraIssueInput(e.target.value)} 
+                      placeholder="Ticket ID (e.g., AUTH-101)" 
+                      className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:border-transparent transition-all" 
+                      aria-label="Jira ticket ID" 
+                      aria-describedby="jira-help" 
+                    />
+                    <p id="jira-help" className="text-xs text-slate-500 mt-1">💡 Enter your Jira ticket ID to pull requirements directly</p>
+                    <button 
+                      onClick={handleJiraFetch} 
+                      disabled={isJiraLoading || !jiraIssueInput.trim()} 
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-all" 
+                      aria-busy={isJiraLoading} 
+                      aria-label="Fetch requirements from Jira"
+                    >
+                      {isJiraLoading ? (
+                        <span className="inline-flex items-center gap-1">
+                          <Loader2 size={14} className="animate-spin" /> Syncing...
+                        </span>
+                      ) : (
+                        'Fetch'
+                      )}
+                    </button>
                   </div>
                 </div>
                 <div className="bg-white p-6 rounded-2xl border shadow-sm flex items-center gap-4">
@@ -212,10 +236,27 @@ const App: React.FC = () => {
 
               <div className="bg-white p-8 rounded-3xl border shadow-sm space-y-4">
                 <h3 className="font-bold">Requirement Staging</h3>
-                <textarea value={state.rawRequirements} onChange={e => setState(p => ({ ...p, rawRequirements: e.target.value }))} className="w-full h-40 p-4 bg-slate-50 border rounded-xl text-sm outline-none" placeholder="Paste requirements..." />
+                <label htmlFor="requirements-input" className="block text-sm font-semibold text-slate-700 mb-2">Requirements</label>
+                <textarea 
+                  id="requirements-input"
+                  value={state.rawRequirements} 
+                  onChange={e => setState(p => ({ ...p, rawRequirements: e.target.value }))} 
+                  className="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:border-transparent transition-all resize-none" 
+                  placeholder="Paste requirements, PRD, or user stories here..." 
+                  aria-label="Raw requirements input" 
+                  aria-describedby="requirements-help" 
+                />
+                <div className="flex justify-between items-center mt-2">
+                  <p id="requirements-help" className="text-xs text-slate-500">
+                    💡 Include business requirements, acceptance criteria, and edge cases for best results
+                  </p>
+                  <span className="text-xs text-slate-500">{state.rawRequirements.length} characters</span>
+                </div>
                 <div className="flex justify-end">
-                  <button onClick={runWorkflow} disabled={state.status !== WorkflowStatus.IDLE || !state.rawRequirements} className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 flex items-center gap-2">
-                    Launch Pipeline <ChevronRight size={16} />
+                  <button onClick={runWorkflow} disabled={state.status !== WorkflowStatus.IDLE || !state.rawRequirements.trim()} aria-busy={state.status !== WorkflowStatus.IDLE} aria-label="Launch multi-agent QA pipeline" className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-all flex items-center gap-2">
+                    {state.status !== WorkflowStatus.IDLE && <Loader2 size={16} className="animate-spin" />}
+                  {state.status === WorkflowStatus.IDLE ? 'Launch Pipeline' : `Running: ${state.status.replace(/_/g, ' ')}`}
+                  {state.status === WorkflowStatus.IDLE && <ChevronRight size={16} />}
                   </button>
                 </div>
               </div>
@@ -362,3 +403,7 @@ const StatCard = ({ label, value, color }: any) => (
 );
 
 export default App;
+
+
+
+
