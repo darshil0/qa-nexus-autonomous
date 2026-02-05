@@ -218,6 +218,8 @@ npm run typecheck
 npm run test
 ```
 
+CI: A GitHub Actions workflow (`.github/workflows/ci.yml`) is configured to run type-checks and tests on pull requests to `main`.
+
 npm run dev
 
 # 2. Test keyboard navigation
