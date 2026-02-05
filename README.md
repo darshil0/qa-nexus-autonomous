@@ -223,6 +223,8 @@ npm run test
 
 CI: A GitHub Actions workflow (`.github/workflows/ci.yml`) is configured to run type-checks and tests on pull requests to `main`.
 
+ESLint Action: An `ESLint` workflow (`.github/workflows/eslint.yml`) is available to run lint checks on pushes and PRs. You can also run the workflow manually via the Actions tab and enable the `auto_fix` input to run `eslint --fix` and commit any safe fixes automatically.
+
 Note: If your editor reports missing type definitions (for example, "Cannot find type definition file for 'vitest'" or for Node), run `npm install` to install devDependencies (e.g., `@types/node`, Vitest types), then restart your editor or the TypeScript server to pick up the types.
 
 npm run dev
