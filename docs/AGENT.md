@@ -1,940 +1,1866 @@
-## Purpose
+# QA Nexus Autonomous - Multi-Agent Architecture
 
-Give AI coding agents the minimal, actionable knowledge to be immediately productive in this multi-agent QA automation platform. This guide covers architecture, workflows, conventions, integration patterns, and development best practices.
+**Version**: 2.0.1  
+**Last Updated**: February 5, 2026  
+**Status**: Production Ready
 
-## Project Overview
+## Table of Contents
 
-**QA Nexus Autonomous** is a TypeScript + React + Vite application that orchestrates three specialized Google Gemini AI agents to autonomously transform product requirements into validated test suites with execution reports.
+1. [Overview](#overview)
+2. [Prerequisites](#prerequisites)
+3. [Architecture](#architecture)
+4. [Agent Specifications](#agent-specifications)
+5. [Core Development Patterns](#core-development-patterns)
+6. [Integration Points](#integration-points)
+7. [Response Schemas](#response-schemas)
+8. [TypeScript Type Definitions](#typescript-type-definitions)
+9. [Testing & Validation](#testing--validation)
+10. [Security & Production](#security--production)
+11. [Deployment Guide](#deployment-guide)
+12. [Troubleshooting](#troubleshooting)
+13. [Best Practices](#best-practices)
+14. [Contributing](#contributing)
 
-- **Total Lines of Code**: ~1,000 (production code + metadata)
-- **Main Component**: `src/App.tsx` (409 lines)
-- **Key Service**: `src/services/geminiService.ts` (multi-agent orchestration)
-- **Build Tool**: Vite with HMR on port 3000
-- **AI Engine**: Google Gemini API with strongly-typed JSON schemas
+---
 
-## Quick Start (project-specific)
+## Overview
 
-### Prerequisites
-- Node.js 18+ and npm
-- Google Gemini API key
+QA Nexus Autonomous is a sophisticated multi-agent system that leverages Google's Gemini AI to automate the complete Quality Assurance workflow. The system orchestrates three specialized AI agents that work sequentially to transform project requirements into executable test cases with simulated results.
 
-### Installation & Commands
+### Key Capabilities
+
+- **Intelligent Requirements Analysis**: Identifies gaps, ambiguities, and potential issues
+- **Automated Test Generation**: Creates comprehensive, prioritized test cases
+- **Execution Simulation**: Simulates test runs with realistic pass/fail metrics
+- **Real-time Orchestration**: Manages agent workflow with live status updates
+- **Error Recovery**: Graceful handling of API failures and malformed responses
+
+### Use Cases
+
+- Sprint planning and requirements validation
+- Automated test case generation for new features
+- QA process acceleration
+- Requirements quality assessment
+- Test coverage analysis
+- Documentation generation for QA teams
+
+---
+
+## Prerequisites
+
+### Required Software
 
 ```bash
-# Clone and install
-git clone https://github.com/darshil0/qa-nexus-autonomous
+# Node.js (version 18 or higher)
+node --version  # Should show v18.x.x or higher
+
+# npm (version 9 or higher)
+npm --version   # Should show 9.x.x or higher
+
+# Git (for version control)
+git --version
+```
+
+### Required Accounts & API Keys
+
+1. **Google Gemini API Key** (Required)
+   - Visit [Google AI Studio](https://aistudio.google.com)
+   - Create or select a project
+   - Enable the Gemini API
+   - Generate an API key
+   - Store securely in `.env` file
+
+2. **Supabase Account** (Optional)
+   - For persistent data storage
+   - Get credentials from [Supabase Dashboard](https://supabase.com)
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/yourusername/qa-nexus-autonomous.git
 cd qa-nexus-autonomous
+
+# Install dependencies
 npm install
 
-# Set environment variable (required)
-export API_KEY=your_google_gemini_api_key
+# Create environment file
+cp .env.example .env  # Or create manually
 
-# Run development server (http://localhost:3000)
+# Add your API key to .env
+echo "VITE_GEMINI_API_KEY=your_api_key_here" >> .env
+
+# Start development server
 npm run dev
+```
 
-# Build for production
+---
+
+## Architecture
+
+### Big Picture: Multi-Agent Workflow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        User Interface                            │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Requirements Input Textarea                              │   │
+│  │  - Project requirements                                   │   │
+│  │  - User stories                                           │   │
+│  │  - Feature specifications                                 │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                              │                                    │
+│                              ▼                                    │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Orchestrator (App.tsx)                                   │   │
+│  │  - Manages workflow state                                 │   │
+│  │  - Coordinates agent execution                            │   │
+│  │  - Handles errors and retries                             │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Gemini Service Layer                          │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  geminiService.ts                                         │   │
+│  │  - API client initialization                              │   │
+│  │  - Prompt engineering                                     │   │
+│  │  - Response parsing                                       │   │
+│  │  - Error handling                                         │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+│    AGENT 1       │  │    AGENT 2       │  │    AGENT 3       │
+│   Requirements   │  │   Test Case      │  │   Test           │
+│   Reviewer       │  │   Writer         │  │   Executor       │
+├──────────────────┤  ├──────────────────┤  ├──────────────────┤
+│ Model:           │  │ Model:           │  │ Model:           │
+│ gemini-pro       │  │ gemini-pro       │  │ gemini-pro       │
+│                  │  │                  │  │                  │
+│ Input:           │  │ Input:           │  │ Input:           │
+│ - Requirements   │  │ - Requirements   │  │ - Test cases     │
+│                  │  │ - Review results │  │                  │
+│ Output:          │  │                  │  │ Output:          │
+│ - Issues found   │  │ Output:          │  │ - Pass/fail      │
+│ - Recommendations│  │ - Test cases     │  │ - Metrics        │
+│ - Completeness   │  │ - Priorities     │  │ - Duration       │
+└──────────────────┘  └──────────────────┘  └──────────────────┘
+        │                     │                     │
+        └─────────────────────┴─────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Results Dashboard                             │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Agent Cards with Status Indicators                       │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  Requirements Review Results                              │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  Generated Test Cases                                     │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  Execution Metrics & Visualizations                       │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Component Architecture
+
+```
+src/
+├── App.tsx                      # Main orchestrator component
+│   ├── State Management         # React useState for workflow state
+│   ├── Agent Coordination       # Sequential agent execution
+│   └── UI Rendering            # Agent cards, results display
+│
+├── services/
+│   └── geminiService.ts        # Gemini API integration
+│       ├── reviewRequirements() # Agent 1 function
+│       ├── generateTestCases()  # Agent 2 function
+│       └── executeTests()       # Agent 3 function
+│
+├── types.ts                    # TypeScript interfaces
+│   ├── WorkflowState           # Main state interface
+│   ├── AgentStatus             # Status tracking
+│   ├── RequirementsReview      # Agent 1 output
+│   ├── TestCase                # Agent 2 output
+│   └── TestResults             # Agent 3 output
+│
+└── constants.ts                # Configuration
+    ├── AGENT_MODELS            # Model assignments
+    ├── STATUS_MESSAGES         # UI messages
+    └── DEFAULT_VALUES          # Fallback values
+```
+
+---
+
+## Agent Specifications
+
+### Agent 1: Requirements Reviewer
+
+**Purpose**: Analyze project requirements and identify potential issues, gaps, and areas for improvement.
+
+#### Responsibilities
+
+1. **Completeness Check**: Verify all necessary requirements are present
+2. **Clarity Assessment**: Identify ambiguous or unclear specifications
+3. **Consistency Validation**: Find contradictory requirements
+4. **Risk Identification**: Highlight potential implementation challenges
+5. **Recommendation Generation**: Suggest improvements and additions
+
+#### Input Format
+
+```typescript
+interface ReviewInput {
+  requirements: string;  // Raw requirements text from user
+}
+```
+
+#### Output Format
+
+```typescript
+interface RequirementsReview {
+  issues: Array<{
+    severity: 'critical' | 'high' | 'medium' | 'low';
+    category: string;
+    description: string;
+    suggestion: string;
+  }>;
+  completeness: {
+    score: number;        // 0-100
+    missingAreas: string[];
+  };
+  recommendations: string[];
+  overallAssessment: string;
+}
+```
+
+#### Prompt Strategy
+
+```typescript
+const prompt = `
+You are an expert QA analyst reviewing project requirements.
+
+REQUIREMENTS:
+${requirements}
+
+Analyze these requirements and provide a comprehensive review in JSON format:
+{
+  "issues": [
+    {
+      "severity": "critical|high|medium|low",
+      "category": "Clarity|Completeness|Consistency|Security|Performance|etc",
+      "description": "What the issue is",
+      "suggestion": "How to fix it"
+    }
+  ],
+  "completeness": {
+    "score": 85,
+    "missingAreas": ["Authentication details", "Error handling"]
+  },
+  "recommendations": [
+    "Add input validation requirements",
+    "Specify error message formats"
+  ],
+  "overallAssessment": "Summary of requirements quality"
+}
+
+Focus on:
+- Security implications
+- Edge cases and error scenarios
+- Performance considerations
+- User experience gaps
+- Technical feasibility
+`;
+```
+
+#### Example Output
+
+```json
+{
+  "issues": [
+    {
+      "severity": "high",
+      "category": "Security",
+      "description": "Password strength requirements not specified",
+      "suggestion": "Define minimum password requirements (length, complexity, special characters)"
+    },
+    {
+      "severity": "medium",
+      "category": "Clarity",
+      "description": "Session timeout duration unclear",
+      "suggestion": "Specify exact timeout period (e.g., 30 minutes of inactivity)"
+    }
+  ],
+  "completeness": {
+    "score": 75,
+    "missingAreas": [
+      "Password reset flow details",
+      "Account lockout policy",
+      "Token expiration times"
+    ]
+  },
+  "recommendations": [
+    "Add rate limiting specifications for all endpoints",
+    "Define error message formats and codes",
+    "Specify logging and audit requirements"
+  ],
+  "overallAssessment": "Requirements provide a solid foundation but need security hardening and edge case coverage."
+}
+```
+
+---
+
+### Agent 2: Test Case Writer
+
+**Purpose**: Generate comprehensive, prioritized test cases based on requirements and review results.
+
+#### Responsibilities
+
+1. **Test Case Generation**: Create detailed test scenarios
+2. **Priority Assignment**: Rank tests by importance (P0, P1, P2, P3)
+3. **Coverage Analysis**: Ensure all requirements are tested
+4. **Test Data Specification**: Define input data and expected outputs
+5. **Edge Case Identification**: Include boundary and negative tests
+
+#### Input Format
+
+```typescript
+interface TestCaseInput {
+  requirements: string;
+  review: RequirementsReview;  // Optional: output from Agent 1
+}
+```
+
+#### Output Format
+
+```typescript
+interface TestCase {
+  id: string;                    // Unique identifier (e.g., "TC001")
+  title: string;                 // Short description
+  priority: 'P0' | 'P1' | 'P2' | 'P3';
+  category: string;              // Feature area
+  type: 'functional' | 'security' | 'performance' | 'integration' | 'edge-case';
+  steps: Array<{
+    step: number;
+    action: string;
+    expectedResult: string;
+  }>;
+  testData: {
+    inputs: Record<string, any>;
+    expectedOutputs: Record<string, any>;
+  };
+  prerequisites: string[];       // Setup requirements
+  tags: string[];                // For filtering/grouping
+}
+```
+
+#### Prompt Strategy
+
+```typescript
+const prompt = `
+You are an expert test engineer creating comprehensive test cases.
+
+REQUIREMENTS:
+${requirements}
+
+REVIEW FINDINGS:
+${JSON.stringify(review, null, 2)}
+
+Generate test cases in JSON format:
+{
+  "testCases": [
+    {
+      "id": "TC001",
+      "title": "User login with valid credentials",
+      "priority": "P0",
+      "category": "Authentication",
+      "type": "functional",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to login page",
+          "expectedResult": "Login form is displayed"
+        }
+      ],
+      "testData": {
+        "inputs": {"email": "user@example.com", "password": "ValidPass123!"},
+        "expectedOutputs": {"status": "success", "redirectTo": "/dashboard"}
+      },
+      "prerequisites": ["User account exists", "Database is accessible"],
+      "tags": ["smoke", "regression", "authentication"]
+    }
+  ]
+}
+
+Coverage Requirements:
+- All happy path scenarios (P0/P1)
+- Security edge cases (P0/P1)
+- Negative test cases (P1/P2)
+- Boundary conditions (P2)
+- Integration points (P1/P2)
+- Performance scenarios (P2/P3)
+
+Prioritization Guide:
+- P0: Critical path, security, data integrity
+- P1: Core functionality, major features
+- P2: Secondary features, edge cases
+- P3: Nice-to-have, minor edge cases
+`;
+```
+
+#### Example Output
+
+```json
+{
+  "testCases": [
+    {
+      "id": "TC001",
+      "title": "Login with valid email and password",
+      "priority": "P0",
+      "category": "Authentication",
+      "type": "functional",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /login",
+          "expectedResult": "Login form displays with email and password fields"
+        },
+        {
+          "step": 2,
+          "action": "Enter valid email: user@example.com",
+          "expectedResult": "Email field accepts input"
+        },
+        {
+          "step": 3,
+          "action": "Enter valid password: SecurePass123!",
+          "expectedResult": "Password field masks characters"
+        },
+        {
+          "step": 4,
+          "action": "Click 'Login' button",
+          "expectedResult": "User redirected to /dashboard with success message"
+        }
+      ],
+      "testData": {
+        "inputs": {
+          "email": "user@example.com",
+          "password": "SecurePass123!"
+        },
+        "expectedOutputs": {
+          "statusCode": 200,
+          "redirectUrl": "/dashboard",
+          "sessionToken": "exists"
+        }
+      },
+      "prerequisites": [
+        "User account exists in database",
+        "Account is not locked",
+        "Database is accessible"
+      ],
+      "tags": ["smoke", "regression", "authentication", "critical"]
+    },
+    {
+      "id": "TC002",
+      "title": "Login with invalid password",
+      "priority": "P0",
+      "category": "Authentication",
+      "type": "security",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /login",
+          "expectedResult": "Login form displays"
+        },
+        {
+          "step": 2,
+          "action": "Enter valid email: user@example.com",
+          "expectedResult": "Email field accepts input"
+        },
+        {
+          "step": 3,
+          "action": "Enter invalid password: wrongpass",
+          "expectedResult": "Password field masks characters"
+        },
+        {
+          "step": 4,
+          "action": "Click 'Login' button",
+          "expectedResult": "Error message: 'Invalid credentials' displayed. User remains on login page."
+        }
+      ],
+      "testData": {
+        "inputs": {
+          "email": "user@example.com",
+          "password": "wrongpass"
+        },
+        "expectedOutputs": {
+          "statusCode": 401,
+          "error": "Invalid credentials",
+          "remainOnPage": true
+        }
+      },
+      "prerequisites": ["User account exists"],
+      "tags": ["security", "negative", "authentication"]
+    }
+  ]
+}
+```
+
+---
+
+### Agent 3: Test Executor
+
+**Purpose**: Simulate test execution and provide realistic results with metrics.
+
+#### Responsibilities
+
+1. **Execution Simulation**: Simulate running each test case
+2. **Result Generation**: Determine pass/fail with realistic distribution
+3. **Metrics Calculation**: Compute success rate, duration, coverage
+4. **Failure Analysis**: Provide failure reasons and debugging hints
+5. **Report Generation**: Create comprehensive execution report
+
+#### Input Format
+
+```typescript
+interface ExecutionInput {
+  testCases: TestCase[];
+}
+```
+
+#### Output Format
+
+```typescript
+interface TestResults {
+  summary: {
+    total: number;
+    passed: number;
+    failed: number;
+    skipped: number;
+    successRate: number;        // Percentage
+    totalDuration: number;      // Milliseconds
+  };
+  results: Array<{
+    testCaseId: string;
+    status: 'passed' | 'failed' | 'skipped';
+    duration: number;           // Milliseconds
+    failureReason?: string;
+    stackTrace?: string;
+    screenshot?: string;        // URL or base64
+    logs: string[];
+  }>;
+  coverage: {
+    requirements: number;       // Percentage of requirements covered
+    codePaths: number;          // Simulated code coverage
+    features: string[];         // Features tested
+  };
+  recommendations: string[];    // Suggested improvements
+}
+```
+
+#### Prompt Strategy
+
+```typescript
+const prompt = `
+You are a test automation system executing test cases.
+
+TEST CASES:
+${JSON.stringify(testCases, null, 2)}
+
+Simulate execution and provide results in JSON format:
+{
+  "summary": {
+    "total": 25,
+    "passed": 22,
+    "failed": 2,
+    "skipped": 1,
+    "successRate": 88.0,
+    "totalDuration": 45230
+  },
+  "results": [
+    {
+      "testCaseId": "TC001",
+      "status": "passed",
+      "duration": 1234,
+      "logs": ["Step 1 completed", "Step 2 completed"]
+    },
+    {
+      "testCaseId": "TC002",
+      "status": "failed",
+      "duration": 890,
+      "failureReason": "Expected status code 401, received 500",
+      "stackTrace": "Error at login.test.ts:45",
+      "logs": ["Step 1 completed", "Step 2 failed"]
+    }
+  ],
+  "coverage": {
+    "requirements": 95.5,
+    "codePaths": 87.3,
+    "features": ["Authentication", "Password Reset", "Session Management"]
+  },
+  "recommendations": [
+    "Add tests for OAuth flow",
+    "Increase timeout for API tests"
+  ]
+}
+
+Simulation Rules:
+- P0 tests: 95% pass rate, faster execution
+- P1 tests: 90% pass rate, moderate execution
+- P2/P3 tests: 85% pass rate, variable execution
+- Security tests: May fail if vulnerabilities detected
+- Realistic timing: 500-3000ms per test
+`;
+```
+
+#### Example Output
+
+```json
+{
+  "summary": {
+    "total": 15,
+    "passed": 13,
+    "failed": 2,
+    "skipped": 0,
+    "successRate": 86.7,
+    "totalDuration": 23450
+  },
+  "results": [
+    {
+      "testCaseId": "TC001",
+      "status": "passed",
+      "duration": 1234,
+      "logs": [
+        "Navigated to login page",
+        "Entered credentials",
+        "Login successful",
+        "Redirected to dashboard"
+      ]
+    },
+    {
+      "testCaseId": "TC002",
+      "status": "passed",
+      "duration": 987,
+      "logs": [
+        "Attempted login with invalid password",
+        "Received expected error message",
+        "User remained on login page"
+      ]
+    },
+    {
+      "testCaseId": "TC005",
+      "status": "failed",
+      "duration": 2100,
+      "failureReason": "Rate limiting not enforced after 5 failed login attempts",
+      "stackTrace": "AssertionError: Expected account to be locked\n  at login.test.ts:78\n  at runTest (executor.ts:123)",
+      "logs": [
+        "Made 5 failed login attempts",
+        "Attempted 6th login",
+        "Expected: Account locked",
+        "Actual: Login attempt allowed"
+      ]
+    }
+  ],
+  "coverage": {
+    "requirements": 93.3,
+    "codePaths": 85.7,
+    "features": [
+      "Email/Password Login",
+      "Invalid Credentials Handling",
+      "Password Masking",
+      "Session Creation"
+    ]
+  },
+  "recommendations": [
+    "Implement rate limiting for failed login attempts",
+    "Add tests for session timeout scenarios",
+    "Consider adding 2FA test coverage"
+  ]
+}
+```
+
+---
+
+## Core Development Patterns
+
+### 1. Agent Function Pattern
+
+All agent functions follow this pattern:
+
+```typescript
+// src/services/geminiService.ts
+
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+
+export async function reviewRequirements(
+  requirements: string
+): Promise<RequirementsReview> {
+  try {
+    // 1. Initialize model
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+    // 2. Construct prompt
+    const prompt = buildReviewPrompt(requirements);
+
+    // 3. Call API
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // 4. Parse response
+    const review = parseReviewResponse(text);
+
+    // 5. Validate and return
+    return validateReview(review);
+  } catch (error) {
+    console.error('Requirements review failed:', error);
+    throw new Error('Failed to review requirements');
+  }
+}
+
+function buildReviewPrompt(requirements: string): string {
+  return `
+You are an expert QA analyst...
+[Detailed prompt as shown above]
+`;
+}
+
+function parseReviewResponse(text: string): RequirementsReview {
+  try {
+    // Remove markdown code blocks if present
+    const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    const parsed = JSON.parse(cleaned);
+    return parsed;
+  } catch (error) {
+    // Return safe fallback
+    return {
+      issues: [],
+      completeness: { score: 50, missingAreas: [] },
+      recommendations: [],
+      overallAssessment: 'Unable to parse review results'
+    };
+  }
+}
+
+function validateReview(review: RequirementsReview): RequirementsReview {
+  // Ensure all required fields exist
+  return {
+    issues: review.issues || [],
+    completeness: review.completeness || { score: 0, missingAreas: [] },
+    recommendations: review.recommendations || [],
+    overallAssessment: review.overallAssessment || 'No assessment available'
+  };
+}
+```
+
+### 2. State Management Pattern
+
+```typescript
+// src/App.tsx
+
+import { useState } from 'react';
+import type { WorkflowState } from './types';
+
+function App() {
+  const [state, setState] = useState<WorkflowState>({
+    requirements: '',
+    status: 'idle',
+    agent1: { status: 'idle', result: null },
+    agent2: { status: 'idle', result: null },
+    agent3: { status: 'idle', result: null },
+    error: null
+  });
+
+  const runWorkflow = async () => {
+    try {
+      // Reset state
+      setState(prev => ({ 
+        ...prev, 
+        status: 'running',
+        error: null 
+      }));
+
+      // Agent 1: Requirements Review
+      setState(prev => ({ 
+        ...prev, 
+        agent1: { status: 'running', result: null } 
+      }));
+      
+      const review = await reviewRequirements(state.requirements);
+      
+      setState(prev => ({ 
+        ...prev, 
+        agent1: { status: 'completed', result: review } 
+      }));
+
+      // Agent 2: Test Case Generation
+      setState(prev => ({ 
+        ...prev, 
+        agent2: { status: 'running', result: null } 
+      }));
+      
+      const testCases = await generateTestCases(
+        state.requirements,
+        review
+      );
+      
+      setState(prev => ({ 
+        ...prev, 
+        agent2: { status: 'completed', result: testCases } 
+      }));
+
+      // Agent 3: Test Execution
+      setState(prev => ({ 
+        ...prev, 
+        agent3: { status: 'running', result: null } 
+      }));
+      
+      const results = await executeTests(testCases);
+      
+      setState(prev => ({ 
+        ...prev, 
+        agent3: { status: 'completed', result: results },
+        status: 'completed'
+      }));
+
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }));
+    }
+  };
+
+  return (
+    <div>
+      {/* UI components */}
+    </div>
+  );
+}
+```
+
+### 3. Async Operations Pattern
+
+```typescript
+// Handle async operations with proper error boundaries
+
+async function safeAgentCall<T>(
+  agentFn: () => Promise<T>,
+  fallback: T
+): Promise<T> {
+  try {
+    return await agentFn();
+  } catch (error) {
+    console.error('Agent call failed:', error);
+    return fallback;
+  }
+}
+
+// Usage
+const review = await safeAgentCall(
+  () => reviewRequirements(requirements),
+  {
+    issues: [],
+    completeness: { score: 0, missingAreas: [] },
+    recommendations: [],
+    overallAssessment: 'Review failed'
+  }
+);
+```
+
+### 4. Response Schema Validation Pattern
+
+```typescript
+import { z } from 'zod';  // Optional: Use Zod for runtime validation
+
+const RequirementsReviewSchema = z.object({
+  issues: z.array(z.object({
+    severity: z.enum(['critical', 'high', 'medium', 'low']),
+    category: z.string(),
+    description: z.string(),
+    suggestion: z.string()
+  })),
+  completeness: z.object({
+    score: z.number().min(0).max(100),
+    missingAreas: z.array(z.string())
+  }),
+  recommendations: z.array(z.string()),
+  overallAssessment: z.string()
+});
+
+function parseAndValidateReview(text: string): RequirementsReview {
+  const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+  const parsed = JSON.parse(cleaned);
+  return RequirementsReviewSchema.parse(parsed);
+}
+```
+
+---
+
+## Integration Points
+
+### Gemini API Integration
+
+```typescript
+// Configuration
+const API_CONFIG = {
+  model: 'gemini-pro',
+  temperature: 0.7,        // Creativity level (0-1)
+  maxOutputTokens: 2048,   // Response length limit
+  topP: 0.95,              // Nucleus sampling
+  topK: 40                 // Top-K sampling
+};
+
+// Initialize client
+const genAI = new GoogleGenerativeAI(
+  import.meta.env.VITE_GEMINI_API_KEY
+);
+
+// Create model instance
+const model = genAI.getGenerativeModel({
+  model: API_CONFIG.model,
+  generationConfig: {
+    temperature: API_CONFIG.temperature,
+    maxOutputTokens: API_CONFIG.maxOutputTokens,
+    topP: API_CONFIG.topP,
+    topK: API_CONFIG.topK,
+  }
+});
+
+// Make request
+const result = await model.generateContent(prompt);
+const response = await result.response;
+const text = response.text();
+```
+
+### Error Handling
+
+```typescript
+class GeminiAPIError extends Error {
+  constructor(
+    message: string,
+    public statusCode?: number,
+    public details?: any
+  ) {
+    super(message);
+    this.name = 'GeminiAPIError';
+  }
+}
+
+async function callGeminiAPI(prompt: string): Promise<string> {
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error: any) {
+    if (error.status === 429) {
+      throw new GeminiAPIError(
+        'Rate limit exceeded. Please try again later.',
+        429,
+        error
+      );
+    } else if (error.status === 401) {
+      throw new GeminiAPIError(
+        'Invalid API key. Check your .env file.',
+        401,
+        error
+      );
+    } else if (error.status === 500) {
+      throw new GeminiAPIError(
+        'Gemini API server error. Try again.',
+        500,
+        error
+      );
+    }
+    throw new GeminiAPIError(
+      'Unexpected error calling Gemini API',
+      undefined,
+      error
+    );
+  }
+}
+```
+
+### Debugging Table
+
+| Issue | Possible Cause | Solution |
+|-------|----------------|----------|
+| `API key not valid` | Missing or incorrect key in `.env` | Verify `VITE_GEMINI_API_KEY` value |
+| `429 Rate Limit` | Too many requests | Implement exponential backoff |
+| `Empty response` | Model returned no text | Add fallback handling |
+| `JSON parse error` | Malformed JSON from model | Use try-catch with fallback |
+| `Timeout` | Request took too long | Increase timeout or reduce prompt size |
+| `Network error` | No internet connection | Check connectivity |
+
+---
+
+## Response Schemas
+
+### Complete Agent 1 Response Schema
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["issues", "completeness", "recommendations", "overallAssessment"],
+  "properties": {
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "category", "description", "suggestion"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "category": {
+            "type": "string",
+            "examples": ["Security", "Performance", "Clarity", "Completeness"]
+          },
+          "description": {
+            "type": "string"
+          },
+          "suggestion": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "completeness": {
+      "type": "object",
+      "required": ["score", "missingAreas"],
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "missingAreas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "overallAssessment": {
+      "type": "string"
+    }
+  }
+}
+```
+
+### Complete Agent 2 Response Schema
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["testCases"],
+  "properties": {
+    "testCases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "priority", "category", "type", "steps"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^TC[0-9]{3}$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["P0", "P1", "P2", "P3"]
+          },
+          "category": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["functional", "security", "performance", "integration", "edge-case"]
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["step", "action", "expectedResult"],
+              "properties": {
+                "step": {
+                  "type": "number"
+                },
+                "action": {
+                  "type": "string"
+                },
+                "expectedResult": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "testData": {
+            "type": "object",
+            "properties": {
+              "inputs": {
+                "type": "object"
+              },
+              "expectedOutputs": {
+                "type": "object"
+              }
+            }
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Complete Agent 3 Response Schema
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["summary", "results", "coverage"],
+  "properties": {
+    "summary": {
+      "type": "object",
+      "required": ["total", "passed", "failed", "skipped", "successRate", "totalDuration"],
+      "properties": {
+        "total": {
+          "type": "number"
+        },
+        "passed": {
+          "type": "number"
+        },
+        "failed": {
+          "type": "number"
+        },
+        "skipped": {
+          "type": "number"
+        },
+        "successRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "totalDuration": {
+          "type": "number"
+        }
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["testCaseId", "status", "duration"],
+        "properties": {
+          "testCaseId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "skipped"]
+          },
+          "duration": {
+            "type": "number"
+          },
+          "failureReason": {
+            "type": "string"
+          },
+          "stackTrace": {
+            "type": "string"
+          },
+          "logs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["requirements", "codePaths", "features"],
+      "properties": {
+        "requirements": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "codePaths": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+```
+
+---
+
+## TypeScript Type Definitions
+
+```typescript
+// src/types.ts
+
+// Workflow State
+export interface WorkflowState {
+  requirements: string;
+  status: 'idle' | 'running' | 'completed' | 'error';
+  agent1: AgentState<RequirementsReview>;
+  agent2: AgentState<TestCaseCollection>;
+  agent3: AgentState<TestResults>;
+  error: string | null;
+}
+
+// Generic Agent State
+export interface AgentState<T> {
+  status: 'idle' | 'running' | 'completed' | 'error';
+  result: T | null;
+  error?: string;
+}
+
+// Agent 1: Requirements Review
+export interface RequirementsReview {
+  issues: Issue[];
+  completeness: Completeness;
+  recommendations: string[];
+  overallAssessment: string;
+}
+
+export interface Issue {
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  category: string;
+  description: string;
+  suggestion: string;
+}
+
+export interface Completeness {
+  score: number;
+  missingAreas: string[];
+}
+
+// Agent 2: Test Cases
+export interface TestCaseCollection {
+  testCases: TestCase[];
+}
+
+export interface TestCase {
+  id: string;
+  title: string;
+  priority: 'P0' | 'P1' | 'P2' | 'P3';
+  category: string;
+  type: 'functional' | 'security' | 'performance' | 'integration' | 'edge-case';
+  steps: TestStep[];
+  testData: TestData;
+  prerequisites: string[];
+  tags: string[];
+}
+
+export interface TestStep {
+  step: number;
+  action: string;
+  expectedResult: string;
+}
+
+export interface TestData {
+  inputs: Record<string, any>;
+  expectedOutputs: Record<string, any>;
+}
+
+// Agent 3: Test Results
+export interface TestResults {
+  summary: TestSummary;
+  results: TestResult[];
+  coverage: Coverage;
+  recommendations: string[];
+}
+
+export interface TestSummary {
+  total: number;
+  passed: number;
+  failed: number;
+  skipped: number;
+  successRate: number;
+  totalDuration: number;
+}
+
+export interface TestResult {
+  testCaseId: string;
+  status: 'passed' | 'failed' | 'skipped';
+  duration: number;
+  failureReason?: string;
+  stackTrace?: string;
+  screenshot?: string;
+  logs: string[];
+}
+
+export interface Coverage {
+  requirements: number;
+  codePaths: number;
+  features: string[];
+}
+
+// Utility Types
+export type AgentFunction<TInput, TOutput> = (
+  input: TInput
+) => Promise<TOutput>;
+
+export type AgentStatus = 'idle' | 'running' | 'completed' | 'error';
+```
+
+---
+
+## Testing & Validation
+
+### Unit Tests
+
+```typescript
+// src/__tests__/geminiService.spec.ts
+
+import { describe, it, expect, beforeEach } from 'vitest';
+import { reviewRequirements, generateTestCases, executeTests } from '../services/geminiService';
+
+describe('geminiService', () => {
+  describe('reviewRequirements', () => {
+    it('should return valid review for simple requirements', async () => {
+      const requirements = 'Build a login page with email and password';
+      const review = await reviewRequirements(requirements);
+      
+      expect(review).toHaveProperty('issues');
+      expect(review).toHaveProperty('completeness');
+      expect(review).toHaveProperty('recommendations');
+      expect(Array.isArray(review.issues)).toBe(true);
+    });
+
+    it('should handle empty requirements gracefully', async () => {
+      const review = await reviewRequirements('');
+      
+      expect(review).toBeDefined();
+      expect(review.issues).toBeDefined();
+    });
+
+    it('should identify security issues', async () => {
+      const requirements = 'Allow users to upload files';
+      const review = await reviewRequirements(requirements);
+      
+      const securityIssues = review.issues.filter(
+        issue => issue.category.toLowerCase().includes('security')
+      );
+      
+      expect(securityIssues.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('generateTestCases', () => {
+    it('should generate test cases from requirements', async () => {
+      const requirements = 'Login with email and password';
+      const review = await reviewRequirements(requirements);
+      const testCases = await generateTestCases(requirements, review);
+      
+      expect(testCases.testCases).toBeDefined();
+      expect(Array.isArray(testCases.testCases)).toBe(true);
+      expect(testCases.testCases.length).toBeGreaterThan(0);
+    });
+
+    it('should prioritize critical tests as P0', async () => {
+      const requirements = 'User authentication system';
+      const review = await reviewRequirements(requirements);
+      const testCases = await generateTestCases(requirements, review);
+      
+      const p0Tests = testCases.testCases.filter(tc => tc.priority === 'P0');
+      expect(p0Tests.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('executeTests', () => {
+    it('should simulate test execution', async () => {
+      const mockTestCases = {
+        testCases: [
+          {
+            id: 'TC001',
+            title: 'Test login',
+            priority: 'P0' as const,
+            category: 'Auth',
+            type: 'functional' as const,
+            steps: [],
+            testData: { inputs: {}, expectedOutputs: {} },
+            prerequisites: [],
+            tags: []
+          }
+        ]
+      };
+      
+      const results = await executeTests(mockTestCases);
+      
+      expect(results.summary).toBeDefined();
+      expect(results.summary.total).toBe(1);
+      expect(results.results).toHaveLength(1);
+    });
+  });
+});
+```
+
+### Integration Tests
+
+```typescript
+// src/__tests__/workflow.integration.spec.ts
+
+import { describe, it, expect } from 'vitest';
+import { reviewRequirements, generateTestCases, executeTests } from '../services/geminiService';
+
+describe('Full Workflow Integration', () => {
+  it('should complete end-to-end workflow', async () => {
+    // Step 1: Review requirements
+    const requirements = `
+      Build a user authentication system with:
+      - Email/password login
+      - Password reset
+      - Session management
+    `;
+    
+    const review = await reviewRequirements(requirements);
+    expect(review).toBeDefined();
+    
+    // Step 2: Generate test cases
+    const testCases = await generateTestCases(requirements, review);
+    expect(testCases.testCases.length).toBeGreaterThan(0);
+    
+    // Step 3: Execute tests
+    const results = await executeTests(testCases);
+    expect(results.summary.total).toBe(testCases.testCases.length);
+    expect(results.summary.successRate).toBeGreaterThan(0);
+  }, 60000); // 60 second timeout for API calls
+});
+```
+
+### Parsing Variation Tests
+
+```typescript
+// src/__tests__/geminiService.parse.spec.ts
+
+import { describe, it, expect } from 'vitest';
+import { parseReviewResponse } from '../services/geminiService';
+
+describe('Response Parsing', () => {
+  it('should parse valid JSON response', () => {
+    const response = JSON.stringify({
+      issues: [],
+      completeness: { score: 80, missingAreas: [] },
+      recommendations: [],
+      overallAssessment: 'Good'
+    });
+    
+    const parsed = parseReviewResponse(response);
+    expect(parsed).toBeDefined();
+  });
+
+  it('should handle JSON wrapped in markdown', () => {
+    const response = '```json\n{"issues":[]}\n```';
+    const parsed = parseReviewResponse(response);
+    expect(parsed).toBeDefined();
+  });
+
+  it('should return fallback for invalid JSON', () => {
+    const response = 'This is not JSON';
+    const parsed = parseReviewResponse(response);
+    
+    expect(parsed.issues).toEqual([]);
+    expect(parsed.completeness.score).toBeDefined();
+  });
+
+  it('should handle empty response', () => {
+    const parsed = parseReviewResponse('');
+    expect(parsed).toBeDefined();
+    expect(parsed.issues).toEqual([]);
+  });
+});
+```
+
+---
+
+## Security & Production
+
+### Environment Variables
+
+```env
+# .env file (DO NOT COMMIT)
+
+# Required
+VITE_GEMINI_API_KEY=your_api_key_here
+
+# Optional
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_anon_key
+
+# Development
+VITE_LOG_LEVEL=debug
+VITE_ENABLE_MOCK_MODE=false
+```
+
+### API Key Security
+
+```typescript
+// Validate API key on startup
+if (!import.meta.env.VITE_GEMINI_API_KEY) {
+  throw new Error(
+    'VITE_GEMINI_API_KEY is required. Add it to your .env file.'
+  );
+}
+
+// Don't log API keys
+const sanitizedEnv = {
+  ...import.meta.env,
+  VITE_GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY 
+    ? '***REDACTED***' 
+    : undefined
+};
+console.log('Environment:', sanitizedEnv);
+```
+
+### Rate Limiting
+
+```typescript
+class RateLimiter {
+  private requests: number[] = [];
+  private maxRequests: number;
+  private timeWindow: number;
+
+  constructor(maxRequests: number = 60, timeWindow: number = 60000) {
+    this.maxRequests = maxRequests;
+    this.timeWindow = timeWindow;
+  }
+
+  async acquire(): Promise<void> {
+    const now = Date.now();
+    this.requests = this.requests.filter(
+      time => now - time < this.timeWindow
+    );
+
+    if (this.requests.length >= this.maxRequests) {
+      const oldestRequest = this.requests[0];
+      const waitTime = this.timeWindow - (now - oldestRequest);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+      return this.acquire();
+    }
+
+    this.requests.push(now);
+  }
+}
+
+const rateLimiter = new RateLimiter(60, 60000); // 60 requests per minute
+
+async function callGeminiWithRateLimit(prompt: string) {
+  await rateLimiter.acquire();
+  return callGeminiAPI(prompt);
+}
+```
+
+### Production Checklist
+
+- [ ] API keys stored in environment variables
+- [ ] Error logging configured (e.g., Sentry)
+- [ ] Rate limiting implemented
+- [ ] Timeout handling for API calls
+- [ ] Fallback responses for API failures
+- [ ] CORS configured properly
+- [ ] HTTPS enforced in production
+- [ ] Build optimization enabled (`npm run build`)
+- [ ] Environment variables validated on startup
+- [ ] Monitoring and alerting set up
+
+---
+
+## Deployment Guide
+
+### Build for Production
+
+```bash
+# Install dependencies
+npm install
+
+# Run type check
+npm run typecheck
+
+# Run tests
+npm test
+
+# Build production bundle
 npm run build
 
 # Preview production build
 npm run preview
 ```
 
-### Important Files & Documentation
-- **Agent Specs**: This file (`docs/AGENT.md`)
-- **UI Workflows**: `docs/Walkthrough.md`
-- **Agent Metadata**: `src/metadata.json` (profiles, descriptions, models)
-- **Implementation Guide**: `docs/README_DOCUMENTATION.md` (navigation hub)
-- **Architecture Overview**: `README.md`
+### Deploy to Vercel
 
-### Environment Setup
-The app requires `API_KEY` environment variable pointing to your Google Gemini API key:
-- The code expects: `process.env.API_KEY`
-- Vite config defines: `define: { 'process.env.API_KEY': JSON.stringify(env.API_KEY) }`
-- Runtime usage: `new GoogleGenerativeAI(process.env.API_KEY!)`
+```bash
+# Install Vercel CLI
+npm install -g vercel
 
-## Big-picture architecture (what to inspect first)
+# Deploy
+vercel
 
-### Project Structure
-```
-src/
-├── App.tsx                  # Orchestrator (409 lines, 5-tab UI)
-├── index.tsx                # React entry point (mounts App to #root)
-├── types.ts                 # TypeScript interfaces (WorkflowState, TestCase, etc.)
-├── constants.ts             # Agent models & system instructions
-├── metadata.json            # Agent profiles & metadata
-├── services/
-│   └── geminiService.ts     # AI orchestration (3 agent functions + simulated integrations)
-└── components/              # (Future component extraction)
+# Set environment variables
+vercel env add VITE_GEMINI_API_KEY
 ```
 
-### Three-Agent Pipeline
+### Deploy to Netlify
 
-```
-Raw Requirements
-        ↓
-[AGENT 1: Requirements Reviewer]
-  Model: gemini-3-pro-preview
-  Task: Validate specs, identify ambiguities
-  Output: ValidatedSpec[] with acceptance criteria & risks
-        ↓
-[AGENT 2: Test Case Writer]
-  Model: gemini-3-pro-preview
-  Task: Generate comprehensive test scenarios
-  Output: TestCase[] with traceability to requirements
-        ↓
-[AGENT 3: Test Executor]
-  Model: gemini-3-flash-preview
-  Task: Simulate execution, report results
-  Output: ExecutionResult[] with pass/fail status & defects
-        ↓
-[ORCHESTRATOR: App.tsx]
-  - Manages workflow state (5 tabs)
-  - Displays agent outputs progressively
-  - Handles async operations with loading states
-  - Integrates with Jira/GitHub (simulated)
-        ↓
-Final QA Report
+```bash
+# Install Netlify CLI
+npm install -g netlify-cli
+
+# Build
+npm run build
+
+# Deploy
+netlify deploy --prod --dir=dist
+
+# Set environment variables in Netlify dashboard
 ```
 
-### Core Components
+### Docker Deployment
 
-#### 1. **Orchestrator** (`src/App.tsx`)
-- **Purpose**: Central React component managing entire workflow
-- **State Management**: React useState for WorkflowState
-- **UI Structure**: 5-tab interface
-  - Tab 1: Orchestrator (pipeline status, thinking log)
-  - Tab 2: Agent 1 output (validated specs)
-  - Tab 3: Agent 2 output (test cases)
-  - Tab 4: Agent 3 output (execution results)
-  - Tab 5: Reports (dashboard, charts)
-- **Key Functions**:
-  - `runWorkflow()`: Triggers the multi-agent pipeline
-  - `handleJiraFetch()`: Simulates Jira integration
-  - Status tracking via `WorkflowStatus` enum
+```dockerfile
+# Dockerfile
+FROM node:18-alpine
 
-#### 2. **Agent 1: Requirements Reviewer** (`reviewRequirements()`)
-- **Model**: `gemini-3-pro-preview`
-- **Goal**: Transform raw requirements into validated specifications
-- **Process**:
-  1. Parse requirements text
-  2. Check for ambiguities and contradictions
-  3. Identify risks and priority levels
-  4. Generate structured output
-- **Output Structure**: `ValidatedSpec` objects with:
-  - `requirementId`: Unique identifier
-  - `title` & `description`: Cleansed text
-  - `acceptanceCriteria`: Array of criteria
-  - `riskClassification`: HIGH/MEDIUM/LOW
-  - `ambiguities`: Array of flag strings
-  - `externalSource`: Jira/GitHub reference (optional)
+WORKDIR /app
 
-#### 3. **Agent 2: Test Case Writer** (`generateTestCases()`)
-- **Model**: `gemini-3-pro-preview`
-- **Goal**: Generate comprehensive, traceable test scenarios
-- **Process**:
-  1. Analyze validated requirements
-  2. Design edge cases and happy paths
-  3. Link tests to requirements
-  4. Include pre/post conditions
-- **Output Structure**: `TestCase` objects with:
-  - `id`: Unique identifier
-  - `specId`: Requirement reference
-  - `title` & `description`: Test scenario
-  - `steps`: Array of test action strings
-  - `expectedOutcome`: Expected behavior
-  - `priority`: CRITICAL/HIGH/MEDIUM/LOW
+COPY package*.json ./
+RUN npm install
 
-#### 4. **Agent 3: Test Executor** (`executeTests()`)
-- **Model**: `gemini-3-flash-preview` (faster, lower cost)
-- **Goal**: Simulate test execution and report results
-- **Process**:
-  1. Simulate each test scenario
-  2. Generate pass/fail results
-  3. Document defects or issues
-  4. Calculate coverage metrics
-- **Output Structure**: `ExecutionResult` objects with:
-  - `testCaseId`: Reference to test case
-  - `status`: PASS/FAIL string
-  - `output`: Execution log
-  - `defects`: Array of discovered issues
-  - `timestamp`: Execution time
+COPY . .
+RUN npm run build
 
-#### 5. **Services Layer** (`src/services/geminiService.ts`)
-- **Gemini API Integration**:
-  - Initializes `GoogleGenerativeAI` with `process.env.API_KEY`
-  - Each agent function calls `ai.models.generateContent()`
-  - Uses strongly-typed `responseSchema` for deterministic JSON
-  - Response parsing: `JSON.parse(response.text || '...')` with error handling
+EXPOSE 3000
 
-- **Simulated Integrations**:
-  - `fetchJiraRequirement()`: Mock Jira API call
-  - `createGithubIssue()`: Mock GitHub API call
-  - Both return mock data for demo purposes
-
-## Agent Specifications (Detailed)
-
-### Agent 1: Requirements Reviewer
-
-**System Instruction Base**:
-Guides the agent to validate and cleanse requirements using "system instruction base" pattern (see `constants.ts`).
-
-**Responsibility**:
-- Parse user-provided requirements or Jira tickets
-- Identify structured information (user stories, acceptance criteria)
-- Flag ambiguous statements
-- Classify risk levels
-- Output deterministic JSON with ValidatedSpec structure
-
-**Example Input**:
-```
-"As a user, I want to login with my credentials so I can access my account"
+CMD ["npm", "run", "preview"]
 ```
 
-**Expected Output** (JSON):
-```json
-{
-  "specs": [
-    {
-      "requirementId": "spec_001",
-      "title": "User Login",
-      "description": "Authenticate user with email and password",
-      "acceptanceCriteria": [
-        "Valid credentials should return user session",
-        "Invalid credentials should show error message",
-        "Account lockout after 5 failed attempts"
-      ],
-      "riskClassification": "HIGH",
-      "priority": "CRITICAL",
-      "ambiguities": [
-        "Password reset flow not specified",
-        "Session timeout duration not defined"
-      ],
-      "externalSource": "JIRA",
-      "externalKey": "AUTH-101"
-    }
-  ]
-}
+```bash
+# Build image
+docker build -t qa-nexus .
+
+# Run container
+docker run -p 3000:3000 \
+  -e VITE_GEMINI_API_KEY=your_key \
+  qa-nexus
 ```
 
-### Agent 2: Test Case Writer
+---
 
-**System Instruction Base**:
-Generates comprehensive test scenarios that are:
-- Traceable to specific requirements
-- Cover happy paths and edge cases
-- Include clear steps and expected outcomes
-- Follow BDD (Behavior-Driven Development) patterns
+## Troubleshooting
 
-**Responsibility**:
-- Accept validated requirements
-- Generate test scenarios for each acceptance criterion
-- Include positive and negative test cases
-- Output deterministic JSON with TestCase structure
+### Common Issues
 
-**Example Input** (from Agent 1 output):
-```json
-{
-  "requirementId": "spec_001",
-  "acceptanceCriteria": ["Valid credentials should return user session"]
-}
-```
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| "API key not valid" | Missing or incorrect API key | Check `.env` file has correct `VITE_GEMINI_API_KEY` |
+| Empty agent results | API returned no text | Check network, verify API quota |
+| JSON parse errors | Malformed response from AI | Review prompt, add better error handling |
+| Slow response times | Large prompts or high latency | Reduce prompt size, check network |
+| TypeScript errors | Missing type definitions | Run `npm install`, restart TS server |
+| Build fails | Config file naming issues | Ensure all config files use dots (`.`) not underscores (`_`) |
 
-**Expected Output** (JSON):
-```json
-{
-  "testCases": [
-    {
-      "id": "tc_001",
-      "specId": "spec_001",
-      "title": "Login with valid credentials",
-      "description": "User login successful with correct email and password",
-      "steps": [
-        "Navigate to login page",
-        "Enter valid email: user@example.com",
-        "Enter valid password: SecurePass123",
-        "Click Login button"
-      ],
-      "expectedOutcome": "User redirected to dashboard with active session",
-      "priority": "CRITICAL"
-    },
-    {
-      "id": "tc_002",
-      "specId": "spec_001",
-      "title": "Login with invalid credentials",
-      "description": "User login fails with incorrect password",
-      "steps": [
-        "Navigate to login page",
-        "Enter valid email: user@example.com",
-        "Enter incorrect password: WrongPass",
-        "Click Login button"
-      ],
-      "expectedOutcome": "Error message displays: 'Invalid credentials'",
-      "priority": "HIGH"
-    }
-  ]
-}
-```
+### Debug Mode
 
-### Agent 3: Test Executor
+```typescript
+// Enable debug logging
+const DEBUG = import.meta.env.VITE_LOG_LEVEL === 'debug';
 
-**System Instruction Base**:
-Simulates test execution based on requirements and test cases.
-
-**Responsibility**:
-- Simulate test execution for each test case
-- Generate pass/fail results with realistic outcomes
-- Report defects and issues
-- Output deterministic JSON with ExecutionResult structure
-
-**Example Input** (test cases from Agent 2):
-```json
-[
-  {
-    "id": "tc_001",
-    "title": "Login with valid credentials",
-    "steps": ["Navigate...", "Enter...", etc]
+function debugLog(message: string, data?: any) {
+  if (DEBUG) {
+    console.log(`[DEBUG] ${message}`, data);
   }
-]
-```
-
-**Expected Output** (JSON):
-```json
-{
-  "results": [
-    {
-      "testCaseId": "tc_001",
-      "status": "PASS",
-      "output": "User successfully authenticated. Session created with token: abc123...",
-      "defects": [],
-      "timestamp": "2024-02-04T12:34:56Z"
-    },
-    {
-      "testCaseId": "tc_002",
-      "status": "PASS",
-      "output": "Error displayed correctly as expected.",
-      "defects": [],
-      "timestamp": "2024-02-04T12:35:20Z"
-    }
-  ]
 }
+
+// Usage
+debugLog('Calling Gemini API', { prompt: prompt.substring(0, 100) });
 ```
 
-## Project-specific conventions and patterns
+### API Response Debugging
 
-### Core Patterns
-
-#### 1. **Agent Function Pattern**
-All agent functions follow this structure:
 ```typescript
-export async function agentName(input: InputType): Promise<OutputType> {
-  // 1. Prepare system instruction
-  const systemInstruction = SYSTEM_INSTRUCTION_BASE + 
-    `\n[AGENT NAME] responsibilities and output format...`;
+async function debugAgentCall(agentFn: () => Promise<any>, agentName: string) {
+  console.log(`[${agentName}] Starting...`);
+  const startTime = Date.now();
   
-  // 2. Call Gemini API with responseSchema
-  const response = await ai.models.generateContent({
-    model: AGENT_MODELS.AGENT_NAME,
-    contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-    config: {
-      systemInstruction,
-      thinkingConfig: { maxThinkingLength: 5000 },
-      responseMimeType: 'application/json',
-      responseSchema: { /* strongly-typed schema */ }
-    }
-  });
-  
-  // 3. Parse and return typed result
-  const result = JSON.parse(response.text || '{}');
-  return result as OutputType;
+  try {
+    const result = await agentFn();
+    const duration = Date.now() - startTime;
+    console.log(`[${agentName}] Completed in ${duration}ms`);
+    console.log(`[${agentName}] Result:`, result);
+    return result;
+  } catch (error) {
+    console.error(`[${agentName}] Failed:`, error);
+    throw error;
+  }
 }
 ```
 
-**Key Points**:
-- ✅ Always include `responseMimeType: 'application/json'`
-- ✅ Always define `responseSchema` with `Type.OBJECT`, `Type.ARRAY`, etc.
-- ✅ Match schema structure to `types.ts` interfaces
-- ✅ Parse response.text with error handling
-- ✅ Return strongly-typed result
+---
 
-#### 2. **State Management Pattern** (in `App.tsx`)
-```typescript
-// Define state interface
-interface WorkflowState {
-  status: WorkflowStatus;
-  rawRequirements: string;
-  validatedSpecs: ValidatedSpec[];
-  testCases: TestCase[];
-  results: ExecutionResult[];
-  thinkingProcess: string;
-  jiraIntegration: JiraIntegration;
-}
+## Best Practices
 
-// Use React setState for updates
-setState(p => ({ 
-  ...p, 
-  status: WorkflowStatus.AGENT1_REVIEWING,
-  thinkingProcess: '[AGENT 1] Reviewing specs...'
-}));
-```
+### DO's ✅
 
-#### 3. **Async Operation Pattern** (with loading states)
-```typescript
-try {
-  setState(p => ({ ...p, status: WorkflowStatus.AGENT1_REVIEWING }));
-  const { specs } = await reviewRequirements(rawRequirements);
-  setState(p => ({ ...p, validatedSpecs: specs }));
-} catch (err) {
-  setState(p => ({ ...p, thinkingProcess: `Error: ${err}` }));
-}
-```
+1. **Validate all inputs** before sending to Gemini API
+2. **Use TypeScript strict mode** for type safety
+3. **Implement proper error handling** with fallbacks
+4. **Cache API responses** when possible to reduce costs
+5. **Log errors** but never log API keys
+6. **Test edge cases** including empty inputs and malformed responses
+7. **Use semantic versioning** for releases
+8. **Document all agent prompts** and expected outputs
+9. **Implement rate limiting** to avoid quota issues
+10. **Monitor API usage** and set up alerts
 
-### Response Schema Pattern (Critical!)
+### DON'Ts ❌
 
-Every agent uses a deterministic response schema. **Preserve this pattern** when modifying agents:
+1. **Don't commit `.env` file** to version control
+2. **Don't trust AI responses** without validation
+3. **Don't expose API keys** in client-side code
+4. **Don't skip error handling** for API calls
+5. **Don't use `any` type** unless absolutely necessary
+6. **Don't ignore TypeScript errors**
+7. **Don't deploy** without running tests
+8. **Don't hardcode** configuration values
+9. **Don't log sensitive data**
+10. **Don't skip code reviews** for agent prompt changes
 
-```typescript
-responseSchema: {
-  type: Type.OBJECT,
-  properties: {
-    specs: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          requirementId: { type: Type.STRING },
-          title: { type: Type.STRING },
-          // ... all fields defined with Type
-        },
-        required: ['requirementId', 'title', /* ... */]
-      }
-    },
-    thinking: { type: Type.STRING }  // Optional: capture agent reasoning
-  },
-  required: ['specs']
-}
-```
+---
 
-**Why?**
-- Downstream code calls `JSON.parse(response.text)` and expects stable JSON
-- TypeScript interfaces in `types.ts` rely on this shape
-- Breaking the schema breaks runtime parsing
+## Contributing
 
-### Simulated Integration Pattern
+### Development Workflow
 
-Integration helpers in `services/geminiService.ts`:
-```typescript
-export async function fetchJiraRequirement(issueKey: string): Promise<JiraRequirement> {
-  // Mock response - replace with real API call if needed
-  return {
-    key: issueKey,
-    summary: 'Mock requirement',
-    description: '...',
-    acceptanceCriteria: [/* ... */]
-  };
-}
-```
-
-**Notes**:
-- These are mock implementations for demo purposes
-- Keep input/output shapes stable
-- When replacing with real APIs, maintain the same interface
-- Test both mock and real implementations
-
-### UI Component Patterns (Recent Enhancement)
-
-All interactive elements now include:
-- ✅ Focus states: `focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2`
-- ✅ Loading spinners: `<Loader2 className="animate-spin" />`
-- ✅ Help text: `aria-describedby="help-id"`
-- ✅ ARIA attributes: `aria-label`, `aria-busy`
-- ✅ Theme colors: `bg-indigo-600 hover:bg-indigo-700`
-
-Example button:
-```tsx
-<button
-  onClick={runWorkflow}
-  disabled={isLoading}
-  aria-busy={isLoading}
-  aria-label="Launch multi-agent QA pipeline"
-  className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold
-    hover:bg-indigo-700 disabled:bg-slate-300
-    focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2
-    transition-all flex items-center gap-2"
->
-  {isLoading ? (
-    <><Loader2 className="animate-spin" /> Running...</>
-  ) : (
-    <>Launch Pipeline</>
-  )}
-</button>
-```
-
-## Integration points to watch
-
-### Gemini API Integration
-- **Initialization**: `new GoogleGenerativeAI(process.env.API_KEY!)`
-- **Models Used**:
-  - `gemini-3-pro-preview`: Agents 1 & 2 (complex analysis)
-  - `gemini-3-flash-preview`: Agent 3 (execution simulation)
-- **See**: `constants.ts` for `AGENT_MODELS`
-- **Common Issues**:
-  - ❌ API_KEY not set → RuntimeError
-  - ❌ Model name mismatch → API 404
-  - ❌ Schema mismatch → Parsing error
-- **Debugging**:
-  ```bash
-  echo $API_KEY  # Verify key is set
-  npm run dev   # Check console for errors
-  ```
-
-### Jira Integration (Simulated)
-- **Function**: `fetchJiraRequirement(issueKey)`
-- **Returns**: Mock JiraRequirement object
-- **To Implement Real API**:
-  1. Replace mock response with Jira REST API call
-  2. Maintain same input/output shape
-  3. Update error handling for network failures
-  4. Add rate limiting if needed
-
-### GitHub Integration (Simulated)
-- **Function**: `createGithubIssue(defect)`
-- **Returns**: Mock GitHub issue object
-- **To Implement Real API**:
-  1. Use Octokit or GitHub GraphQL SDK
-  2. Create issues from test defects
-  3. Link back to test results
-  4. Handle authentication securely
-
-## Files to reference when making changes
-
-### Core Files
-- **`src/App.tsx`** — Main orchestrator (409 lines, state management, UI)
-- **`src/services/geminiService.ts`** — Agent functions & API patterns
-- **`src/types.ts`** — TypeScript interfaces for all data structures
-- **`src/constants.ts`** — Agent models, system instructions, constants
-- **`src/metadata.json`** — Agent profiles (names, descriptions)
-
-### Documentation
-- **`docs/AGENT.md`** — This file (you are here)
-- **`docs/Walkthrough.md`** — UI workflows & user flows
-- **`docs/README_DOCUMENTATION.md`** — Documentation index
-- **`PROJECT_STRUCTURE.md`** — Project organization
-
-### Configuration
-- **`vite.config.ts`** — Build tool config, path aliases
-- **`tsconfig.json`** — TypeScript compiler options
-- **`package.json`** — Dependencies, npm scripts
-- **`index.html`** — HTML entry point
-
-### Recent Enhancements
-- **`docs/BEFORE_AFTER_COMPARISON.md`** — Visual improvements
-- **`docs/IMPLEMENTATION_SUMMARY.md`** — UI enhancement details
-- **`.github/copilot-instructions.md`** — AI development guidelines
-
-## Testing & Validation
-
-### Manual Testing Workflow
-
-1. **Start Dev Server**
-   ```bash
-   npm install
-   npm run dev
-   # Visit http://localhost:3000
-   ```
-
-2. **Keyboard Navigation Test**
-   - Press Tab through form elements
-   - Verify blue focus rings appear (indigo-600)
-   - Test accessibility: ✅ WCAG 2.1 AA compliant
-
-3. **Agent Pipeline Test**
-   ```
-   Requirements input
-   ↓ Click "Launch Pipeline"
-   ↓ Watch loading spinners
-   ↓ Check Agent outputs in 5 tabs
-   ↓ Verify JSON parsing in console
-   ```
-
-4. **API Integration Test**
-   ```bash
-   # Check API_KEY is set
-   echo $API_KEY
-   
-   # Watch browser console for:
-   # - No "undefined API_KEY" errors
-   # - Agents respond with valid JSON
-   # - No parsing exceptions
-   ```
-
-5. **Build & Preview**
-   ```bash
-   npm run build      # Should complete without errors
-   npm run preview    # Verify production build works
-   ```
-
-### Debugging Tips
-
-| Issue | Solution |
-|-------|----------|
-| API Key not recognized | `export API_KEY=your_key` then restart `npm run dev` |
-| Agent returns error | Check browser console for responseSchema mismatch |
-| UI not updating | Check state management in App.tsx (setState calls) |
-| Focus ring not visible | Ensure Tailwind CSS is loading (check page source) |
-| Port 3000 in use | `npm run dev -- --port 3001` |
-
-### TypeScript Validation
-
-All code is TypeScript strict mode:
-```bash
-# Check for TS errors
-npx tsc --noEmit
-
-# Should output: 0 errors found
-```
-
-## Security & Production Considerations
-
-### Environment Variables
-```bash
-# ✅ Safe: Set via environment
-export API_KEY=your_key
-
-# ❌ Unsafe: Commit to repository
-# Never add .env files to Git
-# Never log API_KEY to console
-```
-
-### API Key Handling
-- Vite `define` plugin securely injects API_KEY at build time
-- Not exposed in source code, only in built output
-- Should use service workers or backend proxy for production deployments
-
-### Rate Limiting
-- Gemini API has rate limits (varies by account)
-- Current implementation: basic error handling
-- Production: Add exponential backoff retry logic
-
-### Data Privacy
-- Simulated Jira/GitHub: Mock data only
-- Real integrations should implement token rotation
-- Never log full requirement/test data
-- Consider data retention policies
-
-## Merging guidance
-
-### Before Submitting a PR
-
-1. **Preserve Agent Schemas**
-   - Do not modify `responseSchema` without updating `types.ts`
-   - Test that `JSON.parse()` works on new schema
-   - Update this file with new schema examples
-
-2. **Update Documentation**
-   - If changing agent behavior, update `docs/AGENT.md`
-   - If changing UI flow, update `docs/Walkthrough.md`
-   - If changing architecture, update `README.md`
-
-3. **Test All Three Agents**
-   - Agent 1 must output valid ValidatedSpec[]
-   - Agent 2 must output valid TestCase[]
-   - Agent 3 must output valid ExecutionResult[]
-   - Each must parse successfully with `JSON.parse()`
-
-4. **Verify TypeScript**
-   ```bash
-   npx tsc --noEmit  # Must pass with 0 errors
-   ```
-
-5. **Test Accessibility**
-   - Tab through all form elements
-   - Verify focus indicators visible
-   - Test with screen reader (NVDA/VoiceOver)
-   - Check: `aria-label`, `aria-describedby`, `aria-busy`
+1. **Fork the repository**
+2. **Create feature branch**: `git checkout -b feature/my-feature`
+3. **Make changes** with clear, atomic commits
+4. **Write tests** for new functionality
+5. **Run linting**: `npm run lint:fix`
+6. **Run tests**: `npm test`
+7. **Type check**: `npm run typecheck`
+8. **Push changes**: `git push origin feature/my-feature`
+9. **Open Pull Request** with description
 
 ### Commit Message Format
 
 ```
-<type>: <description>
+type(scope): subject
 
-<optional detailed explanation>
+body
 
-Refs: <agent/file affected>
+footer
 ```
 
-Examples:
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Build process or auxiliary tool changes
+
+**Examples:**
 ```
-feat: add validation to Agent 1 output schema
-  - Enhanced ambiguity detection
-  - Updated responseSchema for new fields
-  Refs: services/geminiService.ts, types.ts
-
-fix: correct focus ring on Launch Pipeline button
-  - Added focus:ring-indigo-600
-  - Verified WCAG 2.1 AA compliance
-  Refs: App.tsx
-
-docs: update AGENT.md with new Agent 2 schema
-  - Added TestCase examples
-  - Documented edge case handling
-  Refs: docs/AGENT.md, types.ts
+feat(agent1): add security issue detection
+fix(gemini): handle empty API responses gracefully
+docs(readme): update installation instructions
+test(workflow): add integration test for full workflow
 ```
 
-### Breaking Changes
+### Code Review Checklist
 
-If your change breaks the agent API:
-1. Update all three files simultaneously:
-   - `services/geminiService.ts` (schema)
-   - `types.ts` (interface)
-   - This file `docs/AGENT.md` (documentation)
-2. Test all downstream parsing code
-3. Update example JSON in documentation
-4. Increment semantic version
-
-## Key Takeaways
-
-### Do's ✅
-- ✅ Keep response schemas in sync with types.ts
-- ✅ Always use `responseMimeType: 'application/json'`
-- ✅ Test agents independently before integration
-- ✅ Document schema changes in AGENT.md
-- ✅ Use TypeScript strict mode
-- ✅ Check accessibility fixes with focus indicators
-- ✅ Preserve error handling patterns
-- ✅ Test both happy path and edge cases
-
-### Don'ts ❌
-- ❌ Modify schema without updating types.ts
-- ❌ Remove or move files without updating imports
-- ❌ Hardcode API keys or secrets
-- ❌ Break backward compatibility silently
-- ❌ Skip TypeScript validation
-- ❌ Remove ARIA attributes from form elements
-- ❌ Change response shapes mid-stream
-- ❌ Ignore error boundaries in async operations
-
-## Additional Resources
-
-- Google Gemini API: [https://ai.google.dev](https://ai.google.dev)
-- React Docs: [https://react.dev](https://react.dev)
-- TypeScript Handbook: [https://www.typescriptlang.org/docs](https://www.typescriptlang.org/docs)
-- Vite Documentation: [https://vitejs.dev](https://vitejs.dev)
-- Tailwind CSS: [https://tailwindcss.com](https://tailwindcss.com)
+- [ ] Code follows TypeScript best practices
+- [ ] All tests pass (`npm run ci`)
+- [ ] ESLint passes without warnings
+- [ ] Types are properly defined (no `any`)
+- [ ] Error handling is implemented
+- [ ] Documentation is updated
+- [ ] Commit messages are clear and descriptive
+- [ ] No sensitive data in code or comments
 
 ---
 
-## Response Schema Examples (Reference)
+## Key Takeaways
 
-### Complete Agent 1 Schema (Requirements Reviewer)
+### Agent Design Principles
 
-```typescript
-// Defined in: src/services/geminiService.ts
-responseSchema: {
-  type: Type.OBJECT,
-  properties: {
-    specs: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          requirementId: { type: Type.STRING },
-          title: { type: Type.STRING },
-          description: { type: Type.STRING },
-          acceptanceCriteria: { 
-            type: Type.ARRAY, 
-            items: { type: Type.STRING } 
-          },
-          riskClassification: { type: Type.STRING },
-          priority: { type: Type.STRING },
-          ambiguities: { 
-            type: Type.ARRAY, 
-            items: { type: Type.STRING } 
-          },
-          externalSource: { type: Type.STRING },
-          externalKey: { type: Type.STRING },
-        },
-        required: [
-          'requirementId',
-          'title',
-          'description',
-          'acceptanceCriteria',
-          'riskClassification',
-          'priority',
-          'ambiguities'
-        ]
-      }
-    },
-    thinking: { type: Type.STRING }
-  },
-  required: ['specs']
-}
-```
+1. **Single Responsibility**: Each agent has one clear purpose
+2. **Sequential Execution**: Agents run in order, passing data forward
+3. **Graceful Degradation**: Failures don't crash the entire workflow
+4. **Stateless Agents**: No persistent state between invocations
+5. **Prompt Engineering**: Clear, structured prompts yield better results
 
-**Key Validations**:
-- All RequiredFields must be present
-- acceptanceCriteria must be non-empty array
-- riskClassification ∈ {HIGH, MEDIUM, LOW}
-- priority ∈ {CRITICAL, HIGH, MEDIUM, LOW}
+### Production Considerations
 
-### Complete Agent 2 Schema (Test Case Writer)
+1. **Cost Management**: Monitor API usage to control costs
+2. **Performance**: Optimize prompts for faster responses
+3. **Reliability**: Implement retries and fallbacks
+4. **Security**: Protect API keys and sanitize inputs
+5. **Monitoring**: Track success rates and error patterns
 
-```typescript
-// Defined in: src/services/geminiService.ts
-responseSchema: {
-  type: Type.OBJECT,
-  properties: {
-    testCases: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          id: { type: Type.STRING },
-          specId: { type: Type.STRING },
-          title: { type: Type.STRING },
-          description: { type: Type.STRING },
-          steps: { 
-            type: Type.ARRAY, 
-            items: { type: Type.STRING } 
-          },
-          expectedOutcome: { type: Type.STRING },
-          priority: { type: Type.STRING },
-        },
-        required: [
-          'id',
-          'specId',
-          'title',
-          'description',
-          'steps',
-          'expectedOutcome',
-          'priority'
-        ]
-      }
-    },
-    thinking: { type: Type.STRING }
-  },
-  required: ['testCases']
-}
-```
+### Scaling Strategies
 
-**Key Validations**:
-- steps array must contain 3+ action strings
-- specId must match a requirement from Agent 1
-- expectedOutcome must be specific and measurable
-- priority consistent with source requirement priority
+1. **Caching**: Cache common responses to reduce API calls
+2. **Batch Processing**: Process multiple requirements in parallel
+3. **Queue System**: Use message queues for high volume
+4. **Model Selection**: Use appropriate models for each task
+5. **Result Storage**: Store results in database for history
 
-### Complete Agent 3 Schema (Test Executor)
+---
 
-```typescript
-// Defined in: src/services/geminiService.ts
-responseSchema: {
-  type: Type.OBJECT,
-  properties: {
-    results: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          testCaseId: { type: Type.STRING },
-          status: { type: Type.STRING },
-          output: { type: Type.STRING },
-          defects: { 
-            type: Type.ARRAY, 
-            items: { type: Type.STRING } 
-          },
-          timestamp: { type: Type.STRING },
-        },
-        required: [
-          'testCaseId',
-          'status',
-          'output',
-          'defects',
-          'timestamp'
-        ]
-      }
-    },
-    summary: {
-      type: Type.OBJECT,
-      properties: {
-        totalTests: { type: Type.NUMBER },
-        passed: { type: Type.NUMBER },
-        failed: { type: Type.NUMBER },
-        coverage: { type: Type.NUMBER },
-      },
-      required: ['totalTests', 'passed', 'failed']
-    },
-    thinking: { type: Type.STRING }
-  },
-  required: ['results', 'summary']
-}
-```
+**Version**: 2.0.1  
+**Last Updated**: February 5, 2026  
+**Maintained by**: QA Nexus Team
 
-**Key Validations**:
-- status ∈ {PASS, FAIL}
-- timestamp ISO 8601 format
-- defects array (empty for PASS, populated for FAIL)
-- summary.passed + summary.failed = summary.totalTests
-- coverage percentage 0-100
-
-## Type Definitions (Reference)
-
-These are the TypeScript interfaces that must match response schemas:
-
-```typescript
-// From src/types.ts
-enum WorkflowStatus {
-  IDLE = 'IDLE',
-  AGENT1_REVIEWING = 'AGENT1_REVIEWING',
-  AGENT2_WRITING = 'AGENT2_WRITING',
-  AGENT3_EXECUTING = 'AGENT3_EXECUTING',
-  COMPLETE = 'COMPLETE',
-  ERROR = 'ERROR',
-}
-
-interface ValidatedSpec {
-  requirementId: string;
-  title: string;
-  description: string;
-  acceptanceCriteria: string[];
-  riskClassification: 'HIGH' | 'MEDIUM' | 'LOW';
-  priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-  ambiguities: string[];
-  externalSource?: string;
-  externalKey?: string;
-}
-
-interface TestCase {
-  id: string;
-  specId: string;
-  title: string;
-  description: string;
-  steps: string[];
-  expectedOutcome: string;
-  priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-}
-
-interface ExecutionResult {
-  testCaseId: string;
-  status: 'PASS' | 'FAIL';
-  output: string;
-  defects: string[];
-  timestamp: string;
-}
-
-interface WorkflowState {
-  status: WorkflowStatus;
-  rawRequirements: string;
-  validatedSpecs: ValidatedSpec[];
-  testCases: TestCase[];
-  results: ExecutionResult[];
-  thinkingProcess: string;
-  jiraIntegration: JiraIntegration;
-}
-```
-
-**Important**:
-When modifying any agent's response schema:
-1. Update the TypeScript interface in `types.ts`
-2. Update the `responseSchema` in `services/geminiService.ts`
-3. Test JSON parsing works with new schema
-4. Update this file with new schema examples
-5. Update tests to validate new fields
+For questions or issues, please open a GitHub issue or contact the maintainers.
