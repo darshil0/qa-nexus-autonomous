@@ -25,7 +25,7 @@ qa-nexus-autonomous/
 │   ├── IMPLEMENTATION_SUMMARY.md  # Technical specifications
 │   ├── PROJECT_COMPLETION_REPORT.md # Official report
 │   ├── UI_ENHANCEMENTS.md        # Implementation guide
-│   ├── AGENT.MD                  # Agent specifications
+│   ├── AGENT.md                  # Agent specifications
 │   └── Walkthrough.MD            # UI walkthrough guide
 │
 ├── public/                       # Static assets (images, fonts, etc.)
