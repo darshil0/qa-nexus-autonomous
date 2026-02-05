@@ -7,7 +7,7 @@ Give AI coding agents the minimal, actionable knowledge to be immediately produc
 **QA Nexus Autonomous** is a TypeScript + React + Vite application that orchestrates three specialized Google Gemini AI agents to autonomously transform product requirements into validated test suites with execution reports.
 
 - **Total Lines of Code**: ~1,000 (production code + metadata)
-- **Main Component**: `src/App.tsx` (338 lines)
+- **Main Component**: `src/App.tsx` (409 lines)
 - **Key Service**: `src/services/geminiService.ts` (multi-agent orchestration)
 - **Build Tool**: Vite with HMR on port 3000
 - **AI Engine**: Google Gemini API with strongly-typed JSON schemas
@@ -40,8 +40,8 @@ npm run preview
 ```
 
 ### Important Files & Documentation
-- **Agent Specs**: This file (`docs/AGENT.MD`)
-- **UI Workflows**: `docs/Walkthrough.MD`
+- **Agent Specs**: This file (`docs/AGENT.md`)
+- **UI Workflows**: `docs/Walkthrough.md`
 - **Agent Metadata**: `src/metadata.json` (profiles, descriptions, models)
 - **Implementation Guide**: `docs/README_DOCUMENTATION.md` (navigation hub)
 - **Architecture Overview**: `README.md`
@@ -57,7 +57,7 @@ The app requires `API_KEY` environment variable pointing to your Google Gemini A
 ### Project Structure
 ```
 src/
-├── App.tsx                  # Orchestrator (338 lines, 5-tab UI)
+├── App.tsx                  # Orchestrator (409 lines, 5-tab UI)
 ├── index.tsx                # React entry point (mounts App to #root)
 ├── types.ts                 # TypeScript interfaces (WorkflowState, TestCase, etc.)
 ├── constants.ts             # Agent models & system instructions
@@ -508,15 +508,15 @@ Example button:
 ## Files to reference when making changes
 
 ### Core Files
-- **`src/App.tsx`** — Main orchestrator (338 lines, state management, UI)
+- **`src/App.tsx`** — Main orchestrator (409 lines, state management, UI)
 - **`src/services/geminiService.ts`** — Agent functions & API patterns
 - **`src/types.ts`** — TypeScript interfaces for all data structures
 - **`src/constants.ts`** — Agent models, system instructions, constants
 - **`src/metadata.json`** — Agent profiles (names, descriptions)
 
 ### Documentation
-- **`docs/AGENT.MD`** — This file (you are here)
-- **`docs/Walkthrough.MD`** — UI workflows & user flows
+- **`docs/AGENT.md`** — This file (you are here)
+- **`docs/Walkthrough.md`** — UI workflows & user flows
 - **`docs/README_DOCUMENTATION.md`** — Documentation index
 - **`PROJECT_STRUCTURE.md`** — Project organization
 
@@ -631,8 +631,8 @@ export API_KEY=your_key
    - Update this file with new schema examples
 
 2. **Update Documentation**
-   - If changing agent behavior, update `docs/AGENT.MD`
-   - If changing UI flow, update `docs/Walkthrough.MD`
+   - If changing agent behavior, update `docs/AGENT.md`
+   - If changing UI flow, update `docs/Walkthrough.md`
    - If changing architecture, update `README.md`
 
 3. **Test All Three Agents**
@@ -674,10 +674,10 @@ fix: correct focus ring on Launch Pipeline button
   - Verified WCAG 2.1 AA compliance
   Refs: App.tsx
 
-docs: update AGENT.MD with new Agent 2 schema
+docs: update AGENT.md with new Agent 2 schema
   - Added TestCase examples
   - Documented edge case handling
-  Refs: docs/AGENT.MD, types.ts
+  Refs: docs/AGENT.md, types.ts
 ```
 
 ### Breaking Changes
@@ -686,7 +686,7 @@ If your change breaks the agent API:
 1. Update all three files simultaneously:
    - `services/geminiService.ts` (schema)
    - `types.ts` (interface)
-   - This file `docs/AGENT.MD` (documentation)
+   - This file `docs/AGENT.md` (documentation)
 2. Test all downstream parsing code
 3. Update example JSON in documentation
 4. Increment semantic version
@@ -697,7 +697,7 @@ If your change breaks the agent API:
 - ✅ Keep response schemas in sync with types.ts
 - ✅ Always use `responseMimeType: 'application/json'`
 - ✅ Test agents independently before integration
-- ✅ Document schema changes in AGENT.MD
+- ✅ Document schema changes in AGENT.md
 - ✅ Use TypeScript strict mode
 - ✅ Check accessibility fixes with focus indicators
 - ✅ Preserve error handling patterns
