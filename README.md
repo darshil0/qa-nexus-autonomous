@@ -6,7 +6,7 @@ A sophisticated multi-agent QA automation system powered by Google Gemini AI. QA
 
 QA Nexus Autonomous demonstrates advanced AI orchestration by combining multiple specialized agents into a cohesive workflow. The system analyzes requirements, generates comprehensive test cases, and simulates test execution—all powered by state-of-the-art language models.
 
-**Version**: 2.2.0  
+**Version**: 2.3.0  
 **Status**: Production Ready  
 **Last Updated**: February 5, 2026
 
@@ -42,14 +42,14 @@ QA Nexus Autonomous demonstrates advanced AI orchestration by combining multiple
 | Category | Technology |
 |----------|-----------|
 | **Frontend Framework** | React 19.2.4 |
-| **Build Tool** | Vite 6.2.0 |
-| **Language** | TypeScript 5.8.2 (strict mode) |
-| **Styling** | Tailwind CSS 3.4.0 |
+| **Build Tool** | Vite 7.3.1 |
+| **Language** | TypeScript 5.9.3 (strict mode) |
+| **Styling** | Tailwind CSS 4.1.18 |
 | **UI Components** | Lucide React 0.563.0 |
 | **Visualization** | Recharts 3.7.0 |
-| **AI Engine** | Google Gemini API 1.39.0 |
-| **Testing** | Vitest 4.0.18, Testing Library 14.0.0 |
-| **Linting** | ESLint 8.50.0, TypeScript ESLint 6.9.0 |
+| **AI Engine** | Google Gemini API 1.40.0 |
+| **Testing** | Vitest 4.0.18, Testing Library 16.3.2 |
+| **Linting** | ESLint 9.39.2, TypeScript ESLint 8.54.0 |
 
 ## Getting Started
 
@@ -131,14 +131,12 @@ qa-nexus-autonomous/
 ├── docs/                          # Project documentation
 ├── public/                        # Static assets
 ├── .github/                       # GitHub configuration
+│   ├── workflows/                 # CI/CD pipelines
+│   │   ├── ci.yml
+│   │   └── eslint.yml
+│   └── copilot-instructions.md    # AI assistant guidance
 ├── index.html                     # HTML entry point
-├── vite.config.ts                 # Vite build configuration
-├── tsconfig.json                  # TypeScript compiler options
-├── tsconfig.node.json             # TypeScript for build files
-├── tailwind.config.js             # Tailwind CSS configuration
-├── postcss.config.js              # PostCSS configuration
-├── .eslintrc.cjs                  # ESLint configuration
-├── .eslintignore                  # ESLint ignore patterns
+├── eslint.config.js               # ESLint 9 configuration (Flat Config)
 ├── .gitignore                     # Git ignore patterns
 ├── .env                           # Environment variables (create this)
 ├── vitest.config.ts               # Vitest configuration
@@ -239,14 +237,10 @@ import { reviewRequirements } from '@/services/geminiService';
 
 All configuration files follow standard naming conventions:
 - **`.env`** - Environment variables (you create this)
-- **`.eslintrc.cjs`** - ESLint rules and settings
-- **`.eslintignore`** - Files to exclude from linting
+- **`eslint.config.js`** - ESLint 9 rules and settings
 - **`.gitignore`** - Files to exclude from version control
-- **`postcss.config.js`** - PostCSS plugin configuration
-- **`tailwind.config.js`** - Tailwind CSS theme customization
+- **`vite.config.ts`** - Vite 7 / Tailwind 4 unified configuration
 - **`tsconfig.json`** - Main TypeScript configuration
-- **`tsconfig.node.json`** - TypeScript for build tooling
-- **`vite.config.ts`** - Vite build and dev server settings
 - **`vitest.config.ts`** - Test runner configuration
 
 ## Development
@@ -342,15 +336,15 @@ npm test -- --coverage
 | Port 3000 in use | Change port in `vite.config.ts` or kill process using port |
 | Module not found | Run `npm install` and restart dev server |
 | TypeScript errors in IDE | Restart TypeScript server in your editor |
-| ESLint not working | Ensure `.eslintrc.cjs` exists (not `_eslintrc.cjs`) |
-| Build fails | Check all config files use correct naming (dots, not underscores) |
+| ESLint not working | Ensure `eslint.config.js` exists (not `.eslintrc.cjs`) |
+| Build fails | Check all config files use correct naming (ESLint 9 / Vite 7 / Tailwind 4) |
 
 ### Configuration File Issues
 
 If your build tools aren't working:
-1. Verify all config files use dots (`.`) not underscores (`_`)
-2. Check file names match exactly: `.env`, `.eslintrc.cjs`, `vite.config.ts`, etc.
-3. Run `npm run lint` to verify ESLint configuration
+1. Verify all config files use modern conventions (`eslint.config.js`, `vite.config.ts`)
+2. Check file names match exactly: `.env`, `eslint.config.js`, `vite.config.ts`, etc.
+3. Run `npm run lint` to verify ESLint 9 configuration
 4. Run `npm run typecheck` to verify TypeScript configuration
 
 ## Future Enhancements

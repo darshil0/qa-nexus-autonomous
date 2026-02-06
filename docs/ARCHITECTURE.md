@@ -1,6 +1,6 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 2.2.0  
+**Version**: 2.3.0  
 **Last Updated**: February 5, 2026  
 **Status**: Production Ready
 
@@ -51,11 +51,11 @@ QA Nexus Autonomous is a sophisticated multi-agent system that leverages Google'
 ### Required Software
 
 ```bash
-# Node.js (version 18 or higher)
-node --version  # Should show v18.x.x or higher
+# Node.js (version 20 or higher)
+node --version  # Should show v20.x.x or higher
 
-# npm (version 9 or higher)
-npm --version   # Should show 9.x.x or higher
+# npm (version 10 or higher)
+npm --version   # Should show 10.x.x or higher
 
 # Git (for version control)
 git --version
@@ -195,7 +195,7 @@ src/
 │   └── TestResults             # Agent 3 output
 │
 └── constants.ts                # Configuration
-    ├── AGENT_MODELS            # Model assignments
+    ├── AGENT_MODELS            # Model assignments (Gemini 2.0 Flash)
     ├── STATUS_MESSAGES         # UI messages
     └── DEFAULT_VALUES          # Fallback values
 ```

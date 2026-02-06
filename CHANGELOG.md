@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-02-05
+
+### Added
+- **Vite 7 Integration**: Upgraded the build engine to Vite 7.3.1 for faster HMR and optimized production builds.
+- **Tailwind CSS 4 Support**: Migrated the styling engine to Tailwind CSS 4.1.18, utilizing the new `@tailwindcss/vite` plugin and CSS-first configuration.
+- **ESLint 9 (Flat Config)**: Fully migrated the linting system from legacy `.eslintrc.cjs` to the modern `eslint.config.js` (Flat Config) system.
+- **Improved React 19 Support**: Updated all testing and build dependencies to resolve peer dependency conflicts with React 19.
+
+### Changed
+- **Tech Stack Modernization**: 
+  - Upgraded `@google/genai` to v1.40.0.
+  - Upgraded `typescript` to v5.9.3.
+  - Upgraded `vitest` to v4.0.18.
+- **Project Structure**: Removed legacy configuration files (`.eslintrc.cjs`, `.eslintignore`, `postcss.config.js`, `tailwind.config.js`) in favor of centralized Vite 7/Tailwind 4/ESLint 9 configurations.
+- **CI/CD Tuning**: Adjusted GitHub workflows to support the new ESLint 9 configuration format.
+
 ## [2.2.0] - 2026-02-05
 
 ### Added
@@ -460,4 +476,4 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 ---
 
 **Last Updated**: February 5, 2026  
-**Version**: 2.1.0
+**Version**: 2.3.0

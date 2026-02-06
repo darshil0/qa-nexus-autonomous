@@ -1,6 +1,6 @@
 # QA Nexus Project Structure
 
-**Version**: 2.2.0
+**Version**: 2.3.0
 **Last Updated**: February 5, 2026
 
 ## Project Organization
@@ -39,10 +39,11 @@ qa-nexus-autonomous/
 │   └── copilot-instructions.md  # AI assistant guidance
 │
 ├── .gitignore                    # Git ignore patterns
+├── eslint.config.js              # ESLint 9 configuration (Flat Config)
 ├── index.html                    # HTML entry point
 ├── package.json                  # Project dependencies and scripts
 ├── tsconfig.json                 # TypeScript configuration
-├── vite.config.ts                # Vite build configuration
+├── vite.config.ts                # Vite 7 / Tailwind 4 configuration
 └── README.md                     # Project overview
 ```
 
