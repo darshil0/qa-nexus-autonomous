@@ -17,37 +17,20 @@ npm install
 npm run dev
 ```
 
-Environment: set `API_KEY` (Gemini) before starting — the app expects `process.env.API_KEY` for `@google/genai` usage.
-
-## Big-picture architecture (what to inspect first)
-
-- Orchestrator / UI: `src/index.tsx` and `src/App.tsx` coordinate the multi-agent pipeline.
-- Agents & AI glue: `src/services/geminiService.ts` contains the three agent functions (`reviewRequirements`, `generateTestCases`, `executeTests`) and shows how the code calls `@google/genai` with strongly-typed JSON `responseSchema`.
-- Types and contracts: check `src/types.ts` and `src/constants.ts` for model names and instruction bases (`AGENT_MODELS`, `SYSTEM_INSTRUCTION_BASE`).
-- Metadata & manifest: `src/metadata.json` contains agent profiles and is authoritative for agent names/descriptions.
+## Environment Configuration
+- Set `VITE_GEMINI_API_KEY` for the frontend.
+- Set `VITE_GEMINI_API_KEY` (or `GENAI_API_KEY`) for Node-based test environments.
+- Use `.env.example` as a template for local development.
 
 ## Project-specific conventions and patterns
-
-- Agents always call `ai.models.generateContent` with an explicit `responseSchema` and `responseMimeType: "application/json"`. Preserve this pattern when adding or changing agent prompts — downstream code parses `response.text` with `JSON.parse` and expects stable shapes.
-- Simulated integration helpers live in `src/services/geminiService.ts` (e.g., `fetchJiraRequirement`, `createGithubIssue`) — these are used in lieu of real backend calls and should be updated conservatively.
-- UI is Vite + React (ES modules). Keep imports as ESM and respect the `type: "module"` in `package.json`.
-
-## Integration points to watch
-
-- Gemini API: uses `@google/genai`; ensure `API_KEY` and model names inside `constants.ts` match live config.
-- Jira / GitHub: the repo uses simulated sync functions; real integrations (if added) should follow the same input/output shapes (see `AGENT.md` for expected external metadata fields).
-
-## Files to reference when making changes
-
-- `docs/AGENT.md` — authoritative description of the three agents and their responsibilities.
-- `src/services/geminiService.ts` — core AI call patterns, response schema examples, and simulated external services.
-- `docs/Walkthrough.md` — UI workflows and how users trigger the pipeline.
-- `package.json` — scripts (`dev`, `build`, `preview`) and dependencies.
-- `src/metadata.json`, `src/types.ts`, `src/constants.ts` — agent configs, types, and constants.
+- Agents always call `ai.models.generateContent` with an explicit `responseSchema` and `responseMimeType: "application/json"`. 
+- Type-safe parsing is handled by the `parseAiResponse` helper in `geminiService.ts`.
+- UI is decomposed into modular tab components in `src/components/tabs/`. Performance is managed via `useCallback` and `useMemo`.
 
 ## Tests & CI
-
-- No test runner or CI workflows were found in the repo root. Do not add assumptions about test frameworks; if you add tests, document the exact `npm` script and update this file.
+- **Test Runner**: Vitest 4.0 is integrated. Run tests using `npm test`.
+- **CI Workflows**: GitHub Actions are configured in `.github/workflows/ci.yml` and `eslint.yml`. 
+- **Quality Gates**: PRs and pushes to `main` trigger type-checking (`npm run typecheck`), linting (`npm run lint`), and unit tests (`npm run test -- --run`).
 
 ## Merging guidance
 
