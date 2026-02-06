@@ -1,6 +1,6 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 2.1.0  
+**Version**: 2.2.0  
 **Last Updated**: February 5, 2026  
 **Status**: Production Ready
 
@@ -113,8 +113,13 @@ npm run dev
 │                              ▼                                    │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │  Orchestrator (App.tsx)                                   │   │
-│  │  - Manages workflow state                                 │   │
-│  │  - Coordinates agent execution                            │   │
+│  │  - Decomposed into modular tab components (v2.2)          │   │
+│  │  - Manages workflow state using memoized handlers         │   │
+│  │  - Coordinates agent execution via centralized hooks      │   │
+│  │                                                           │   │
+│  │  Tabs (src/components/tabs/):                             │   │
+│  │  - OrchestratorTab, Agent1Tab, Agent2Tab,                 │   │
+│  │  - Agent3Tab, ReportsTab                                  │   │
 │  │  - Handles errors and retries                             │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘

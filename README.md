@@ -6,7 +6,7 @@ A sophisticated multi-agent QA automation system powered by Google Gemini AI. QA
 
 QA Nexus Autonomous demonstrates advanced AI orchestration by combining multiple specialized agents into a cohesive workflow. The system analyzes requirements, generates comprehensive test cases, and simulates test execution—all powered by state-of-the-art language models.
 
-**Version**: 2.1.0  
+**Version**: 2.2.0  
 **Status**: Production Ready  
 **Last Updated**: February 5, 2026
 
@@ -71,7 +71,12 @@ QA Nexus Autonomous demonstrates advanced AI orchestration by combining multiple
 
 2. **Configure Environment**
 
-   Create a `.env` file in the project root:
+   Copy the example environment file and add your keys:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Alternatively, create a `.env` file in the project root:
    ```env
    VITE_GEMINI_API_KEY=your_gemini_api_key_here
    VITE_SUPABASE_URL=your_supabase_url
@@ -110,10 +115,18 @@ qa-nexus-autonomous/
 │   ├── constants.ts               # App constants and defaults
 │   ├── types.ts                   # TypeScript interfaces
 │   ├── metadata.json              # Agent configuration and metadata
-│   ├── components/                # Reusable React components
-│   │   └── .gitkeep
+│   ├── components/                # UI components
+│   │   ├── tabs/                  # Modular tab views (v2.2+)
+│   │   │   ├── OrchestratorTab.tsx
+│   │   │   ├── Agent1Tab.tsx
+│   │   │   ├── Agent2Tab.tsx
+│   │   │   ├── Agent3Tab.tsx
+│   │   │   └── ReportsTab.tsx
+│   │   ├── NavBtn.tsx
+│   │   ├── StatCard.tsx
+│   │   └── AgentThinkingLog.tsx
 │   └── services/
-│       └── geminiService.ts       # Gemini API integration layer
+│       └── geminiService.ts       # Gemini API integration (centralized parsing)
 │
 ├── docs/                          # Project documentation
 ├── public/                        # Static assets

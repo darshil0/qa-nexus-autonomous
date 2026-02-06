@@ -1,6 +1,6 @@
 # QA Nexus Project Structure
 
-**Version**: 2.1.0
+**Version**: 2.2.0
 **Last Updated**: February 5, 2026
 
 ## Project Organization
@@ -16,6 +16,12 @@ qa-nexus-autonomous/
 │   ├── types.ts                  # TypeScript types and interfaces
 │   ├── metadata.json             # Agent metadata
 │   ├── components/               # UI components
+│   │   ├── tabs/                 # View-specific tab components
+│   │   │   ├── OrchestratorTab.tsx
+│   │   │   ├── Agent1Tab.tsx
+│   │   │   ├── Agent2Tab.tsx
+│   │   │   ├── Agent3Tab.tsx
+│   │   │   └── ReportsTab.tsx
 │   │   ├── NavBtn.tsx            # Sidebar navigation button
 │   │   ├── StatCard.tsx          # Reporting metric card
 │   │   └── AgentThinkingLog.tsx  # Terminal-style log display

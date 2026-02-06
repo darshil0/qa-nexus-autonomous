@@ -5,6 +5,27 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-02-05
+
+### Added
+- **Modular Tab Architecture**: Decomposed the monolithic `App.tsx` into specialized tab components:
+  - `OrchestratorTab`: Workflow management and Jira sync.
+  - `Agent1Tab`: Requirements visualization.
+  - `Agent2Tab`: Test case analysis and traceability.
+  - `Agent3Tab`: Execution results and GitHub reporting.
+  - `ReportsTab`: Analytics and coverage metrics.
+- **Environment Documentation**: Added `.env.example` to guide developers on API key configuration.
+
+### Changed
+- **Performance Optimization**: 
+  - Implemented `useCallback` for all major workflow handlers.
+  - Reduced re-renders in the main orchestrator.
+- **Service Refactoring**: 
+  - Centralized AI response parsing in `geminiService.ts` using a generic helper.
+  - Improved error handling and response validation for all agents.
+  - Enhanced environment variable detection to support both Vite and Node (test) environments.
+- **Code Cleanliness**: Reduced `App.tsx` size by ~60% through component extraction.
+
 ## [2.1.0] - 2026-02-05
 
 ### Added
