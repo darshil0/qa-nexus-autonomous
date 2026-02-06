@@ -224,197 +224,40 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🏗️ Architecture Overview
 
-### System Architecture: Multi-Agent QA Automation
-
-QA Nexus implements a sophisticated multi-agent architecture where three specialized agents work together through a centralized orchestration layer.
-
-### High-Level System Flow
+QA Nexus implements a sophisticated multi-agent architecture where three specialized agents work together through a centralized orchestration layer:
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          INPUT LAYER                                 │
-│  Requirements (PRD, User Stories, Jira, Swagger, API Docs)          │
-└─────────────────────┬───────────────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    ORCHESTRATION LAYER                               │
-│  ┌────────────────────────────────────────────────────────────┐     │
-│  │  Central Orchestrator                                       │     │
-│  │  • Parses tasks and stores artifacts                        │     │
-│  │  • Manages workflow state and transitions                   │     │
-│  │  • Handles retries, timeouts, and fallbacks                │     │
-│  │  • Coordinates agent execution                              │     │
-│  └────────────────────────────────────────────────────────────┘     │
-└─────┬───────────────────┬─────────────────────┬─────────────────────┘
-      │                   │                     │
-      ▼                   ▼                     ▼
-┌──────────┐      ┌──────────────┐      ┌──────────────┐
-│ AGENT 1  │      │   AGENT 2    │      │   AGENT 3    │
-│  Reqs    │──────▶│   Test       │──────▶│   Test       │
-│ Reviewer │      │   Writer     │      │  Executor    │
-└──────────┘      └──────────────┘      └──────────────┘
-      │                   │                     │
-      ▼                   ▼                     ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    KNOWLEDGE & MEMORY LAYER                          │
-│  ┌────────────────┐  ┌─────────────┐  ┌───────────────────────┐    │
-│  │  Vector DB     │  │ Relational  │  │  Agent Memory         │    │
-│  │  (Documents)   │  │    DB       │  │  (Context Store)      │    │
-│  └────────────────┘  └─────────────┘  └───────────────────────┘    │
-└─────────────────────────────────────────────────────────────────────┘
-      │                   │                     │
-      ▼                   ▼                     ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    INTEGRATION LAYER                                 │
-│  Jira │ GitHub │ TestRail │ CI/CD │ Automation Frameworks           │
-└─────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                     ORCHESTRATION LAYER                           │
+│                    (React + App.tsx)                              │
+└────────┬─────────────────────┬─────────────────────┬─────────────┘
+         │                     │                     │
+         ▼                     ▼                     ▼
+   ┌──────────┐         ┌──────────────┐      ┌──────────────┐
+   │ AGENT 1  │────────▶│   AGENT 2    │─────▶│   AGENT 3    │
+   │ Reviewer │         │    Writer    │      │   Executor   │
+   └──────────┘         └──────────────┘      └──────────────┘
 ```
 
-### Workflow Steps
+### Key Components
 
-1. **Input**: Requirements submitted via UI or API
-2. **Orchestrator**: Parses task, stores artifacts, triggers Agent 1
-3. **Agent 1**: Reviews requirements → produces validated spec
-4. **Agent 2**: Consumes spec → generates structured test cases
-5. **Agent 3**: Executes tests → records results
-6. **Feedback**: Results flow back to central store for analysis
+| Layer | Description |
+|-------|-------------|
+| **Orchestrator** | React application managing workflow state and agent coordination |
+| **Agent 1** | Requirements Reviewer - analyzes and validates requirements |
+| **Agent 2** | Test Case Writer - generates comprehensive test cases |
+| **Agent 3** | Test Executor - simulates test execution with metrics |
+| **Service Layer** | Gemini API integration for AI-powered processing |
 
-### Core Components
+### Workflow
 
-#### 1. Interaction Layer
-- **Web UI**: React application for user interaction
-- **API Gateway**: REST endpoints for integrations
-- **Orchestrator**: Central workflow controller
+1. **Input** → Requirements submitted via UI
+2. **Agent 1** → Reviews and validates requirements
+3. **Agent 2** → Generates prioritized test cases
+4. **Agent 3** → Executes tests and reports results
+5. **Output** → Comprehensive test report with metrics
 
-#### 2. Knowledge Layer
-- **Vector DB**: Stores documents with semantic search
-- **Relational DB**: Structured requirements, test cases, results
-- **Agent Memory**: Context storage for AI agents
-
-#### 3. Integration Layer
-- **Jira/Azure DevOps**: Requirement syncing
-- **GitHub/GitLab**: Issue creation, code access
-- **Test Tools**: TestRail, automation frameworks
-- **CI/CD**: Jenkins, GitHub Actions
-
-### Agent Deep Dive
-
-#### Agent 1: Requirements Reviewer
-
-**Inputs**:
-- Raw requirements (docs, user stories)
-- Historical context (past features, bugs)
-- Quality checklist
-
-**Processing**:
-- Identifies ambiguities and gaps
-- Classifies risk level
-- Validates acceptance criteria
-- Finds conflicting requirements
-
-**Outputs**:
-```json
-{
-  "requirementId": "REQ-001",
-  "title": "User Authentication",
-  "riskClassification": "HIGH",
-  "priority": "P0",
-  "ambiguities": ["Rate limit threshold unclear"],
-  "acceptanceCriteria": [...]
-}
-```
-
-#### Agent 2: Test Case Writer
-
-**Inputs**:
-- Validated requirements (from Agent 1)
-- Testing templates (BDD, custom)
-- Historical test cases
-
-**Processing**:
-- Converts requirements to test scenarios
-- Ensures traceability
-- Balances coverage (positive, negative, edge)
-- Prioritizes by risk
-
-**Outputs**:
-```json
-{
-  "testCaseId": "TC-001",
-  "linkedRequirementIds": ["REQ-001"],
-  "priority": "P0",
-  "steps": [...],
-  "expectedResults": "User logged in successfully",
-  "automationCandidate": true
-}
-```
-
-#### Agent 3: Test Executor
-
-**Inputs**:
-- Approved test cases (from Agent 2)
-- Test environment info
-- Automation framework metadata
-
-**Processing**:
-- Maps test cases to execution paths
-- Triggers automated tests
-- Simulates manual test execution
-- Collects results and logs
-
-**Outputs**:
-```json
-{
-  "testCaseId": "TC-001",
-  "status": "PASS",
-  "duration": "3.2s",
-  "logs": "Test execution successful",
-  "coverage": "85%"
-}
-```
-
-### Deployment Architecture
-
-#### Current: Modular Monolith
-```
-┌──────────────────────────────────────────┐
-│      Single Backend Service              │
-│  ┌────────────────────────────────┐      │
-│  │  Orchestrator                  │      │
-│  └──────┬─────────────────────────┘      │
-│         │                                │
-│    ┌────┴─────┬───────────┐             │
-│    ▼          ▼           ▼             │
-│  Agent1    Agent2      Agent3           │
-│    │          │           │             │
-│    └──────────┴───────────┘             │
-│               │                          │
-│    ┌──────────▼─────────────┐           │
-│    │  Shared DB & Memory    │           │
-│    └────────────────────────┘           │
-└──────────────────────────────────────────┘
-```
-
-**Best for**: Small-medium teams, rapid development
-
-#### Future: Microservices
-```
-┌─────────┐   ┌─────────┐   ┌─────────┐
-│ Agent 1 │──▶│ Agent 2 │──▶│ Agent 3 │
-│ Service │   │ Service │   │ Service │
-└────┬────┘   └────┬────┘   └────┬────┘
-     │             │             │
-     └─────────────┴─────────────┘
-                   │
-            ┌──────▼──────┐
-            │ Message Bus │
-            └─────────────┘
-```
-
-**Best for**: Large teams, high scale, independent deployment
-
-**For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
+📖 **For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
 
 ---
 

@@ -8,18 +8,19 @@
 
 1. [Overview](#overview)
 2. [Prerequisites](#prerequisites)
-3. [Architecture](#architecture)
-4. [Agent Specifications](#agent-specifications)
-5. [Core Development Patterns](#core-development-patterns)
-6. [Integration Points](#integration-points)
-7. [Response Schemas](#response-schemas)
-8. [TypeScript Type Definitions](#typescript-type-definitions)
-9. [Testing & Validation](#testing--validation)
-10. [Security & Production](#security--production)
-11. [Deployment Guide](#deployment-guide)
-12. [Troubleshooting](#troubleshooting)
-13. [Best Practices](#best-practices)
-14. [Contributing](#contributing)
+3. [System Architecture](#system-architecture)
+4. [Component Architecture](#component-architecture)
+5. [Agent Specifications](#agent-specifications)
+6. [Core Development Patterns](#core-development-patterns)
+7. [Integration Points](#integration-points)
+8. [Response Schemas](#response-schemas)
+9. [TypeScript Type Definitions](#typescript-type-definitions)
+10. [Testing & Validation](#testing--validation)
+11. [Security & Production](#security--production)
+12. [Deployment Guide](#deployment-guide)
+13. [Troubleshooting](#troubleshooting)
+14. [Best Practices](#best-practices)
+15. [Contributing](#contributing)
 
 ---
 
@@ -96,7 +97,123 @@ npm run dev
 
 ---
 
-## Architecture
+## System Architecture
+
+### High-Level System Flow
+
+QA Nexus implements a sophisticated multi-agent architecture where three specialized agents work together through a centralized orchestration layer.
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                          INPUT LAYER                                 │
+│  Requirements (PRD, User Stories, Jira, Swagger, API Docs)          │
+└─────────────────────┬───────────────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    ORCHESTRATION LAYER                               │
+│  ┌────────────────────────────────────────────────────────────┐     │
+│  │  Central Orchestrator                                       │     │
+│  │  • Parses tasks and stores artifacts                        │     │
+│  │  • Manages workflow state and transitions                   │     │
+│  │  • Handles retries, timeouts, and fallbacks                │     │
+│  │  • Coordinates agent execution                              │     │
+│  └────────────────────────────────────────────────────────────┘     │
+└─────┬───────────────────┬─────────────────────┬─────────────────────┘
+      │                   │                     │
+      ▼                   ▼                     ▼
+┌──────────┐      ┌──────────────┐      ┌──────────────┐
+│ AGENT 1  │      │   AGENT 2    │      │   AGENT 3    │
+│  Reqs    │──────▶│   Test       │──────▶│   Test       │
+│ Reviewer │      │   Writer     │      │  Executor    │
+└──────────┘      └──────────────┘      └──────────────┘
+      │                   │                     │
+      ▼                   ▼                     ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    KNOWLEDGE & MEMORY LAYER                          │
+│  ┌────────────────┐  ┌─────────────┐  ┌───────────────────────┐    │
+│  │  Vector DB     │  │ Relational  │  │  Agent Memory         │    │
+│  │  (Documents)   │  │    DB       │  │  (Context Store)      │    │
+│  └────────────────┘  └─────────────┘  └───────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────┘
+      │                   │                     │
+      ▼                   ▼                     ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    INTEGRATION LAYER                                 │
+│  Jira │ GitHub │ TestRail │ CI/CD │ Automation Frameworks           │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Workflow Steps
+
+1. **Input**: Requirements submitted via UI or API
+2. **Orchestrator**: Parses task, stores artifacts, triggers Agent 1
+3. **Agent 1**: Reviews requirements → produces validated spec
+4. **Agent 2**: Consumes spec → generates structured test cases
+5. **Agent 3**: Executes tests → records results
+6. **Feedback**: Results flow back to central store for analysis
+
+### Core Components
+
+#### 1. Interaction Layer
+- **Web UI**: React application for user interaction
+- **API Gateway**: REST endpoints for integrations
+- **Orchestrator**: Central workflow controller
+
+#### 2. Knowledge Layer
+- **Vector DB**: Stores documents with semantic search
+- **Relational DB**: Structured requirements, test cases, results
+- **Agent Memory**: Context storage for AI agents
+
+#### 3. Integration Layer
+- **Jira/Azure DevOps**: Requirement syncing
+- **GitHub/GitLab**: Issue creation, code access
+- **Test Tools**: TestRail, automation frameworks
+- **CI/CD**: Jenkins, GitHub Actions
+
+### Deployment Architecture
+
+#### Current: Modular Monolith
+```
+┌──────────────────────────────────────────┐
+│      Single Backend Service              │
+│  ┌────────────────────────────────┐      │
+│  │  Orchestrator                  │      │
+│  └──────┬─────────────────────────┘      │
+│         │                                │
+│    ┌────┴─────┬───────────┐             │
+│    ▼          ▼           ▼             │
+│  Agent1    Agent2      Agent3           │
+│    │          │           │             │
+│    └──────────┴───────────┘             │
+│               │                          │
+│    ┌──────────▼─────────────┐           │
+│    │  Shared DB & Memory    │           │
+│    └────────────────────────┘           │
+└──────────────────────────────────────────┘
+```
+
+**Best for**: Small-medium teams, rapid development
+
+#### Future: Microservices
+```
+┌─────────┐   ┌─────────┐   ┌─────────┐
+│ Agent 1 │──▶│ Agent 2 │──▶│ Agent 3 │
+│ Service │   │ Service │   │ Service │
+└────┬────┘   └────┬────┘   └────┬────┘
+     │             │             │
+     └─────────────┴─────────────┘
+                   │
+            ┌──────▼──────┐
+            │ Message Bus │
+            └─────────────┘
+```
+
+**Best for**: Large teams, high scale, independent deployment
+
+---
+
+## Component Architecture
 
 ### Big Picture: Multi-Agent Workflow
 
