@@ -1,17 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  ClipboardCheck, 
-  FileEdit, 
-  PlayCircle, 
-  CheckCircle2, 
-  AlertCircle, 
-  Loader2, 
+import {
+  ClipboardCheck,
+  FileEdit,
+  PlayCircle,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
   LayoutDashboard,
   BrainCircuit,
   ChevronRight,
   RefreshCw,
   X,
-  Terminal,
   BarChart3,
   Github,
   Database,
@@ -20,31 +19,34 @@ import {
   Map as MapIcon,
   Circle
 } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  PieChart, 
-  Pie, 
-  Cell 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
-import { 
-  WorkflowStatus, 
-  WorkflowState, 
+import {
+  WorkflowStatus,
+  WorkflowState,
   TestCase,
   ExecutionResult
 } from './types';
-import { 
-  reviewRequirements, 
-  generateTestCases, 
+import {
+  reviewRequirements,
+  generateTestCases,
   executeTests,
   fetchJiraRequirement,
   createGithubIssue
 } from './services/geminiService';
+import { NavBtn } from './components/NavBtn';
+import { StatCard } from './components/StatCard';
+import { AgentThinkingLog } from './components/AgentThinkingLog';
 
 const App: React.FC = () => {
   const [state, setState] = useState<WorkflowState>({
@@ -69,7 +71,7 @@ const App: React.FC = () => {
     try {
       setState(p => ({ ...p, status: WorkflowStatus.AGENT1_REVIEWING, thinkingProcess: '[AGENT 1] Reviewing specs...' }));
       const { specs, thinking: t1 } = await reviewRequirements(state.rawRequirements);
-      
+
       setState(p => ({ ...p, status: WorkflowStatus.AGENT2_WRITING, validatedSpecs: specs, thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...` }));
       const { testCases, thinking: t2 } = await generateTestCases(specs);
 
@@ -108,7 +110,7 @@ const App: React.FC = () => {
 
   const navigateToTests = (reqId: string) => {
     setHighlightedReqId(reqId);
-    setTcSearchTerm(''); 
+    setTcSearchTerm('');
     setActiveTab('agent2');
   };
 
@@ -170,9 +172,9 @@ const App: React.FC = () => {
           <NavBtn icon={<BarChart3 size={18} />} label="Reports" active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} disabled={!state.results.length} />
         </nav>
         <div className="p-4 border-t space-y-2">
-           <button onClick={() => setState({ ...state, status: WorkflowStatus.IDLE, rawRequirements: '', validatedSpecs: [], testCases: [], results: [] })} className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors">
-             <RefreshCw size={14} /> Reset System
-           </button>
+          <button onClick={() => setState({ ...state, status: WorkflowStatus.IDLE, rawRequirements: '', validatedSpecs: [], testCases: [], results: [] })} className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors">
+            <RefreshCw size={14} /> Reset System
+          </button>
         </div>
       </aside>
 
@@ -193,21 +195,21 @@ const App: React.FC = () => {
                   <h3 className="text-sm font-bold flex items-center gap-2"><Database size={16} /> Jira Sync</h3>
                   <div className="flex gap-2">
                     <label htmlFor="jira-ticket" className="sr-only">Jira Ticket ID</label>
-                    <input 
+                    <input
                       id="jira-ticket"
-                      value={jiraIssueInput} 
-                      onChange={e => setJiraIssueInput(e.target.value)} 
-                      placeholder="Ticket ID (e.g., AUTH-101)" 
-                      className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:border-transparent transition-all" 
-                      aria-label="Jira ticket ID" 
-                      aria-describedby="jira-help" 
+                      value={jiraIssueInput}
+                      onChange={e => setJiraIssueInput(e.target.value)}
+                      placeholder="Ticket ID (e.g., AUTH-101)"
+                      className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:border-transparent transition-all"
+                      aria-label="Jira ticket ID"
+                      aria-describedby="jira-help"
                     />
                     <p id="jira-help" className="text-xs text-slate-500 mt-1">💡 Enter your Jira ticket ID to pull requirements directly</p>
-                    <button 
-                      onClick={handleJiraFetch} 
-                      disabled={isJiraLoading || !jiraIssueInput.trim()} 
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-all" 
-                      aria-busy={isJiraLoading} 
+                    <button
+                      onClick={handleJiraFetch}
+                      disabled={isJiraLoading || !jiraIssueInput.trim()}
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-all"
+                      aria-busy={isJiraLoading}
                       aria-label="Fetch requirements from Jira"
                     >
                       {isJiraLoading ? (
@@ -232,14 +234,14 @@ const App: React.FC = () => {
               <div className="bg-white p-8 rounded-3xl border shadow-sm space-y-4">
                 <h3 className="font-bold">Requirement Staging</h3>
                 <label htmlFor="requirements-input" className="block text-sm font-semibold text-slate-700 mb-2">Requirements</label>
-                <textarea 
+                <textarea
                   id="requirements-input"
-                  value={state.rawRequirements} 
-                  onChange={e => setState(p => ({ ...p, rawRequirements: e.target.value }))} 
-                  className="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:border-transparent transition-all resize-none" 
-                  placeholder="Paste requirements, PRD, or user stories here..." 
-                  aria-label="Raw requirements input" 
-                  aria-describedby="requirements-help" 
+                  value={state.rawRequirements}
+                  onChange={e => setState(p => ({ ...p, rawRequirements: e.target.value }))}
+                  className="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:border-transparent transition-all resize-none"
+                  placeholder="Paste requirements, PRD, or user stories here..."
+                  aria-label="Raw requirements input"
+                  aria-describedby="requirements-help"
                 />
                 <div className="flex justify-between items-center mt-2">
                   <p id="requirements-help" className="text-xs text-slate-500">
@@ -250,16 +252,13 @@ const App: React.FC = () => {
                 <div className="flex justify-end">
                   <button onClick={runWorkflow} disabled={state.status !== WorkflowStatus.IDLE || !state.rawRequirements.trim()} aria-busy={state.status !== WorkflowStatus.IDLE} aria-label="Launch multi-agent QA pipeline" className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-all flex items-center gap-2">
                     {state.status !== WorkflowStatus.IDLE && <Loader2 size={16} className="animate-spin" />}
-                  {state.status === WorkflowStatus.IDLE ? 'Launch Pipeline' : `Running: ${state.status.replace(/_/g, ' ')}`}
-                  {state.status === WorkflowStatus.IDLE && <ChevronRight size={16} />}
+                    {state.status === WorkflowStatus.IDLE ? 'Launch Pipeline' : `Running: ${state.status.replace(/_/g, ' ')}`}
+                    {state.status === WorkflowStatus.IDLE && <ChevronRight size={16} />}
                   </button>
                 </div>
               </div>
 
-              <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                <div className="flex items-center gap-2 text-indigo-400 text-xs font-bold mb-4 uppercase tracking-widest"><Terminal size={14}/> Agent Thinking log</div>
-                <pre className="text-indigo-200 text-xs mono leading-relaxed opacity-80 max-h-48 overflow-y-auto">{state.thinkingProcess}</pre>
-              </div>
+              <AgentThinkingLog thinkingProcess={state.thinkingProcess} />
             </div>
           )}
 
@@ -268,7 +267,7 @@ const App: React.FC = () => {
               {state.validatedSpecs.map(spec => {
                 const associatedTests = testCasesByReq[spec.requirementId] || [];
                 const resMap = new Map<string, string>(state.results.map(r => [r.testCaseId, r.status]));
-                
+
                 return (
                   <div key={spec.requirementId} id={`spec-${spec.requirementId}`} className={`bg-white p-6 rounded-2xl border transition-all ${spec.requirementId === highlightedReqId ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg' : 'border-slate-200 shadow-sm'}`}>
                     <div className="flex justify-between items-start mb-4">
@@ -291,7 +290,7 @@ const App: React.FC = () => {
                           </div>
                         )}
                       </div>
-                      <button onClick={() => navigateToTests(spec.requirementId)} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"><MapIcon size={18}/></button>
+                      <button onClick={() => navigateToTests(spec.requirementId)} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"><MapIcon size={18} /></button>
                     </div>
                     <p className="text-sm text-slate-500 mb-4">{spec.description}</p>
                     <div className="grid grid-cols-2 gap-4">
@@ -316,8 +315,8 @@ const App: React.FC = () => {
             <div className="max-w-4xl mx-auto space-y-6">
               {highlightedReqId && (
                 <div className="flex items-center justify-between bg-indigo-600 text-white p-4 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-2">
-                  <span className="text-sm font-bold flex items-center gap-2"><Workflow size={16}/> Viewing scenarios for: {highlightedReqId}</span>
-                  <button onClick={() => setHighlightedReqId(null)}><X size={16}/></button>
+                  <span className="text-sm font-bold flex items-center gap-2"><Workflow size={16} /> Viewing scenarios for: {highlightedReqId}</span>
+                  <button onClick={() => setHighlightedReqId(null)}><X size={16} /></button>
                 </div>
               )}
               {filteredTestCases.map(tc => (
@@ -333,9 +332,9 @@ const App: React.FC = () => {
                   <div className="p-6 space-y-4">
                     <div className="text-xs text-slate-500 italic">Pre: {tc.preconditions}</div>
                     <div className="space-y-2">
-                      {tc.steps.map((s, i) => <div key={i} className="text-sm flex gap-3"><span className="text-slate-300 font-bold">{i+1}.</span> {s}</div>)}
+                      {tc.steps.map((s, i) => <div key={i} className="text-sm flex gap-3"><span className="text-slate-300 font-bold">{i + 1}.</span> {s}</div>)}
                     </div>
-                    <div className="mt-4 p-4 bg-slate-900 text-indigo-400 rounded-xl text-sm font-bold flex items-center gap-2"><ArrowRight size={14}/> {tc.expectedOutcomes}</div>
+                    <div className="mt-4 p-4 bg-slate-900 text-indigo-400 rounded-xl text-sm font-bold flex items-center gap-2"><ArrowRight size={14} /> {tc.expectedOutcomes}</div>
                   </div>
                 </div>
               ))}
@@ -347,7 +346,7 @@ const App: React.FC = () => {
               {state.results.map(res => (
                 <div key={res.testCaseId} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex">
                   <div className={`w-32 flex flex-col items-center justify-center ${res.status === 'PASS' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                    {res.status === 'PASS' ? <CheckCircle2 size={32}/> : <AlertCircle size={32}/>}
+                    {res.status === 'PASS' ? <CheckCircle2 size={32} /> : <AlertCircle size={32} />}
                     <span className="text-[10px] font-black uppercase tracking-widest mt-2">{res.status}</span>
                   </div>
                   <div className="flex-1 p-6 space-y-4">
@@ -368,13 +367,13 @@ const App: React.FC = () => {
           {activeTab === 'reports' && (
             <div className="max-w-5xl mx-auto space-y-8">
               <div className="grid grid-cols-3 gap-6">
-                 <StatCard label="Traceability" value={`${Math.round((new Set(state.testCases.flatMap(tc => tc.linkedRequirementIds)).size / (state.validatedSpecs.length || 1)) * 100)}%`} color="indigo" />
-                 <StatCard label="Stability" value={`${Math.round((state.results.filter(r => r.status === 'PASS').length / (state.results.length || 1)) * 100)}%`} color="emerald" />
-                 <StatCard label="Failures" value={state.results.filter(r => r.status === 'FAIL').length.toString()} color="rose" />
+                <StatCard label="Traceability" value={`${Math.round((new Set(state.testCases.flatMap(tc => tc.linkedRequirementIds)).size / (state.validatedSpecs.length || 1)) * 100)}%`} color="indigo" />
+                <StatCard label="Stability" value={`${Math.round((state.results.filter(r => r.status === 'PASS').length / (state.results.length || 1)) * 100)}%`} color="emerald" />
+                <StatCard label="Failures" value={state.results.filter(r => r.status === 'FAIL').length.toString()} color="rose" />
               </div>
               <div className="grid grid-cols-2 gap-8">
-                 <div className="bg-white p-8 rounded-3xl border shadow-sm h-64"><ResponsiveContainer><PieChart><Pie data={chartData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value"><Cell fill="#10b981"/><Cell fill="#f43f5e"/></Pie><Tooltip/></PieChart></ResponsiveContainer></div>
-                 <div className="bg-white p-8 rounded-3xl border shadow-sm h-64"><ResponsiveContainer><BarChart data={coverageData}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="name"/><YAxis/><Tooltip/><Bar dataKey="count" fill="#6366f1" radius={[8, 8, 0, 0]}/></BarChart></ResponsiveContainer></div>
+                <div className="bg-white p-8 rounded-3xl border shadow-sm h-64"><ResponsiveContainer><PieChart><Pie data={chartData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value"><Cell fill="#10b981" /><Cell fill="#f43f5e" /></Pie><Tooltip /></PieChart></ResponsiveContainer></div>
+                <div className="bg-white p-8 rounded-3xl border shadow-sm h-64"><ResponsiveContainer><BarChart data={coverageData}><CartesianGrid strokeDasharray="3 3" vertical={false} /><XAxis dataKey="name" /><YAxis /><Tooltip /><Bar dataKey="count" fill="#6366f1" radius={[8, 8, 0, 0]} /></BarChart></ResponsiveContainer></div>
               </div>
             </div>
           )}
@@ -383,44 +382,6 @@ const App: React.FC = () => {
     </div>
   );
 };
-
-interface NavBtnProps {
-  icon?: React.ReactNode;
-  label: string;
-  active?: boolean;
-  onClick?: () => void;
-  disabled?: boolean;
-}
-
-export const NavBtn: React.FC<NavBtnProps> = ({ icon, label, active = false, onClick, disabled = false }) => (
-  <button onClick={onClick} disabled={disabled} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${active ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'} ${disabled ? 'opacity-25' : ''}`}>
-    {icon} {label}
-  </button>
-);
-
-type StatCardColor = 'indigo' | 'emerald' | 'rose' | 'slate' | 'cyan' | 'amber';
-
-interface StatCardProps {
-  label: string;
-  value: string;
-  color?: StatCardColor;
-}
-
-const colorClassMap: Record<StatCardColor, string> = {
-  indigo: 'text-indigo-600',
-  emerald: 'text-emerald-600',
-  rose: 'text-rose-600',
-  slate: 'text-slate-600',
-  cyan: 'text-cyan-600',
-  amber: 'text-amber-600',
-};
-
-export const StatCard: React.FC<StatCardProps> = ({ label, value, color = 'indigo' }) => (
-  <div className="bg-white p-6 rounded-2xl border border-slate-200 text-center space-y-1">
-    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label}</p>
-    <p className={`text-3xl font-black ${colorClassMap[color]}`}>{value}</p>
-  </div>
-);
 
 export default App;
 

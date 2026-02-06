@@ -15,8 +15,10 @@ qa-nexus-autonomous/
 │   ├── constants.ts              # Application constants (agent models, etc.)
 │   ├── types.ts                  # TypeScript types and interfaces
 │   ├── metadata.json             # Agent metadata
-│   ├── components/               # Reusable React components
-│   │   └── .gitkeep              # Placeholder for future components
+│   ├── components/               # UI components
+│   │   ├── NavBtn.tsx            # Sidebar navigation button
+│   │   ├── StatCard.tsx          # Reporting metric card
+│   │   └── AgentThinkingLog.tsx  # Terminal-style log display
 │   └── services/                 # External service integrations
 │       └── geminiService.ts     # Google Gemini API integration
 │
@@ -44,7 +46,7 @@ qa-nexus-autonomous/
 Contains all application source code organized by type:
 - **Main Files**: App.tsx, index.tsx, constants.ts, types.ts
 - **Services**: External API integrations (Gemini AI, simulated Jira/GitHub)
-- **Components**: Reusable React components (future organization)
+- **Components**: Reusable UI components (NavBtn, StatCard, AgentThinkingLog)
 - **Metadata**: Agent profiles and configuration
 
 ### `/docs`
@@ -101,7 +103,7 @@ The project uses TypeScript path aliases for cleaner imports:
 
 ## Future Enhancements
 
-1. Extract components from App.tsx to `/src/components` (e.g., AgentCard, ResultsPanel)
+1. Extract more components from App.tsx (e.g., AgentCard, ResultsPanel)
 2. Add utility functions to `/src/utils`
 3. Create `/src/hooks` for custom React hooks
 4. Add `/src/styles` for CSS modules
