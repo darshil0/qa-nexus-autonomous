@@ -6,9 +6,9 @@ A sophisticated multi-agent QA automation system powered by Google Gemini AI. QA
 
 QA Nexus Autonomous demonstrates advanced AI orchestration by combining multiple specialized agents into a cohesive workflow. The system analyzes requirements, generates comprehensive test cases, and simulates test execution—all powered by state-of-the-art language models.
 
-**Version**: 2.3.0  
+**Version**: 2.3.1  
 **Status**: Production Ready  
-**Last Updated**: February 5, 2026
+**Last Updated**: February 6, 2026
 
 ## Key Features
 
@@ -47,7 +47,7 @@ QA Nexus Autonomous demonstrates advanced AI orchestration by combining multiple
 | **Styling** | Tailwind CSS 4.1.18 |
 | **UI Components** | Lucide React 0.563.0 |
 | **Visualization** | Recharts 3.7.0 |
-| **AI Engine** | Google Gemini API 1.40.0 |
+| **AI Engine** | Google Gemini 3 (Pro/Flash) |
 | **Testing** | Vitest 4.0.18, Testing Library 16.3.2 |
 | **Linting** | ESLint 9.39.2, TypeScript ESLint 8.54.0 |
 
@@ -142,6 +142,7 @@ qa-nexus-autonomous/
 ├── vitest.config.ts               # Vitest configuration
 ├── package.json                   # Dependencies and scripts
 ├── CHANGELOG.md                   # Version history
+├── AGENT.md                       # AI Agent identity and guidelines
 └── README.md                      # This file
 ```
 
@@ -305,7 +306,7 @@ All configuration files follow standard naming conventions:
 
 ### Google Gemini API
 
-- **Model**: `gemini-pro`
+- **Models**: `gemini-3-pro-preview`, `gemini-3-flash-preview`
 - **Rate Limits**: Refer to Google's pricing and quotas
 - **Response Format**: JSON with fallback to empty structures
 - **Error Handling**: Graceful degradation with user feedback
@@ -383,7 +384,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-For issues, questions, or feature requests, please open an issue on GitHub.
+For issues, questions, or feature requests, please open an issue on GitHub. Detailed documentation can be found in the [docs/ directory](./docs/README_DOCUMENTATION.md).
 
 ## Changelog
 

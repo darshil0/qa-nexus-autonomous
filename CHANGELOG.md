@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2026-02-06
+
+### Added
+- **Agent Documentation Foundation**: Restored and updated the root `AGENT.md` file to provide a comprehensive identity and development roadmap for AI assistants.
+- **Agent Identity Update**: Rebranded the AI agent from "Antigravity" to "QA Nexus Autonomous Agent".
+- **AI Client API Key Fix**: Updated `geminiService.ts` to utilize `import.meta.env.VITE_GEMINI_API_KEY`, ensuring compatibility with Vite environment variables and project-standard naming.
+- **Model Name Synchronization**: Unified model references throughout the project to utilize `gemini-3-pro-preview` and `gemini-3-flash-preview` for technical precision.
+- **Project-Wide Synchronization**: Unified version numbers and update dates across all core documentation (`README.md`, `ARCHITECTURE.md`, `PROJECT_STRUCTURE.md`) and `package.json`.
+- **Documentation Linking**: Integrated `AGENT.md` references into the main project structure and architectural guides.
+
 ## [2.3.0] - 2026-02-05
 
 ### Added
@@ -312,8 +322,8 @@ These fixes ensure:
 
 ## Version Information
 
-**Current Version**: 2.0.1  
-**Release Date**: February 5, 2026  
+**Current Version**: 2.3.1  
+**Release Date**: February 6, 2026  
 **Status**: Production Ready  
 **License**: MIT
 
@@ -475,5 +485,5 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 
 ---
 
-**Last Updated**: February 5, 2026  
-**Version**: 2.3.0
+**Last Updated**: February 6, 2026  
+**Version**: 2.3.1

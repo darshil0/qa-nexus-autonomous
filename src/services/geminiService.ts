@@ -3,13 +3,12 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "../constants";
 import { ValidatedSpec, TestCase, ExecutionResult } from "../types";
 
-const apiKey = process.env.GENAI_API_KEY || process.env.API_KEY;
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 let ai: GoogleGenAI | undefined;
 if (apiKey) {
   ai = new GoogleGenAI({ apiKey });
 } else {
-  // Warn at import time; functions will throw when called without a configured client
-  console.warn('GENAI API key is not set. Gemini client will not be initialized and calls will throw unless a key is provided.');
+  console.warn('VITE_GEMINI_API_KEY is not set. Gemini client will not be initialized.');
 }
 
 // For testing and advanced usage, allow swapping the underlying AI client

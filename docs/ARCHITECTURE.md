@@ -1,7 +1,7 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 2.3.0  
-**Last Updated**: February 5, 2026  
+**Version**: 2.3.1  
+**Last Updated**: February 6, 2026  
 **Status**: Production Ready
 
 ## Table of Contents
@@ -144,7 +144,7 @@ npm run dev
 │   Reviewer       │  │   Writer         │  │   Executor       │
 ├──────────────────┤  ├──────────────────┤  ├──────────────────┤
 │ Model:           │  │ Model:           │  │ Model:           │
-│ gemini-pro       │  │ gemini-pro       │  │ gemini-pro       │
+│ gemini-3-pro-prev│  │ gemini-3-pro-prev│  │ gemini-3-flash-pr│
 │                  │  │                  │  │                  │
 │ Input:           │  │ Input:           │  │ Input:           │
 │ - Requirements   │  │ - Requirements   │  │ - Test cases     │
@@ -195,7 +195,7 @@ src/
 │   └── TestResults             # Agent 3 output
 │
 └── constants.ts                # Configuration
-    ├── AGENT_MODELS            # Model assignments (Gemini 2.0 Flash)
+    ├── AGENT_MODELS            # Model assignments (Gemini 3)
     ├── STATUS_MESSAGES         # UI messages
     └── DEFAULT_VALUES          # Fallback values
 ```
@@ -707,7 +707,7 @@ export async function reviewRequirements(
 ): Promise<RequirementsReview> {
   try {
     // 1. Initialize model
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-pro-preview' });
 
     // 2. Construct prompt
     const prompt = buildReviewPrompt(requirements);
@@ -915,7 +915,7 @@ function parseAndValidateReview(text: string): RequirementsReview {
 ```typescript
 // Configuration
 const API_CONFIG = {
-  model: 'gemini-pro',
+  model: 'gemini-3-pro-preview',
   temperature: 0.7,        // Creativity level (0-1)
   maxOutputTokens: 2048,   // Response length limit
   topP: 0.95,              // Nucleus sampling
@@ -960,7 +960,7 @@ class GeminiAPIError extends Error {
 
 async function callGeminiAPI(prompt: string): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-pro-preview' });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     return response.text();
@@ -1864,8 +1864,8 @@ test(workflow): add integration test for full workflow
 
 ---
 
-**Version**: 2.0.1  
-**Last Updated**: February 5, 2026  
+**Version**: 2.3.1  
+**Last Updated**: February 6, 2026  
 **Maintained by**: QA Nexus Team
 
 For questions or issues, please open a GitHub issue or contact the maintainers.

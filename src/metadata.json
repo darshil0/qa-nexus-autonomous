@@ -1,5 +1,5 @@
 {
   "name": "QA Nexus Autonomous",
-  "description": "A high-fidelity, multi-agent AI orchestrator powered by Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.",
+  "description": "A high-fidelity, multi-agent AI orchestrator powered by Gemini 3 (Pro & Flash) that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.",
   "requestFramePermissions": []
 }

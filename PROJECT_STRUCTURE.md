@@ -1,7 +1,7 @@
 # QA Nexus Project Structure
 
-**Version**: 2.3.0
-**Last Updated**: February 5, 2026
+**Version**: 2.3.1
+**Last Updated**: February 6, 2026
 
 ## Project Organization
 
@@ -29,7 +29,12 @@ qa-nexus-autonomous/
 │       └── geminiService.ts     # Google Gemini API integration
 │
 ├── docs/                         # Project documentation
-│   └── ARCHITECTURE.md           # Multi-agent architecture & specifications
+│   ├── ARCHITECTURE.md           # Multi-agent architecture & specifications
+│   ├── README_DOCUMENTATION.md   # Documentation index
+│   ├── QUICK_REFERENCE.md        # Commands and environment guide
+│   ├── IMPLEMENTATION_SUMMARY.md # Technical implementation details
+│   ├── UI_ENHANCEMENTS.md        # UI/UX and accessibility guide
+│   └── Walkthrough.md            # Step-by-step user guide
 │
 │
 ├── public/                       # Static assets (images, fonts, etc.)
@@ -44,6 +49,7 @@ qa-nexus-autonomous/
 ├── package.json                  # Project dependencies and scripts
 ├── tsconfig.json                 # TypeScript configuration
 ├── vite.config.ts                # Vite 7 / Tailwind 4 configuration
+├── AGENT.md                      # AI Agent identity and guidelines
 └── README.md                     # Project overview
 ```
 
