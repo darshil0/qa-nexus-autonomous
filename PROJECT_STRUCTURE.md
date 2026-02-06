@@ -21,15 +21,8 @@ qa-nexus-autonomous/
 │       └── geminiService.ts     # Google Gemini API integration
 │
 ├── docs/                         # Project documentation
-│   ├── README_DOCUMENTATION.md   # Documentation index (START HERE)
-│   ├── QUICK_REFERENCE.md        # Quick overview
-│   ├── BEFORE_AFTER_COMPARISON.md # Visual code comparisons
-│   ├── COMPLETION_SUMMARY.md     # Executive summary
-│   ├── IMPLEMENTATION_SUMMARY.md  # Technical specifications
-│   ├── PROJECT_COMPLETION_REPORT.md # Official report
-│   ├── UI_ENHANCEMENTS.md        # Implementation guide
-│   ├── AGENT.md                  # Agent specifications
-│   └── Walkthrough.md            # UI walkthrough guide
+│   └── ARCHITECTURE.md           # Multi-agent architecture & specifications
+│
 │
 ├── public/                       # Static assets (images, fonts, etc.)
 │   └── .gitkeep                  # Placeholder
@@ -56,10 +49,7 @@ Contains all application source code organized by type:
 
 ### `/docs`
 Comprehensive project documentation:
-- Start with **README_DOCUMENTATION.md** for navigation
-- Use **QUICK_REFERENCE.md** for a 2-3 minute overview
-- See **BEFORE_AFTER_COMPARISON.md** for visual code examples
-- Read **IMPLEMENTATION_SUMMARY.md** for technical details
+- **ARCHITECTURE.md**: Detailed specifications of the multi-agent system, prompt strategies, and technical deep-dive.
 
 ### `/public`
 Reserved for static assets:
