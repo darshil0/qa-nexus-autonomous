@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated `vitest.config.ts` with new setup files and improved globals handling.
 - Refactored `geminiService.ts` for better internal typing and cleaner code.
+- **Repository Management**: Initialized Git repository, configured remote, and synchronized with main branch.
+- **Documentation Cleanup**: consolidated redundant documentation files into a core `ARCHITECTURE.md` and updated all project-wide references to maintain consistency.
 
 ## [2.0.1] - 2026-02-05
 
