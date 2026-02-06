@@ -460,7 +460,7 @@ Built with cutting-edge technologies:
 - Vite for lightning-fast development
 - TypeScript for type safety
 - Google Gemini AI for intelligent automation
-- Tailwind CSS for beautiful UI
+- Vanilla CSS for premium design
 
 ---
 
@@ -485,7 +485,7 @@ Built with cutting-edge technologies:
 
 All documentation is comprehensive and up-to-date:
 - `README.md` - Main entry point (updated for v2.1.0)
-- `docs/AGENT.md` - Developer reference (940 lines)
+- `AGENT.md` - Developer reference (located at project root)
 - `docs/README_DOCUMENTATION.md` - Documentation index
 - `docs/QUICK_REFERENCE.md` - Quick overview
 - `docs/BEFORE_AFTER_COMPARISON.md` - UI improvements

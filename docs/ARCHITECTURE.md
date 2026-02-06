@@ -51,11 +51,11 @@ QA Nexus Autonomous is a sophisticated multi-agent system that leverages Google'
 ### Required Software
 
 ```bash
-# Node.js (version 20 or higher)
-node --version  # Should show v20.x.x or higher
+# Node.js (version 18 or higher)
+node --version  # Should show v18.x.x or higher
 
-# npm (version 10 or higher)
-npm --version   # Should show 10.x.x or higher
+# npm (version 9 or higher)
+npm --version   # Should show 9.x.x or higher
 
 # Git (for version control)
 git --version

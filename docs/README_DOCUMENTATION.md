@@ -19,7 +19,7 @@ Welcome to the comprehensive documentation suite for **QA Nexus Autonomous**. Th
 ### 3. Implementation & Design
 - **[IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md)**: Detailed breakdown of the technical components and service layers.
 - **[UI_ENHANCEMENTS.md](./UI_ENHANCEMENTS.md)**: Documentation on accessibility (WCAG), focus management, and visual design patterns.
-- **[BEFORE_AFTER_COMPARISON.md](./BEFORE_AFTER_COMPARISON.md)**: A catalog of UI/UX improvements from v1.0 to v2.3.
+- **[BEFORE_AFTER_COMPARISON.md](./BEFORE_AFTER_COMPARISON.md)**: A catalog of UI/UX improvements from v1.0 to v2.4.
 
 ### 4. Project Management
 - **[PROJECT_COMPLETION_REPORT.md](./PROJECT_COMPLETION_REPORT.md)**: Final analysis of milestones achieved, technical hurdles overcome, and production readiness.

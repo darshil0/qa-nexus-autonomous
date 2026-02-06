@@ -155,7 +155,7 @@ We follow Conventional Commits:
 
 ### Code Standards Checklist
 - [ ] Strict TypeScript adherence.
-- [ ] Mobile-responsive Tailwind UI.
+- [ ] Mobile-responsive Vanilla CSS UI.
 - [ ] Proper error boundary implementation.
 - [ ] Updated `AGENT.md` if structure changes.
 

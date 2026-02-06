@@ -10,7 +10,6 @@ QA Nexus Autonomous prioritizes a **"Premium Dashboard"** aesthetic: clean, vibr
 - **Vanilla CSS Design System**: Bespoke styling without utility class bloat.
 - **Glassmorphism**: Translucent cards with backdrop-blur for a modern, multi-layered feel.
 - **Neural Trace Terminal**: Premium dark terminal aesthetic for agent logs.
-- **Glassmorphism**: Subtle use of backdrop blurs and borders to create depth.
 - **Micro-Animations**: Smooth transitions when switching tabs and real-time status updates.
 
 ## ♿ Accessibility (A11y)
