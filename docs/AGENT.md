@@ -1,6 +1,6 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 2.0.1  
+**Version**: 2.1.0  
 **Last Updated**: February 5, 2026  
 **Status**: Production Ready
 
@@ -78,11 +78,11 @@ git --version
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/qa-nexus-autonomous.git
+git clone https://github.com/darshil0/qa-nexus-autonomous.git
 cd qa-nexus-autonomous
 
-# Install dependencies
-npm install
+# Install dependencies (use peer-deps flag for React 19 compatibility)
+npm install --legacy-peer-deps
 
 # Create environment file
 cp .env.example .env  # Or create manually
@@ -693,16 +693,16 @@ All agent functions follow this pattern:
 ```typescript
 // src/services/geminiService.ts
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+const genAI = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 export async function reviewRequirements(
   requirements: string
 ): Promise<RequirementsReview> {
   try {
     // 1. Initialize model
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
     // 2. Construct prompt
     const prompt = buildReviewPrompt(requirements);

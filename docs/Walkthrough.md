@@ -1,5 +1,8 @@
 # User Walkthrough: QA Nexus Autonomous
 
+**Version**: 2.1.0
+**Last Updated**: February 5, 2026
+
 Follow these steps to navigate the autonomous QA pipeline.
 
 ### 1. The Orchestrator (Input)

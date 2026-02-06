@@ -1,5 +1,8 @@
 # QA Nexus Project Structure
 
+**Version**: 2.1.0
+**Last Updated**: February 5, 2026
+
 ## Project Organization
 
 This project follows the standard Vite + React + TypeScript structure:

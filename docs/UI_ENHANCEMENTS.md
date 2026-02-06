@@ -1,5 +1,8 @@
 ## UI Enhancement Implementation Guide
 
+**Version**: 2.1.0
+**Last Updated**: February 5, 2026
+
 This document provides step-by-step instructions for applying the focus states, loading spinners, help text, and theme colors to QA Nexus.
 
 ### Enhancement 1: Focus States on Form Inputs
