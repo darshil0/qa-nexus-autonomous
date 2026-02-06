@@ -27,85 +27,92 @@ export const OrchestratorTab: React.FC<OrchestratorTabProps> = ({
     thinkingProcess
 }) => {
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
-            <div className="grid grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-                    <h3 className="text-sm font-bold flex items-center gap-2">
-                        <Database size={16} /> Jira Sync
-                    </h3>
-                    <div className="flex gap-2">
-                        <label htmlFor="jira-ticket" className="sr-only">Jira Ticket ID</label>
+        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ padding: '0.5rem', borderRadius: '0.5rem', background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)' }}>
+                            <Database size={18} />
+                        </div>
+                        <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)' }}>Jira Synchronizer</h3>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.75rem' }}>
                         <input
                             id="jira-ticket"
                             value={jiraIssueInput}
                             onChange={e => setJiraIssueInput(e.target.value)}
                             placeholder="Ticket ID (e.g., AUTH-101)"
-                            className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:border-transparent transition-all"
-                            aria-label="Jira ticket ID"
-                            aria-describedby="jira-help"
+                            className="input-field"
+                            style={{ fontSize: '0.875rem' }}
                         />
                         <button
                             onClick={handleJiraFetch}
                             disabled={isJiraLoading || !jiraIssueInput.trim()}
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-all"
-                            aria-busy={isJiraLoading}
-                            aria-label="Fetch requirements from Jira"
+                            className="btn-primary"
+                            style={{ padding: '0 1.25rem' }}
                         >
-                            {isJiraLoading ? (
-                                <span className="inline-flex items-center gap-1">
-                                    <Loader2 size={14} className="animate-spin" /> Syncing...
-                                </span>
-                            ) : (
-                                'Fetch'
-                            )}
+                            {isJiraLoading ? <Loader2 size={16} className="animate-spin" /> : 'Fetch'}
                         </button>
                     </div>
-                    <p id="jira-help" className="text-xs text-slate-500 mt-1">
-                        💡 Enter your Jira ticket ID to pull requirements directly
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        Pull requirements directly from your synchronized Jira workspace.
                     </p>
                 </div>
-                <div className="bg-white p-6 rounded-2xl border shadow-sm flex items-center gap-4">
-                    <Github size={32} className="text-slate-400" />
+
+                <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                    <div style={{ padding: '1rem', borderRadius: '1rem', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--glass-border)' }}>
+                        <Github size={32} style={{ color: 'var(--text-muted)' }} />
+                    </div>
                     <div>
-                        <h3 className="text-sm font-bold">GitHub Repository</h3>
-                        <p className="text-xs text-slate-400">repo: core-testing-matrix</p>
+                        <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)' }}>GitHub Environment</h3>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>repo: qa-nexus-autonomous</p>
+                        <div style={{ marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--success)' }}></div>
+                            <span style={{ fontSize: '0.6rem', fontWeight: 700, color: 'var(--success)' }}>CONNECTED</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl border shadow-sm space-y-4">
-                <h3 className="font-bold">Requirement Staging</h3>
-                <label htmlFor="requirements-input" className="block text-sm font-semibold text-slate-700 mb-2">
-                    Requirements
-                </label>
+            <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '1.125rem' }}>Requirement Staging</h3>
+                    <div className="badge-warning" style={{ fontSize: '0.6rem', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontWeight: 800 }}>DRAFT MODE</div>
+                </div>
+
                 <textarea
                     id="requirements-input"
                     value={rawRequirements}
                     onChange={e => setRawRequirements(e.target.value)}
-                    className="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:border-transparent transition-all resize-none"
-                    placeholder="Paste requirements, PRD, or user stories here..."
-                    aria-label="Raw requirements input"
-                    aria-describedby="requirements-help"
+                    className="input-field"
+                    style={{ height: '220px', resize: 'none', lineHeight: '1.6', fontSize: '0.9rem' }}
+                    placeholder="Enter or paste your project requirements, technical specifications, or user stories..."
                 />
-                <div className="flex justify-between items-center mt-2">
-                    <p id="requirements-help" className="text-xs text-slate-500">
-                        💡 Include business requirements, acceptance criteria, and edge cases for best results
-                    </p>
-                    <span className="text-xs text-slate-500">{rawRequirements.length} characters</span>
-                </div>
-                <div className="flex justify-end">
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        <span>Chars: {rawRequirements.length}</span>
+                        <span>Source: {jiraIssueInput ? 'Jira' : 'Manual'}</span>
+                    </div>
+
                     <button
                         onClick={runWorkflow}
                         disabled={status !== WorkflowStatus.IDLE || !rawRequirements.trim()}
-                        aria-busy={status !== WorkflowStatus.IDLE}
-                        aria-label="Launch multi-agent QA pipeline"
-                        className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-all flex items-center gap-2"
+                        className="btn-primary"
+                        style={{ padding: '0.875rem 2rem', fontSize: '1rem' }}
                     >
-                        {status !== WorkflowStatus.IDLE && <Loader2 size={16} className="animate-spin" />}
-                        {status === WorkflowStatus.IDLE
-                            ? 'Launch Pipeline'
-                            : `Running: ${status.replace(/_/g, ' ')}`}
-                        {status === WorkflowStatus.IDLE && <ChevronRight size={16} />}
+                        {status !== WorkflowStatus.IDLE ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <Loader2 size={18} className="animate-spin" />
+                                <span>ORCHESTRATING...</span>
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <span>LAUNCH PIPELINE</span>
+                                <ChevronRight size={18} />
+                            </div>
+                        )}
                     </button>
                 </div>
             </div>

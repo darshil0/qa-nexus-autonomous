@@ -8,18 +8,18 @@ interface StatCardProps {
     color?: StatCardColor;
 }
 
-const colorClassMap: Record<StatCardColor, string> = {
-    indigo: 'text-indigo-600',
-    emerald: 'text-emerald-600',
-    rose: 'text-rose-600',
-    slate: 'text-slate-600',
-    cyan: 'text-cyan-600',
-    amber: 'text-amber-600',
+const colorVarMap: Record<StatCardColor, string> = {
+    indigo: 'var(--primary)',
+    emerald: 'var(--success)',
+    rose: 'var(--accent)',
+    slate: 'var(--text-muted)',
+    cyan: '#06b6d4',
+    amber: '#f59e0b',
 };
 
 export const StatCard: React.FC<StatCardProps> = ({ label, value, color = 'indigo' }) => (
-    <div className="bg-white p-6 rounded-2xl border border-slate-200 text-center space-y-1">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label}</p>
-        <p className={`text-3xl font-black ${colorClassMap[color]}`}>{value}</p>
+    <div className="card" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.5rem', transition: 'all 0.3s ease' }}>
+        <p style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.15em', margin: 0 }}>{label}</p>
+        <p style={{ fontSize: '2.5rem', fontWeight: 900, color: colorVarMap[color as StatCardColor], margin: 0, textShadow: `0 0 20px rgba(${color === 'indigo' ? '99, 102, 241' : color === 'rose' ? '244, 63, 94' : '16, 185, 129'}, 0.2)` }}>{value}</p>
     </div>
 );

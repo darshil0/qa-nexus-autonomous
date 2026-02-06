@@ -138,36 +138,86 @@ const App: React.FC = () => {
   ], [state.validatedSpecs, state.testCases]);
 
   return (
-    <div className="flex h-screen bg-slate-50 text-slate-900">
-      <aside className="w-64 bg-white border-r flex flex-col shadow-sm">
-        <div className="p-6 border-b flex items-center gap-3">
-          <BrainCircuit className="w-8 h-8 text-indigo-600" />
-          <h1 className="font-bold text-lg leading-tight">QA Nexus</h1>
+    <div className="app-container">
+      <aside className="sidebar">
+        <div style={{ paddingBottom: '2rem', borderBottom: '1px solid var(--glass-border)', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <BrainCircuit className="pulse-primary" style={{ color: 'var(--primary)', width: '40px', height: '40px' }} />
+          <div>
+            <h1 className="brand-text" style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(to right, #6366f1, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>QA NEXUS</h1>
+            <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.1em' }}>AUTONOMOUS V2.3</p>
+          </div>
         </div>
-        <nav className="flex-1 p-4 space-y-1">
-          <NavBtn icon={<LayoutDashboard size={18} />} label="Overview" active={activeTab === 'orchestrator'} onClick={() => setActiveTab('orchestrator')} />
-          <NavBtn icon={<ClipboardCheck size={18} />} label="Specs" active={activeTab === 'agent1'} onClick={() => setActiveTab('agent1')} disabled={!state.validatedSpecs.length} />
-          <NavBtn icon={<FileEdit size={18} />} label="Tests" active={activeTab === 'agent2'} onClick={() => setActiveTab('agent2')} disabled={!state.testCases.length} />
-          <NavBtn icon={<PlayCircle size={18} />} label="Results" active={activeTab === 'agent3'} onClick={() => setActiveTab('agent3')} disabled={!state.results.length} />
-          <NavBtn icon={<BarChart3 size={18} />} label="Reports" active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} disabled={!state.results.length} />
+
+        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <NavBtn
+            icon={<LayoutDashboard size={20} />}
+            label="Orchestrator"
+            active={activeTab === 'orchestrator'}
+            onClick={() => setActiveTab('orchestrator')}
+          />
+          <NavBtn
+            icon={<ClipboardCheck size={20} />}
+            label="Requirements"
+            active={activeTab === 'agent1'}
+            disabled={!state.validatedSpecs.length}
+            onClick={() => setActiveTab('agent1')}
+          />
+          <NavBtn
+            icon={<FileEdit size={20} />}
+            label="Test Designer"
+            active={activeTab === 'agent2'}
+            disabled={!state.testCases.length}
+            onClick={() => setActiveTab('agent2')}
+          />
+          <NavBtn
+            icon={<PlayCircle size={20} />}
+            label="Execution"
+            active={activeTab === 'agent3'}
+            disabled={!state.results.length}
+            onClick={() => setActiveTab('agent3')}
+          />
+          <NavBtn
+            icon={<BarChart3 size={20} />}
+            label="Analytics"
+            active={activeTab === 'reports'}
+            disabled={!state.results.length}
+            onClick={() => setActiveTab('reports')}
+          />
         </nav>
-        <div className="p-4 border-t space-y-2">
-          <button onClick={() => setState({ ...state, status: WorkflowStatus.IDLE, rawRequirements: '', validatedSpecs: [], testCases: [], results: [] })} className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors">
-            <RefreshCw size={14} /> Reset System
+
+        <div style={{ paddingTop: '1.5rem', borderTop: '1px solid var(--glass-border)' }}>
+          <button
+            onClick={() => setState({ ...state, status: WorkflowStatus.IDLE, rawRequirements: '', validatedSpecs: [], testCases: [], results: [] })}
+            className="btn-secondary"
+            style={{ width: '100%', fontSize: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+          >
+            <RefreshCw size={14} /> Clear Session
           </button>
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 bg-white border-b px-8 flex items-center justify-between">
-          <h2 className="font-bold text-slate-700">{activeTab.toUpperCase()}</h2>
-          <div className="flex items-center gap-3">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 py-1 bg-slate-50 rounded-full border">Status: {state.status}</div>
-            {state.error && <div title={state.error} className="text-xs text-rose-600 font-bold">⚠️ {state.error}</div>}
+      <main className="main-content">
+        <header className="header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>WORKSPACE</span>
+            <div style={{ width: '1px', height: '16px', background: 'var(--glass-border)' }}></div>
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>{activeTab.toUpperCase()}</h2>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <div className="badge" style={{ background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)', border: '1px solid rgba(99, 102, 241, 0.2)', fontSize: '0.65rem' }}>
+              STATUS: {state.status}
+            </div>
+            {state.error && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent)', fontSize: '0.875rem', fontWeight: 600 }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }}></div>
+                {state.error}
+              </div>
+            )}
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8 scroll-smooth">
+        <div className="animate-fade-in" style={{ flex: 1, overflowY: 'auto', padding: '2rem' }}>
           {activeTab === 'orchestrator' && (
             <OrchestratorTab
               jiraIssueInput={jiraIssueInput}

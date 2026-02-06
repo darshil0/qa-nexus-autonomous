@@ -16,54 +16,71 @@ export const Agent2Tab: React.FC<Agent2TabProps> = ({
     navigateToSpec
 }) => {
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {highlightedReqId && (
-                <div className="flex items-center justify-between bg-indigo-600 text-white p-4 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-2">
-                    <span className="text-sm font-bold flex items-center gap-2">
-                        <Workflow size={16} /> Viewing scenarios for: {highlightedReqId}
-                    </span>
-                    <button onClick={() => setHighlightedReqId(null)} aria-label="Clear filter">
+                <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyItems: 'space-between', background: 'var(--primary)', color: 'white', padding: '1rem 1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-glow)' }}>
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <Workflow size={18} />
+                        <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>SCENARIOS FILTERED BY: {highlightedReqId}</span>
+                    </div>
+                    <button onClick={() => setHighlightedReqId(null)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', cursor: 'pointer', padding: '0.25rem', borderRadius: '50%', display: 'flex' }}>
                         <X size={16} />
                     </button>
                 </div>
             )}
+
             {filteredTestCases.map(tc => (
-                <div
-                    key={tc.id}
-                    id={`tc-card-${tc.id}`}
-                    className="bg-white rounded-2xl border shadow-sm overflow-hidden"
-                >
-                    <div className="px-6 py-4 bg-slate-50 border-b flex justify-between items-center">
-                        <h4 className="font-bold text-slate-700">
-                            {tc.id} - {tc.category}
-                        </h4>
-                        <div className="flex gap-2">
+                <div key={tc.id} id={`tc-card-${tc.id}`} className="card animate-fade-in" style={{ padding: 0, overflow: 'hidden' }}>
+                    <div style={{ padding: '1.25rem 1.5rem', background: 'rgba(255, 255, 255, 0.05)', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--primary)', background: 'rgba(99, 102, 241, 0.1)', padding: '0.25rem 0.5rem', borderRadius: '0.25rem' }}>{tc.category.toUpperCase()}</span>
+                            <h4 style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1rem' }}>{tc.id}</h4>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
                             {tc.linkedRequirementIds.map(rid => (
                                 <button
                                     key={rid}
                                     onClick={() => navigateToSpec(rid)}
-                                    className={`text-[10px] font-bold px-2 py-1 rounded border transition-all ${rid === highlightedReqId
-                                            ? 'bg-indigo-600 text-white border-indigo-700 shadow-md scale-105'
-                                            : 'bg-white text-slate-400 hover:text-indigo-600'
-                                        }`}
-                                    aria-label={`Go to requirement ${rid}`}
+                                    className="badge"
+                                    style={{
+                                        cursor: 'pointer',
+                                        background: rid === highlightedReqId ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                                        color: rid === highlightedReqId ? 'white' : 'var(--text-muted)',
+                                        border: '1px solid var(--glass-border)'
+                                    }}
                                 >
                                     {rid}
                                 </button>
                             ))}
                         </div>
                     </div>
-                    <div className="p-6 space-y-4">
-                        <div className="text-xs text-slate-500 italic">Pre: {tc.preconditions}</div>
-                        <div className="space-y-2">
+
+                    <div style={{ padding: '1.5rem' }}>
+                        {tc.preconditions && (
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(0,0,0,0.2)', padding: '0.75rem 1rem', borderRadius: '0.75rem', marginBottom: '1.5rem', borderLeft: '3px solid var(--primary)' }}>
+                                <span style={{ fontWeight: 800, color: 'var(--text-secondary)', marginRight: '0.5rem' }}>PRECONDITIONS:</span>
+                                {tc.preconditions}
+                            </div>
+                        )}
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
                             {tc.steps.map((s, i) => (
-                                <div key={i} className="text-sm flex gap-3">
-                                    <span className="text-slate-300 font-bold">{i + 1}.</span> {s}
+                                <div key={i} style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                    <span style={{ color: 'var(--primary)', fontWeight: 800, minWidth: '1.5rem' }}>{String(i + 1).padStart(2, '0')}</span>
+                                    <p style={{ margin: 0 }}>{s}</p>
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-4 p-4 bg-slate-900 text-indigo-400 rounded-xl text-sm font-bold flex items-center gap-2">
-                            <ArrowRight size={14} /> {tc.expectedOutcomes}
+
+                        <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(168, 85, 247, 0.05)', border: '1px solid rgba(168, 85, 247, 0.2)', borderRadius: '1rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                            <div style={{ padding: '0.4rem', borderRadius: '0.5rem', background: 'var(--accent)', color: 'white' }}>
+                                <ArrowRight size={14} />
+                            </div>
+                            <div>
+                                <h5 style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Expected Outcome</h5>
+                                <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600, margin: 0 }}>{tc.expectedOutcomes}</p>
+                            </div>
                         </div>
                     </div>
                 </div>

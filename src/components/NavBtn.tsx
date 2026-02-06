@@ -12,8 +12,12 @@ export const NavBtn: React.FC<NavBtnProps> = ({ icon, label, active = false, onC
     <button
         onClick={onClick}
         disabled={disabled}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${active ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'} ${disabled ? 'opacity-25' : ''}`}
+        className={`nav-item ${active ? 'active' : ''}`}
+        style={{ width: '100%', border: 'none', background: 'none', cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.3 : 1 }}
     >
-        {icon} {label}
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {icon}
+            <span style={{ fontWeight: 600 }}>{label}</span>
+        </span>
     </button>
 );

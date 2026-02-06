@@ -20,74 +20,90 @@ export const Agent1Tab: React.FC<Agent1TabProps> = ({
     const resMap = new Map<string, string>(results.map(r => [r.testCaseId, r.status]));
 
     return (
-        <div className="max-w-4xl mx-auto space-y-4">
+        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {validatedSpecs.map(spec => {
                 const associatedTests = testCasesByReq[spec.requirementId] || [];
+                const isHighlighted = spec.requirementId === highlightedReqId;
 
                 return (
                     <div
                         key={spec.requirementId}
                         id={`spec-${spec.requirementId}`}
-                        className={`bg-white p-6 rounded-2xl border transition-all ${spec.requirementId === highlightedReqId
-                                ? 'border-indigo-500 ring-4 ring-indigo-50 shadow-lg'
-                                : 'border-slate-200 shadow-sm'
-                            }`}
+                        className="card animate-fade-in"
+                        style={{
+                            border: isHighlighted ? '2px solid var(--primary)' : '1px solid var(--glass-border)',
+                            boxShadow: isHighlighted ? 'var(--shadow-glow)' : 'var(--shadow-sm)',
+                            transform: isHighlighted ? 'scale(1.01)' : 'none',
+                        }}
                     >
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="flex items-start gap-4">
-                                <div>
-                                    <span className="text-[10px] font-bold bg-indigo-50 text-indigo-600 px-2 py-1 rounded-md uppercase tracking-wider">
-                                        {spec.requirementId}
-                                    </span>
-                                    <h4 className="text-lg font-bold mt-2">{spec.title}</h4>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <div style={{
+                                    padding: '0.4rem 0.8rem',
+                                    borderRadius: '0.5rem',
+                                    background: 'rgba(99, 102, 241, 0.1)',
+                                    color: 'var(--primary)',
+                                    fontSize: '0.7rem',
+                                    fontWeight: 800,
+                                    letterSpacing: '0.05em'
+                                }}>
+                                    {spec.requirementId}
                                 </div>
+                                <h4 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-primary)' }}>{spec.title}</h4>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                 {associatedTests.length > 0 && (
-                                    <div className="flex gap-1 mt-2.5">
+                                    <div style={{ display: 'flex', gap: '4px' }}>
                                         {associatedTests.map(tc => {
                                             const status = resMap.get(tc.id) || 'NOT_RUN';
-                                            const colorClass =
-                                                status === 'PASS'
-                                                    ? 'text-emerald-500'
-                                                    : status === 'FAIL'
-                                                        ? 'text-rose-500'
-                                                        : 'text-slate-200';
+                                            const color = status === 'PASS' ? 'var(--success)' : status === 'FAIL' ? 'var(--accent)' : 'rgba(255,255,255,0.1)';
                                             return (
-                                                <span key={tc.id} title={`${tc.id}: ${status}`} className="inline-flex">
-                                                    <Circle size={10} fill="currentColor" className={colorClass} />
-                                                </span>
+                                                <div key={tc.id} title={`${tc.id}: ${status}`} style={{ width: '8px', height: '8px', borderRadius: '50%', background: color }}></div>
                                             );
                                         })}
                                     </div>
                                 )}
+                                <button
+                                    onClick={() => navigateToTests(spec.requirementId)}
+                                    className="btn-secondary"
+                                    style={{ padding: '0.5rem', borderRadius: '0.5rem' }}
+                                    title="Trace to Tests"
+                                >
+                                    <MapIcon size={16} />
+                                </button>
                             </div>
-                            <button
-                                onClick={() => navigateToTests(spec.requirementId)}
-                                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                aria-label={`View tests for ${spec.requirementId}`}
-                            >
-                                <MapIcon size={18} />
-                            </button>
                         </div>
-                        <p className="text-sm text-slate-500 mb-4">{spec.description}</p>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                <h5 className="text-[10px] font-bold text-slate-400 uppercase mb-2">
+
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.6' }}>{spec.description}</p>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div style={{ padding: '1rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '1rem', border: '1px solid var(--glass-border)' }}>
+                                <h5 style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
                                     Acceptance Criteria
                                 </h5>
-                                <ul className="text-xs space-y-1 list-disc list-inside">
+                                <ul style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', paddingLeft: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                     {spec.acceptanceCriteria.map((ac, i) => (
                                         <li key={i}>{ac}</li>
                                     ))}
                                 </ul>
                             </div>
-                            {spec.ambiguities.length > 0 && (
-                                <div className="p-4 bg-rose-50 rounded-xl border border-rose-100">
-                                    <h5 className="text-[10px] font-bold text-rose-400 uppercase mb-2"> Ambiguities </h5>
-                                    <ul className="text-xs space-y-1 list-inside text-rose-700">
+
+                            {spec.ambiguities.length > 0 ? (
+                                <div style={{ padding: '1rem', background: 'rgba(244, 63, 94, 0.05)', borderRadius: '1rem', border: '1px solid rgba(244, 63, 94, 0.2)' }}>
+                                    <h5 style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
+                                        Detected Ambiguities
+                                    </h5>
+                                    <ul style={{ fontSize: '0.8rem', color: 'var(--accent)', paddingLeft: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', opacity: 0.9 }}>
                                         {spec.ambiguities.map((am, i) => (
-                                            <li key={i}>• {am}</li>
+                                            <li key={i}>{am}</li>
                                         ))}
                                     </ul>
+                                </div>
+                            ) : (
+                                <div style={{ padding: '1rem', background: 'rgba(16, 185, 129, 0.05)', borderRadius: '1rem', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
+                                    <div style={{ color: 'var(--success)', fontSize: '0.7rem', fontWeight: 800 }}>✓ SPECIFICATION VERIFIED</div>
+                                    <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textAlign: 'center' }}>No ambiguities detected by Agent 1.</p>
                                 </div>
                             )}
                         </div>

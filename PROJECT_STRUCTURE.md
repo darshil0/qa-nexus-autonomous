@@ -1,6 +1,6 @@
 # QA Nexus Project Structure
 
-**Version**: 2.3.1
+**Version**: 2.4.0
 **Last Updated**: February 6, 2026
 
 ## Project Organization
@@ -48,7 +48,7 @@ qa-nexus-autonomous/
 ├── index.html                    # HTML entry point
 ├── package.json                  # Project dependencies and scripts
 ├── tsconfig.json                 # TypeScript configuration
-├── vite.config.ts                # Vite 7 / Tailwind 4 configuration
+├── vite.config.ts                # Vite 7 configuration
 ├── AGENT.md                      # AI Agent identity and guidelines
 └── README.md                     # Project overview
 ```
@@ -135,7 +135,7 @@ All files are properly organized and tracked by Git:
 - **Tree-shaking**: Unused code is eliminated during build
 - **Code splitting**: Vite automatically splits large modules
 - **HMR**: Hot Module Replacement enabled for fast development
-- **CSS**: Tailwind CSS compiled at build time
+- **CSS**: Custom Vanilla CSS Design System
 
 ---
 

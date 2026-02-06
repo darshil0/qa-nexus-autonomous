@@ -5,6 +5,28 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-02-06
+
+### Added
+- **Premium UI Revamp**: Replaced Tailwind CSS with a custom-built Vanilla CSS design system.
+  - Implemented **Glassmorphism** aesthetics with translucent surfaces and backdrop blurs.
+  - Introduced a unified color palette using CSS Custom Properties (Variables).
+  - Added rich micro-animations and hover effects across all interactive elements.
+- **Neural Engine Trace**: Refactored the agent thinking log into a "Neural Engine Trace" with a dark terminal aesthetic and pulse animations.
+- **Enhanced StatCards**: Revamped metric displays with glowing text shadows and status-specific accent colors.
+- **Analytics Visualization**: Updated Recharts integration to align with the new dark-themed glass design.
+
+### Changed
+- **Tech Stack Simplification**: Removed Tailwind CSS, PostCSS, and related plugins from the build pipeline.
+- **Component Refactoring**: Migrated all tab components to the new design system:
+  - `OrchestratorTab`, `Agent1Tab`, `Agent2Tab`, `Agent3Tab`, `ReportsTab`.
+- **Navigation Overhaul**: Implemented a reusable `NavBtn` component for consistent sidebar interactions.
+- **Type Safety Improvements**: Resolved multiple "implicitly any" TypeScript errors across core components.
+
+### Removed
+- `tailwindcss` and `@tailwindcss/vite` devDependencies.
+- Legacy Tailwind utility classes from JSX files.
+
 ## [2.3.1] - 2026-02-06
 
 ### Added
@@ -323,7 +345,7 @@ These fixes ensure:
 
 ## Version Information
 
-**Current Version**: 2.3.1  
+**Current Version**: 2.4.0  
 **Release Date**: February 6, 2026  
 **Status**: Production Ready  
 **License**: MIT
@@ -336,15 +358,15 @@ These fixes ensure:
 ### Tech Stack
 
 - **Frontend**: React 19.2.4
-- **Framework**: Vite 6.2.0 (HMR on port 3000)
-- **Language**: TypeScript 5.8.2 (strict mode)
-- **Styling**: Tailwind CSS 3.4.0
+- **Framework**: Vite 7.3.1 (Unified Config)
+- **Language**: TypeScript 5.9.3 (strict mode)
+- **Styling**: Vanilla CSS (Custom Design System)
 - **Icons**: Lucide React 0.563.0
 - **Charts**: Recharts 3.7.0
-- **AI**: Google Gemini API (@google/genai ^1.39.0)
-- **Testing**: Vitest 1.3.0 with Testing Library
-- **Linting**: ESLint 8.50.0
-- **Build Tool**: Rollup (via Vite)
+- **AI**: Google Gemini API (@google/genai ^1.40.0)
+- **Testing**: Vitest 4.0.18
+- **Linting**: ESLint 9.39.2
+- **Build Tool**: Vite 7
 
 ### Breaking Changes
 
@@ -487,4 +509,4 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 ---
 
 **Last Updated**: February 6, 2026  
-**Version**: 2.3.1
+**Version**: 2.4.0

@@ -14,51 +14,89 @@ export const Agent3Tab: React.FC<Agent3TabProps> = ({
     githubCreatingId
 }) => {
     return (
-        <div className="max-w-4xl mx-auto space-y-4">
-            {results.map(res => (
-                <div
-                    key={res.testCaseId}
-                    className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex"
-                >
+        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {results.map(res => {
+                const isPass = res.status === 'PASS';
+                const accentColor = isPass ? 'var(--success)' : 'var(--accent)';
+
+                return (
                     <div
-                        className={`w-32 flex flex-col items-center justify-center ${res.status === 'PASS' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
-                            }`}
+                        key={res.testCaseId}
+                        className="card animate-fade-in"
+                        style={{ padding: 0, overflow: 'hidden', display: 'flex', borderLeft: `4px solid ${accentColor}` }}
                     >
-                        {res.status === 'PASS' ? <CheckCircle2 size={32} /> : <AlertCircle size={32} />}
-                        <span className="text-[10px] font-black uppercase tracking-widest mt-2">
-                            {res.status}
-                        </span>
-                    </div>
-                    <div className="flex-1 p-6 space-y-4">
-                        <div className="flex justify-between items-start">
-                            <h4 className="font-bold">{res.testCaseId}</h4>
-                            {res.status === 'FAIL' && !res.githubIssueUrl && (
-                                <button
-                                    onClick={() => handleGithubIssue(res)}
-                                    disabled={githubCreatingId === res.testCaseId}
-                                    className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50"
-                                    aria-label={`Report failure for ${res.testCaseId}`}
-                                >
-                                    {githubCreatingId === res.testCaseId ? '...' : 'Report'}
-                                </button>
-                            )}
-                            {res.githubIssueUrl && (
-                                <a
-                                    href={res.githubIssueUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-emerald-600 text-xs font-bold underline hover:text-emerald-700"
-                                >
-                                    Linked Issue
-                                </a>
-                            )}
+                        <div
+                            style={{
+                                width: '120px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                itemsCenter: 'center',
+                                justifyContent: 'center',
+                                background: `rgba(${isPass ? '16, 185, 129' : '244, 63, 94'}, 0.05)`,
+                                gap: '0.75rem',
+                                borderRight: '1px solid var(--glass-border)',
+                                textAlign: 'center'
+                            }}
+                        >
+                            <div style={{ color: accentColor }}>
+                                {isPass ? <CheckCircle2 size={32} /> : <AlertCircle size={32} />}
+                            </div>
+                            <span style={{ fontSize: '0.7rem', fontWeight: 900, color: accentColor, letterSpacing: '0.1em' }}>
+                                {res.status}
+                            </span>
                         </div>
-                        <pre className="bg-slate-950 text-emerald-400 p-4 rounded-xl text-xs mono max-h-32 overflow-y-auto whitespace-pre-wrap">
-                            {res.logs}
-                        </pre>
+
+                        <div style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <h4 style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '1rem' }}>{res.testCaseId}</h4>
+
+                                {res.status === 'FAIL' && !res.githubIssueUrl && (
+                                    <button
+                                        onClick={() => handleGithubIssue(res)}
+                                        disabled={githubCreatingId === res.testCaseId}
+                                        className="btn-secondary"
+                                        style={{ fontSize: '0.75rem', padding: '0.4rem 1rem' }}
+                                    >
+                                        {githubCreatingId === res.testCaseId ? 'CREATING...' : 'REPORT ISSUE'}
+                                    </button>
+                                )}
+
+                                {res.githubIssueUrl && (
+                                    <a
+                                        href={res.githubIssueUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="badge"
+                                        style={{ background: 'var(--success)', color: 'white', border: 'none' }}
+                                    >
+                                        LINKED ISSUE
+                                    </a>
+                                )}
+                            </div>
+
+                            <div style={{ position: 'relative' }}>
+                                <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.6rem', color: 'rgba(255,255,255,0.2)', fontWeight: 800 }}>VIRTUAL_MACHINE_LOGS</div>
+                                <pre style={{
+                                    background: 'rgba(0, 0, 0, 0.3)',
+                                    color: isPass ? '#bbf7d0' : '#fecdd3',
+                                    padding: '1.25rem',
+                                    borderRadius: '0.75rem',
+                                    fontSize: '0.8rem',
+                                    margin: 0,
+                                    maxHeight: '160px',
+                                    overflowY: 'auto',
+                                    whiteSpace: 'pre-wrap',
+                                    border: '1px solid var(--glass-border)',
+                                    fontFamily: 'monospace',
+                                    lineHeight: '1.5'
+                                }}>
+                                    {res.logs}
+                                </pre>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 };

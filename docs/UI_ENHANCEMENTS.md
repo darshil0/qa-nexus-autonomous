@@ -1,13 +1,15 @@
 # 🎨 UI/UX Enhancements & Accessibility
 
-**Version**: 2.3.1  
+**Version**: 2.4.0  
 **Last Updated**: February 6, 2026
 
 ## ✨ Design Philosophy
 QA Nexus Autonomous prioritizes a **"Premium Dashboard"** aesthetic: clean, vibrant, and highly interactive.
 
 ### Key Visual Elements
-- **Color Palette**: Slate & Indigo base with vibrant semantic colors (Emerald for Pass, Rose for Fail).
+- **Vanilla CSS Design System**: Bespoke styling without utility class bloat.
+- **Glassmorphism**: Translucent cards with backdrop-blur for a modern, multi-layered feel.
+- **Neural Trace Terminal**: Premium dark terminal aesthetic for agent logs.
 - **Glassmorphism**: Subtle use of backdrop blurs and borders to create depth.
 - **Micro-Animations**: Smooth transitions when switching tabs and real-time status updates.
 
