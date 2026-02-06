@@ -1,6 +1,6 @@
 # ⚡ QA Nexus Quick Reference
 
-**Version**: 2.3.1  
+**Version**: 2.4.0  
 **Last Updated**: February 6, 2026
 
 ## 🚀 Common Commands

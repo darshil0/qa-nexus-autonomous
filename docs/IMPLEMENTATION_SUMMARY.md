@@ -1,6 +1,6 @@
 # ⚙️ Implementation Summary
 
-**Version**: 2.3.1  
+**Version**: 2.4.0  
 **Last Updated**: February 6, 2026
 
 ## 🏗️ Technical Architecture
@@ -16,7 +16,7 @@
 
 ### 3. Component Architecture (`src/components/`)
 - **Modular Tabs**: The UI is split into domain-specific tabs (`Orchestrator`, `Agent1`, `Agent2`, `Agent3`, `Reports`) to keep the codebase maintainable.
-- **Functional Components**: Lightweight components using Tailwind 4 utility classes for high-performance styling.
+- **Functional Components**: Lightweight components using a custom Vanilla CSS Design System for high-performance, premium styling.
 
 ### 4. Data Persistence & State
 - **Unified State Machine**: Controlled via `App.tsx`, providing a single source of truth for the entire workflow.

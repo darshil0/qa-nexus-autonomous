@@ -1,6 +1,6 @@
 # 📖 QA Nexus Documentation Index
 
-**Version**: 2.3.1  
+**Version**: 2.4.0  
 **Last Updated**: February 6, 2026
 
 Welcome to the comprehensive documentation suite for **QA Nexus Autonomous**. This directory contains detailed guides covering every aspect of the project, from high-level architecture to specific UI enhancements.
