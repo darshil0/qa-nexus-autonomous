@@ -1,6 +1,6 @@
 # QA Nexus Autonomous
 
-A sophisticated multi-agent QA automation system powered by Google Gemini AI. QA Nexus Autonomous orchestrates three specialized AI agents to streamline the entire quality assurance workflow: from requirements analysis through test case generation to execution simulation.
+A high-fidelity, multi-agent AI orchestrator powered by Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
 ## Overview
 
