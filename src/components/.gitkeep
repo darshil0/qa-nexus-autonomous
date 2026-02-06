@@ -1,0 +1,4 @@
+# This directory contains React components
+
+Components in this project can be organized here for better structure.
+Currently components are inlined in App.tsx but can be extracted to this directory.
