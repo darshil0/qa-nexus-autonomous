@@ -46,164 +46,142 @@ export const createGithubIssue = async (_testCaseId: string, _logs: string): Pro
 };
 
 /**
+ * Helper to safely extract and parse JSON from Gemini's response.
+ */
+async function parseAiResponse<T>(responsePromise: Promise<any>, field: string): Promise<{ data: T | null; thinking: string }> {
+  try {
+    const response = await responsePromise;
+    const text = response?.text || '';
+    if (!text) return { data: null, thinking: 'No response from AI' };
+
+    const parsed = JSON.parse(text);
+    return { data: parsed[field] || null, thinking: "Analysis complete." };
+  } catch (err) {
+    console.error(`AI ${field} parsing error:`, err);
+    return { data: null, thinking: 'Could not parse AI response: ' + (err instanceof Error ? err.message : String(err)) };
+  }
+}
+
+/**
  * Agent 1: Requirements Reviewer
- * Normalizes and validates requirements for clarity and completeness.
  */
 export const reviewRequirements = async (rawInput: string): Promise<{ specs: ValidatedSpec[], thinking: string }> => {
-  if (!ai) throw new Error('GenAI client not initialized. Set GENAI_API_KEY environment variable.');
-  let response: any;
-  try {
-    response = await ai.models.generateContent({
-      model: AGENT_MODELS.AGENT1,
-      contents: `Analyze the following product requirements and output a list of Validated Requirements Specifications. If the input starts with [JIRA SOURCE], preserve that context in the external metadata fields. Input: ${rawInput}`,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\nYou are Agent 1 (Requirements Reviewer). Your role is to normalize and validate requirements. Always detect if the source is Jira and populate externalSource/externalKey accordingly.",
-        thinkingConfig: { thinkingBudget: 4000 },
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            specs: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  requirementId: { type: Type.STRING },
-                  title: { type: Type.STRING },
-                  description: { type: Type.STRING },
-                  acceptanceCriteria: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  riskClassification: { type: Type.STRING },
-                  priority: { type: Type.STRING },
-                  ambiguities: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  externalSource: { type: Type.STRING },
-                  externalKey: { type: Type.STRING },
-                },
-                required: ["requirementId", "title", "description", "acceptanceCriteria", "riskClassification", "priority", "ambiguities"]
-              }
+  if (!ai) throw new Error('GenAI client not initialized. Set VITE_GEMINI_API_KEY environment variable.');
+
+  const responsePromise = ai.models.generateContent({
+    model: AGENT_MODELS.AGENT1,
+    contents: `Analyze requirements: ${rawInput}`,
+    config: {
+      systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\nYou are Agent 1 (Requirements Reviewer). Normalize and validate requirements. Detect Jira sources.",
+      thinkingConfig: { thinkingBudget: 4000 },
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          specs: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                requirementId: { type: Type.STRING },
+                title: { type: Type.STRING },
+                description: { type: Type.STRING },
+                acceptanceCriteria: { type: Type.ARRAY, items: { type: Type.STRING } },
+                riskClassification: { type: Type.STRING },
+                priority: { type: Type.STRING },
+                ambiguities: { type: Type.ARRAY, items: { type: Type.STRING } },
+                externalSource: { type: Type.STRING },
+                externalKey: { type: Type.STRING },
+              },
+              required: ["requirementId", "title", "description", "acceptanceCriteria", "riskClassification", "priority", "ambiguities"]
             }
-          },
-          required: ["specs"]
-        }
+          }
+        },
+        required: ["specs"]
       }
-    });
-  } catch (err) {
-    return { specs: [], thinking: 'AI request failed: ' + (err instanceof Error ? err.message : String(err)) };
-  }
+    }
+  });
 
-  const text = response?.text || '';
-  if (!text) return { specs: [], thinking: 'No response from AI' };
-  let data: { specs?: ValidatedSpec[] };
-  try {
-    data = JSON.parse(text);
-  } catch (e) {
-    return { specs: [], thinking: 'Could not parse AI response' };
-  }
-
-  return { specs: data.specs || [], thinking: "Requirement Review analysis complete. Integration metadata synced." };
+  const { data, thinking } = await parseAiResponse<ValidatedSpec[]>(responsePromise, 'specs');
+  return { specs: data || [], thinking: data ? "Requirement Review analysis complete. Integration metadata synced." : thinking };
 };
 
 /**
  * Agent 2: Test Case Writer
- * Generates structured, traceable test cases from validated specifications.
  */
 export const generateTestCases = async (specs: ValidatedSpec[]): Promise<{ testCases: TestCase[], thinking: string }> => {
-  if (!ai) throw new Error('GenAI client not initialized. Set GENAI_API_KEY environment variable.');
-  let response: any;
-  try {
-    response = await ai.models.generateContent({
-      model: AGENT_MODELS.AGENT2,
-      contents: `Convert these validated specifications into structured test cases: ${JSON.stringify(specs)}`,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\nYou are Agent 2 (Test Case Writer). Your role is to generate structured, traceable test cases.",
-        thinkingConfig: { thinkingBudget: 4000 },
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            testCases: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  id: { type: Type.STRING },
-                  linkedRequirementIds: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  category: { type: Type.STRING },
-                  preconditions: { type: Type.STRING },
-                  steps: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  expectedOutcomes: { type: Type.STRING },
-                  isAutomationCandidate: { type: Type.BOOLEAN },
-                },
-                required: ["id", "linkedRequirementIds", "category", "preconditions", "steps", "expectedOutcomes", "isAutomationCandidate"]
-              }
+  if (!ai) throw new Error('GenAI client not initialized.');
+
+  const responsePromise = ai.models.generateContent({
+    model: AGENT_MODELS.AGENT2,
+    contents: `Convert specs to test cases: ${JSON.stringify(specs)}`,
+    config: {
+      systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\nYou are Agent 2 (Test Case Writer). Generate structured test cases.",
+      thinkingConfig: { thinkingBudget: 4000 },
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          testCases: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                id: { type: Type.STRING },
+                linkedRequirementIds: { type: Type.ARRAY, items: { type: Type.STRING } },
+                category: { type: Type.STRING },
+                preconditions: { type: Type.STRING },
+                steps: { type: Type.ARRAY, items: { type: Type.STRING } },
+                expectedOutcomes: { type: Type.STRING },
+                isAutomationCandidate: { type: Type.BOOLEAN },
+              },
+              required: ["id", "linkedRequirementIds", "category", "preconditions", "steps", "expectedOutcomes", "isAutomationCandidate"]
             }
-          },
-          required: ["testCases"]
-        }
+          }
+        },
+        required: ["testCases"]
       }
-    });
-  } catch (err) {
-    return { testCases: [], thinking: 'AI request failed: ' + (err instanceof Error ? err.message : String(err)) };
-  }
+    }
+  });
 
-  const text = response?.text || '';
-  if (!text) return { testCases: [], thinking: 'No response from AI' };
-  let data: { testCases?: TestCase[] };
-  try {
-    data = JSON.parse(text);
-  } catch (e) {
-    return { testCases: [], thinking: 'Could not parse AI response' };
-  }
-
-  return { testCases: data.testCases || [], thinking: "Test cases generated with full traceability to requirements." };
+  const { data, thinking } = await parseAiResponse<TestCase[]>(responsePromise, 'testCases');
+  return { testCases: data || [], thinking: data ? "Test cases generated with full traceability." : thinking };
 };
 
 /**
  * Agent 3: Test Executor
- * Simulates execution of test cases and generates summary results.
  */
 export const executeTests = async (testCases: TestCase[]): Promise<{ results: ExecutionResult[], thinking: string }> => {
-  if (!ai) throw new Error('GenAI client not initialized. Set GENAI_API_KEY environment variable.');
-  let response: any;
-  try {
-    response = await ai.models.generateContent({
-      model: AGENT_MODELS.AGENT3,
-      contents: `Simulate the execution of these test cases and provide detailed results: ${JSON.stringify(testCases)}`,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\nYou are Agent 3 (Test Executor). Your role is to simulate execution and provide structured logs.",
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            results: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  testCaseId: { type: Type.STRING },
-                  status: { type: Type.STRING }, // "PASS" or "FAIL"
-                  logs: { type: Type.STRING },
-                  timestamp: { type: Type.STRING },
-                },
-                required: ["testCaseId", "status", "logs", "timestamp"]
-              }
+  if (!ai) throw new Error('GenAI client not initialized.');
+
+  const responsePromise = ai.models.generateContent({
+    model: AGENT_MODELS.AGENT3,
+    contents: `Execute test cases: ${JSON.stringify(testCases)}`,
+    config: {
+      systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\nYou are Agent 3 (Test Executor). Simulate execution and provide logs.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          results: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                testCaseId: { type: Type.STRING },
+                status: { type: Type.STRING },
+                logs: { type: Type.STRING },
+                timestamp: { type: Type.STRING },
+              },
+              required: ["testCaseId", "status", "logs", "timestamp"]
             }
-          },
-          required: ["results"]
-        }
+          }
+        },
+        required: ["results"]
       }
-    });
-  } catch (err) {
-    return { results: [], thinking: 'AI request failed: ' + (err instanceof Error ? err.message : String(err)) };
-  }
+    }
+  });
 
-  const text = response?.text || '';
-  if (!text) return { results: [], thinking: 'No response from AI' };
-  let data: { results?: ExecutionResult[] };
-  try {
-    data = JSON.parse(text);
-  } catch (e) {
-    return { results: [], thinking: 'Could not parse AI response' };
-  }
-
-  return { results: data.results || [], thinking: "Execution summary compiled. Readiness for GitHub issue creation identified." };
+  const { data, thinking } = await parseAiResponse<ExecutionResult[]>(responsePromise, 'results');
+  return { results: data || [], thinking: data ? "Execution summary compiled and results verified." : thinking };
 };
