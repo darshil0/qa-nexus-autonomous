@@ -96,6 +96,12 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Responsive Design**: Works seamlessly across all devices
 - **Dark Theme**: Easy on the eyes for long work sessions
 
+### ♿ Accessibility (WCAG 2.1 AA)
+- **Focus Management**: Clear visual focus rings for all interactive elements
+- **Keyboard Navigation**: Full support for tab-based navigation
+- **Screen Reader Friendly**: Proper ARIA labels and semantic HTML structure
+- **High Contrast**: Excellent contrast ratios for all text content
+
 ---
 
 ## 🚀 Quick Start
@@ -444,9 +450,8 @@ qa-nexus-autonomous/
 │       └── geminiService.spec.ts
 │
 ├── docs/                          # Documentation
-│   ├── ARCHITECTURE.md
-│   ├── QUICK_REFERENCE.md
-│   └── ...
+│   ├── ARCHITECTURE.md            # Technical deep-dive
+│   └── Walkthrough.md             # User guide
 │
 ├── .env                           # Environment config (create this)
 ├── .env.example                   # Environment template
@@ -958,9 +963,8 @@ test(workflow): add integration test
 ### Quick Links
 
 - [Architecture Guide](docs/ARCHITECTURE.md)
+- [User Walkthrough](docs/Walkthrough.md)
 - [Agent Implementation](AGENT.md)
-- [Project Structure](PROJECT_STRUCTURE.md)
-- [Quick Reference](docs/QUICK_REFERENCE.md)
 - [Changelog](CHANGELOG.md)
 
 ---

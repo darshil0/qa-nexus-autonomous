@@ -484,23 +484,17 @@ Built with cutting-edge technologies:
 ## Documentation
 
 All documentation is comprehensive and up-to-date:
-- `README.md` - Main entry point (updated for v2.1.0)
-- `AGENT.md` - Developer reference (located at project root)
-- `docs/README_DOCUMENTATION.md` - Documentation index
-- `docs/QUICK_REFERENCE.md` - Quick overview
-- `docs/BEFORE_AFTER_COMPARISON.md` - UI improvements
-- `docs/IMPLEMENTATION_SUMMARY.md` - Technical specs
-- `docs/PROJECT_COMPLETION_REPORT.md` - Milestone report
-- `docs/UI_ENHANCEMENTS.md` - Accessibility guide
-- `docs/Walkthrough.md` - UI workflows
-- `PROJECT_STRUCTURE.md` - Directory organization
-- `CHANGELOG.md` - This file
+- `README.md` - Main entry point (comprehensive project overview)
+- `CHANGELOG.md` - Version history (this file)
+- `AGENT.md` - AI agent guidelines (located at project root)
+- `docs/ARCHITECTURE.md` - Technical deep-dive
+- `docs/Walkthrough.md` - User guide
 
 ---
 
 ## Contributing
 
-See [README.md](README.md) for contribution guidelines and [docs/AGENT.md](docs/AGENT.md) for detailed developer documentation.
+See [README.md](README.md) for contribution guidelines and [AGENT.md](AGENT.md) for detailed developer documentation.
 
 ## Roadmap
 
