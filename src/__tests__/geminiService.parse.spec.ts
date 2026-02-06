@@ -1,11 +1,18 @@
 
 import { setAiClient, reviewRequirements, generateTestCases, executeTests } from '../services/geminiService';
-import { test, expect, beforeEach } from 'vitest';
+import { test, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // Helper to create a fake client
 const makeClient = (text: string) => ({ models: { generateContent: async () => ({ text }) } });
 
-beforeEach(() => setAiClient(undefined));
+beforeEach(() => {
+  setAiClient(undefined);
+  vi.spyOn(console, 'error').mockImplementation(() => { });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 test('reviewRequirements handles empty response text', async () => {
   setAiClient(makeClient('') as any);

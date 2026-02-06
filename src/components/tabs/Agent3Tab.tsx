@@ -30,7 +30,7 @@ export const Agent3Tab: React.FC<Agent3TabProps> = ({
                                 width: '120px',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                itemsCenter: 'center',
+                                alignItems: 'center',
                                 justifyContent: 'center',
                                 background: `rgba(${isPass ? '16, 185, 129' : '244, 63, 94'}, 0.05)`,
                                 gap: '0.75rem',

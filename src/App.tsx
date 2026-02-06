@@ -49,20 +49,20 @@ const App: React.FC = () => {
   const runWorkflow = useCallback(async () => {
     if (!state.rawRequirements.trim()) return;
     try {
-      setState(p => ({ ...p, status: WorkflowStatus.AGENT1_REVIEWING, thinkingProcess: '[AGENT 1] Reviewing specs...' }));
+      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.AGENT1_REVIEWING, thinkingProcess: '[AGENT 1] Reviewing specs...' }));
       const { specs, thinking: t1 } = await reviewRequirements(state.rawRequirements);
 
-      setState(p => ({ ...p, status: WorkflowStatus.AGENT2_WRITING, validatedSpecs: specs, thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...` }));
+      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.AGENT2_WRITING, validatedSpecs: specs, thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...` }));
       const { testCases, thinking: t2 } = await generateTestCases(specs);
 
-      setState(p => ({ ...p, status: WorkflowStatus.AGENT3_EXECUTING, testCases, thinkingProcess: `[AGENT 2] ${t2}\n[AGENT 3] Running execution...` }));
+      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.AGENT3_EXECUTING, testCases, thinkingProcess: `[AGENT 2] ${t2}\n[AGENT 3] Running execution...` }));
       const { results, thinking: t3 } = await executeTests(testCases);
 
-      setState(p => ({ ...p, status: WorkflowStatus.COMPLETED, results, thinkingProcess: `Pipeline complete.\n[AGENT 3] ${t3}` }));
+      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.COMPLETED, results, thinkingProcess: `Pipeline complete.\n[AGENT 3] ${t3}` }));
       setActiveTab('reports');
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      setState(p => ({ ...p, status: WorkflowStatus.FAILED, thinkingProcess: '[ERROR] Workflow aborted.', error: message }));
+      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.FAILED, thinkingProcess: '[ERROR] Workflow aborted.', error: message }));
     }
   }, [state.rawRequirements]);
 
@@ -71,7 +71,7 @@ const App: React.FC = () => {
     setIsJiraLoading(true);
     try {
       const content = await fetchJiraRequirement(jiraIssueInput);
-      setState(p => ({ ...p, rawRequirements: (p.rawRequirements ? p.rawRequirements + '\n\n' : '') + content }));
+      setState((p: WorkflowState) => ({ ...p, rawRequirements: (p.rawRequirements ? p.rawRequirements + '\n\n' : '') + content }));
       setJiraIssueInput('');
     } finally {
       setIsJiraLoading(false);
@@ -82,7 +82,7 @@ const App: React.FC = () => {
     setGithubCreatingId(res.testCaseId);
     try {
       const url = await createGithubIssue(res.testCaseId, res.logs);
-      setState(p => ({ ...p, results: p.results.map(r => r.testCaseId === res.testCaseId ? { ...r, githubIssueUrl: url } : r) }));
+      setState((p: WorkflowState) => ({ ...p, results: p.results.map(r => r.testCaseId === res.testCaseId ? { ...r, githubIssueUrl: url } : r) }));
     } finally {
       setGithubCreatingId(null);
     }

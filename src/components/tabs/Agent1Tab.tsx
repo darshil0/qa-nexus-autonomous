@@ -1,5 +1,5 @@
 import React from 'react';
-import { Circle, Map as MapIcon } from 'lucide-react';
+import { Map as MapIcon } from 'lucide-react';
 import { ValidatedSpec, TestCase, ExecutionResult } from '@/types';
 
 interface Agent1TabProps {

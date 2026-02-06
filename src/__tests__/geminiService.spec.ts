@@ -1,6 +1,10 @@
 
-import { fetchJiraRequirement, reviewRequirements } from '../services/geminiService';
-import { test, expect } from 'vitest';
+import { fetchJiraRequirement, reviewRequirements, setAiClient } from '../services/geminiService';
+import { test, expect, beforeEach } from 'vitest';
+
+beforeEach(() => {
+  setAiClient(undefined);
+});
 
 test('fetchJiraRequirement returns formatted data', async () => {
   const res = await fetchJiraRequirement('AUTH-101');
