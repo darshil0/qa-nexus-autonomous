@@ -328,7 +328,7 @@ npm test -- --coverage
 
 ## Troubleshooting
 
-### Common Issues
+### Common Issues & Solutions:
 
 | Issue | Solution |
 |-------|----------|
@@ -391,4 +391,4 @@ See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes.
 
 ---
 
-**Built with ❤️ using React, TypeScript, and Gemini AI**
+**Built with ❤️ by Darshil using React, TypeScript, and Gemini AI**
