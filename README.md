@@ -281,10 +281,10 @@ All configuration files follow standard naming conventions:
 
 ## Browser Support
 
-- Chrome/Edge: Latest 2 versions
-- Firefox: Latest 2 versions
-- Safari: Latest 2 versions
-- Mobile browsers: All modern versions
+- **Chrome/Edge**: v144+ (Latest)
+- **Firefox**: v147+ (Latest)
+- **Safari**: v26+ (Latest)
+- **Mobile browsers**: iOS 19+, Android 16+
 
 ## Accessibility
 

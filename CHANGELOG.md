@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Agent Identity Update**: Rebranded the AI agent from "Antigravity" to "QA Nexus Autonomous Agent".
 - **AI Client API Key Fix**: Updated `geminiService.ts` to utilize `import.meta.env.VITE_GEMINI_API_KEY`, ensuring compatibility with Vite environment variables and project-standard naming.
 - **Model Name Synchronization**: Unified model references throughout the project to utilize `gemini-3-pro-preview` and `gemini-3-flash-preview` for technical precision.
+- **Browser Support Update**: Updated verified browser target versions to reflect early 2026 standards (Chrome v144+, Firefox v147+, Safari v26+).
 - **Project-Wide Synchronization**: Unified version numbers and update dates across all core documentation (`README.md`, `ARCHITECTURE.md`, `PROJECT_STRUCTURE.md`) and `package.json`.
 - **Documentation Linking**: Integrated `AGENT.md` references into the main project structure and architectural guides.
 
