@@ -1,5 +1,5 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "../constants";
 import { ValidatedSpec, TestCase, ExecutionResult } from "../types";
 
@@ -47,7 +47,7 @@ export const createGithubIssue = async (_testCaseId: string, _logs: string): Pro
 /**
  * Helper to safely extract and parse JSON from Gemini's response.
  */
-async function parseAiResponse<T>(responsePromise: Promise<any>, field: string): Promise<{ data: T | null; thinking: string }> {
+async function parseAiResponse<T>(responsePromise: Promise<GenerateContentResponse>, field: string): Promise<{ data: T | null; thinking: string }> {
   try {
     const response = await responsePromise;
     const text = response?.text || '';
