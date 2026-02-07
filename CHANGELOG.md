@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2026-02-07
+
+### Fixed
+- **Dependency Conflicts**: Resolved critical peer dependency issues between `eslint` and `eslint-plugin-react-hooks` by upgrading to version 5.x.
+- **Type Safety**:
+  - Replaced unsafe `any` types in `geminiService.ts` with proper `GenerateContentResponse` interfaces from `@google/genai`.
+  - Fixed `implicitly any` errors in test files by using correct type casting (`as unknown as GoogleGenAI`).
+- **Linting**: Achieved zero linting errors across the entire codebase.
+
 ## [2.4.0] - 2026-02-06
 
 ### Added
@@ -345,8 +354,8 @@ These fixes ensure:
 
 ## Version Information
 
-**Current Version**: 2.4.0  
-**Release Date**: February 6, 2026  
+**Current Version**: 2.4.1  
+**Release Date**: February 7, 2026  
 **Status**: Production Ready  
 **License**: MIT
 
@@ -502,5 +511,5 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 
 ---
 
-**Last Updated**: February 6, 2026  
-**Version**: 2.4.0
+**Last Updated**: February 7, 2026  
+**Version**: 2.4.1
