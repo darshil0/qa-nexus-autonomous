@@ -89,6 +89,17 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
+### 🤖 Agentic Skills & MCP (v2.5)
+- **Model Context Protocol**: Standardized tool discovery and execution framework.
+- **Dynamic Skill Registry**: Agents can now search Jira, create GitHub issues, and run test simulations autonomously.
+- **Thought-Action Loop**: Enhanced AI reasoning with internal tool-calling logic.
+- **Extensible Architecture**: Easily add new skills to the `skillRegistry`.
+
+### 🧠 Tiny GPT Engine
+- **Pure Python Implementation**: Atomic GPT training and inference engine.
+- **Dependency-Free**: Zero external libraries for maximum portability.
+- **Educational Core**: Demonstrates the fundamental algorithms of modern LLMs.
+
 ### 🎨 Premium Design System (v2.4)
 - **Glassmorphism UI**: Translucent surfaces with backdrop blur
 - **Neural Engine Trace**: Real-time AI thinking visualization
@@ -297,9 +308,9 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
 
 ### AI Model Configuration
 
-- **Agent 1**: `gemini-3-pro-preview` (Requirements analysis)
-- **Agent 2**: `gemini-3-pro-preview` (Test generation)
-- **Agent 3**: `gemini-3-flash-preview` (Test execution)
+- **Agent 1**: `gemini-3-pro-preview` (Requirements analysis + MCP)
+- **Agent 2**: `gemini-3-pro-preview` (Test generation + MCP)
+- **Agent 3**: `gemini-3-flash-preview` (Test execution + MCP)
 
 ---
 

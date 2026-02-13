@@ -1,7 +1,7 @@
 # 🤖 AGENT.md - QA Nexus Autonomous Reference Guide
 
-**Version**: 2.4.0  
-**Last Updated**: February 6, 2026  
+**Version**: 2.5.0
+**Last Updated**: February 8, 2026
 **Status**: Comprehensive Developer Reference
 
 ---
@@ -61,6 +61,27 @@ The system is managed by a centralized React orchestrator (`App.tsx`) that maint
 ### 3. Test Executor Agent
 - **Goal**: Simulate realistic test runs.
 - **Logic**: Random failure distributions based on priority, execution duration modeling, and detailed failure log generation.
+
+---
+
+## 🤖 Agentic Skills & MCP Framework
+
+### 🛠️ Model Context Protocol (MCP)
+QA Nexus now implements a subset of MCP for standardized tool interaction.
+- **Discovery**: Agents can query `tools/list` to see available capabilities.
+- **Execution**: Agents can call `tools/call` with specific arguments to perform actions.
+
+### 🧰 Skill Registry
+Located in `src/services/agenticSkills.ts`:
+- `jira_search`: Contextual requirement lookup.
+- `github_issue_create`: Automated bug reporting.
+- `test_runner`: Real-time execution simulation.
+
+### 🧠 Thought-Action-Observation Loop
+Agents are encouraged to use a reasoning loop:
+1. **Thought**: Analyze the current state and determine if a tool is needed.
+2. **Action**: Call the appropriate MCP tool.
+3. **Observation**: Process the tool output and incorporate it into the final response.
 
 ---
 
