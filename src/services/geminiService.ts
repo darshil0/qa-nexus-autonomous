@@ -21,12 +21,15 @@ export const setAiClient = (client: GoogleGenAI | undefined) => {
 /**
  * Helper to safely extract and parse JSON from Gemini's response.
  */
-async function parseAiResponse<T>(response: GenerateContentResponse, field: string): Promise<{ data: T | null; thinking: string; toolCall?: any }> {
+async function parseAiResponse<T>(response: GenerateContentResponse, field: string): Promise<{ data: T | null; thinking: string; toolCall?: { name: string; arguments: Record<string, string> } }> {
   try {
-    const text = typeof response.text === 'function' ? response.text() : (response as any).text;
+    // Handle both property and method access for .text (supports both real API and current test mocks)
+    const rawResponse = response as unknown as { text: string | (() => string) };
+    const text = (typeof rawResponse.text === 'function') ? rawResponse.text() : rawResponse.text;
+
     if (!text) return { data: null, thinking: 'No response from AI' };
 
-    const parsed = JSON.parse(text);
+    const parsed = JSON.parse(text) as { thought?: string; tool_call?: { name: string; arguments: Record<string, string> } } & Record<string, T>;
     const thinking = parsed.thought || "Analysis complete.";
     const toolCall = parsed.tool_call;
 
@@ -49,7 +52,7 @@ async function runAgenticWorkflow<T>(
   instruction: string,
   input: string,
   field: string,
-  schema: any
+  schema: Record<string, unknown>
 ): Promise<{ data: T | null; thinking: string }> {
   if (!ai) throw new Error('GenAI client not initialized.');
 
@@ -64,11 +67,12 @@ async function runAgenticWorkflow<T>(
       systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction + " If you use a tool, provide your 'thought' and 'tool_call'.",
       thinkingConfig: { thinkingBudget: 4000 },
       responseMimeType: "application/json",
-      responseSchema: schema
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      responseSchema: schema as any
     }
   });
 
-  let { data, thinking, toolCall } = await parseAiResponse<T>(response, field);
+  const { data, thinking, toolCall } = await parseAiResponse<T>(response, field);
   let finalThinking = thinking;
 
   if (toolCall) {
@@ -92,7 +96,8 @@ async function runAgenticWorkflow<T>(
         systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction,
         thinkingConfig: { thinkingBudget: 4000 },
         responseMimeType: "application/json",
-        responseSchema: schema
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        responseSchema: schema as any
       }
     });
 
@@ -103,14 +108,14 @@ async function runAgenticWorkflow<T>(
     };
   }
 
-  return { data, thinking: finalThinking };
+  return { data: data || ([] as unknown as T), thinking: finalThinking };
 }
 
 /**
  * Agent 1: Requirements Reviewer
  */
 export const reviewRequirements = async (rawInput: string): Promise<{ specs: ValidatedSpec[], thinking: string }> => {
-  const schema = {
+  const schema: Record<string, unknown> = {
     type: Type.OBJECT,
     properties: {
       thought: { type: Type.STRING },
@@ -158,7 +163,7 @@ export const reviewRequirements = async (rawInput: string): Promise<{ specs: Val
  * Agent 2: Test Case Writer
  */
 export const generateTestCases = async (specs: ValidatedSpec[]): Promise<{ testCases: TestCase[], thinking: string }> => {
-  const schema = {
+  const schema: Record<string, unknown> = {
     type: Type.OBJECT,
     properties: {
       thought: { type: Type.STRING },
@@ -204,7 +209,7 @@ export const generateTestCases = async (specs: ValidatedSpec[]): Promise<{ testC
  * Agent 3: Test Executor
  */
 export const executeTests = async (testCases: TestCase[]): Promise<{ results: ExecutionResult[], thinking: string }> => {
-  const schema = {
+  const schema: Record<string, unknown> = {
     type: Type.OBJECT,
     properties: {
       thought: { type: Type.STRING },

@@ -7,7 +7,7 @@ import { skillRegistry, Skill } from "./agenticSkills";
 export type MCPRequest = {
   jsonrpc: "2.0";
   method: string;
-  params: any;
+  params: Record<string, unknown>;
   id: string | number;
 };
 
@@ -16,7 +16,7 @@ export type MCPRequest = {
  */
 export type MCPResponse = {
   jsonrpc: "2.0";
-  result?: any;
+  result?: unknown;
   error?: {
     code: number;
     message: string;
@@ -40,19 +40,21 @@ export class MCPService {
    * Handle an MCP request
    */
   public async handleRequest(request: MCPRequest): Promise<MCPResponse> {
-    console.log(`[MCP] Handling request: ${request.method}`, request.params);
+    console.warn(`[MCP] Handling request: ${request.method}`, request.params);
 
     try {
       switch (request.method) {
-        case "tools/list":
+        case "tools/list": {
           return {
             jsonrpc: "2.0",
             result: { tools: this.listTools() },
             id: request.id
           };
+        }
 
-        case "tools/call":
-          const { name, arguments: args } = request.params;
+        case "tools/call": {
+          const params = request.params as { name: string; arguments: Record<string, string> };
+          const { name, arguments: args } = params;
           const skill = skillRegistry[name];
 
           if (!skill) {
@@ -70,13 +72,15 @@ export class MCPService {
             result,
             id: request.id
           };
+        }
 
-        default:
+        default: {
           return {
             jsonrpc: "2.0",
             error: { code: -32601, message: `Method not found: ${request.method}` },
             id: request.id
           };
+        }
       }
     } catch (error) {
       console.error(`[MCP] Error handling request:`, error);

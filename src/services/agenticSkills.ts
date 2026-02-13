@@ -1,14 +1,12 @@
 
-import { TestCase, ValidatedSpec } from "../types";
-
 /**
  * Interface for an Agentic Skill (Tool)
  */
 export interface Skill {
   name: string;
   description: string;
-  parameters: Record<string, any>;
-  execute: (...args: any[]) => Promise<any>;
+  parameters: Record<string, string>;
+  execute: (...args: string[]) => Promise<unknown>;
 }
 
 /**
@@ -22,7 +20,7 @@ export const jiraSearch: Skill = {
     query: "The search query or issue key."
   },
   execute: async (query: string) => {
-    console.log(`[Skill: jira_search] Searching for: ${query}`);
+    console.warn(`[Skill: jira_search] Searching for: ${query}`);
     await new Promise(resolve => setTimeout(resolve, 500));
     return `Results for "${query}": Found 1 matching requirement (AUTH-101: Biometric Auth).`;
   }
@@ -39,8 +37,8 @@ export const githubIssueCreate: Skill = {
     title: "The issue title.",
     body: "The issue description/logs."
   },
-  execute: async (title: string, body: string) => {
-    console.log(`[Skill: github_issue_create] Creating issue: ${title}`);
+  execute: async (title: string, _body: string) => {
+    console.warn(`[Skill: github_issue_create] Creating issue: ${title}`);
     await new Promise(resolve => setTimeout(resolve, 800));
     const issueId = Math.floor(Math.random() * 1000) + 100;
     return `Issue created successfully: https://github.com/org/repo/issues/${issueId}`;
@@ -58,7 +56,7 @@ export const testRunner: Skill = {
     testCaseId: "The ID of the test case to run."
   },
   execute: async (testCaseId: string) => {
-    console.log(`[Skill: test_runner] Running test: ${testCaseId}`);
+    console.warn(`[Skill: test_runner] Running test: ${testCaseId}`);
     await new Promise(resolve => setTimeout(resolve, 1000));
     const status = Math.random() > 0.2 ? "PASSED" : "FAILED";
     return {
