@@ -89,11 +89,11 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
-### 🤖 Agentic Skills & MCP (v2.5)
+### 🤖 Agentic Skills & MCP (v2.6)
 - **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0.
-- **Dynamic Skill Registry**: Agents can now search Jira, create GitHub issues, and run test simulations autonomously.
-- **Autonomous Reasoning Loop**: Implements a multi-pass "Thought-Action-Observation" sequence, allowing agents to refine results based on tool outputs.
-- **Skill-Augmented Pipelines**: Each agent (Reviewer, Writer, Executor) is now equipped with relevant tools to enhance their domain-specific tasks.
+- **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 3 per task) to gather complex context before providing a final answer.
+- **Advanced Skill Registry**: Includes new capabilities for **Code Analysis**, **Performance Audits**, and **Tiny GPT Technical Reference**.
+- **Autonomous Reasoning Loop**: Implements a recursive "Thought-Action-Observation" sequence, allowing agents to refine results dynamically based on real-time tool feedback.
 
 ### 🧠 Tiny GPT Engine
 - **Pure Python Implementation**: Atomic GPT training and inference engine located in `src/engine/tiny_gpt.py`.

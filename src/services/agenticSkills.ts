@@ -69,12 +69,90 @@ export const testRunner: Skill = {
 };
 
 /**
+ * Skill: Code Analysis
+ * Simulates deep inspection of code for potential issues.
+ */
+export const codeAnalysisSkill: Skill = {
+  name: "code_analysis",
+  description: "Analyze code for security vulnerabilities, logic errors, and best practices.",
+  parameters: {
+    code: "The source code or snippet to analyze."
+  },
+  execute: async (code: string) => {
+    console.warn(`[Skill: code_analysis] Analyzing code...`);
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    const issues = [
+      "Potential memory leak in effect cleanup.",
+      "Insecure direct object reference (IDOR) risk detected in API call.",
+      "Complexity is too high (O(N^2)). Suggest optimization."
+    ];
+    return {
+      snippet: code.substring(0, 50) + "...",
+      issuesDetected: issues,
+      healthScore: 72
+    };
+  }
+};
+
+/**
+ * Skill: Tiny GPT Reference
+ * Allows agents to query the underlying GPT algorithm details.
+ */
+export const tinyGptSkill: Skill = {
+  name: "tiny_gpt_reference",
+  description: "Retrieve technical details about the dependency-free Python GPT implementation.",
+  parameters: {
+    topic: "The topic to query (e.g., 'autograd', 'attention', 'rmsnorm')."
+  },
+  execute: async (topic: string) => {
+    console.warn(`[Skill: tiny_gpt_reference] Querying topic: ${topic}`);
+    await new Promise(resolve => setTimeout(resolve, 600));
+    const data: Record<string, string> = {
+      autograd: "Tiny GPT uses a scalar-based Value class with manual backward pass implementation for automatic differentiation.",
+      attention: "Uses multi-head causal self-attention with a KV cache for efficient inference.",
+      rmsnorm: "Implements Root Mean Square Layer Normalization for improved stability and faster training.",
+      optimizer: "Uses the Adam optimizer with linear learning rate decay."
+    };
+    return data[topic.toLowerCase()] || "Information not available for this topic. Available topics: autograd, attention, rmsnorm, optimizer.";
+  }
+};
+
+/**
+ * Skill: Performance Audit
+ * Simulates performance profiling of an application.
+ */
+export const performanceAuditSkill: Skill = {
+  name: "performance_audit",
+  description: "Run a performance audit and retrieve metrics like FCP, LCP, and TTI.",
+  parameters: {
+    url: "The URL of the application to audit."
+  },
+  execute: async (url: string) => {
+    console.warn(`[Skill: performance_audit] Auditing URL: ${url}`);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    return {
+      url,
+      metrics: {
+        fcp: "0.8s",
+        lcp: "1.2s",
+        tti: "1.4s",
+        totalBlockingTime: "50ms"
+      },
+      recommendations: ["Optimize image sizes.", "Reduce main-thread work."]
+    };
+  }
+};
+
+/**
  * Skill Registry
  */
 export const skillRegistry: Record<string, Skill> = {
   jira_search: jiraSearch,
   github_issue_create: githubIssueCreate,
-  test_runner: testRunner
+  test_runner: testRunner,
+  code_analysis: codeAnalysisSkill,
+  tiny_gpt_reference: tinyGptSkill,
+  performance_audit: performanceAuditSkill
 };
 
 /**

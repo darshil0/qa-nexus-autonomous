@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-02-13
+
+### Added
+- **Recursive Reasoning Loop**: Upgraded the agentic workflow to support sequential, multi-step tool calls (up to 3 per task).
+- **Advanced Skills Registry**:
+  - `code_analysis`: For deep security and logic inspection.
+  - `tiny_gpt_reference`: Technical documentation for the internal GPT engine.
+  - `performance_audit`: Automated application benchmarking.
+- **Enhanced Orchestration**: Agents now maintain stateful context across multiple tool-calling iterations.
+
+### Changed
+- **System Instructions**: Refined prompts to encourage sequential information gathering and better synthesis of multi-tool outputs.
+
 ## [2.5.0] - 2026-02-08
 
 ### Added

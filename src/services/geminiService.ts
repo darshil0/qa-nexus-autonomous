@@ -45,7 +45,7 @@ async function parseAiResponse<T>(response: GenerateContentResponse, field: stri
 }
 
 /**
- * Universal Agentic Loop
+ * Universal Agentic Loop (Multi-Step)
  */
 async function runAgenticWorkflow<T>(
   agentModel: string,
@@ -57,43 +57,19 @@ async function runAgenticWorkflow<T>(
   if (!ai) throw new Error('GenAI client not initialized.');
 
   const skillDocs = getSkillDescriptions();
-  const fullInput = `${input}\n\nAvailable MCP Skills:\n${skillDocs}`;
+  let currentInput = `${input}\n\nAvailable MCP Skills:\n${skillDocs}`;
+  let finalThinking = "";
+  let finalData: T | null = null;
+  let iterations = 0;
+  const MAX_ITERATIONS = 3;
 
-  // First Pass
-  let response = await ai.models.generateContent({
-    model: agentModel,
-    contents: fullInput,
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction + " If you use a tool, provide your 'thought' and 'tool_call'.",
-      thinkingConfig: { thinkingBudget: 4000 },
-      responseMimeType: "application/json",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      responseSchema: schema as any
-    }
-  });
-
-  const { data, thinking, toolCall } = await parseAiResponse<T>(response, field);
-  let finalThinking = thinking;
-
-  if (toolCall) {
-    const mcpRes = await mcpService.handleRequest({
-      jsonrpc: "2.0",
-      method: "tools/call",
-      params: toolCall,
-      id: `mcp-${Date.now()}`
-    });
-
-    const observation = JSON.stringify(mcpRes.result || mcpRes.error);
-    finalThinking += `\n\n[MCP Skill Call: ${toolCall.name}]\nResult: ${observation}`;
-
-    // Second Pass: Incorporate observation
-    const secondPassInput = `${fullInput}\n\n[PREVIOUS THOUGHT]: ${thinking}\n[TOOL CALL]: ${toolCall.name}\n[OBSERVATION]: ${observation}\n\nPlease provide the final result based on this information.`;
-
-    response = await ai.models.generateContent({
+  while (iterations < MAX_ITERATIONS) {
+    iterations++;
+    const response = await ai.models.generateContent({
       model: agentModel,
-      contents: secondPassInput,
+      contents: currentInput,
       config: {
-        systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction,
+        systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction + " If you use a tool, provide your 'thought' and 'tool_call'. If you have all information, provide the final result.",
         thinkingConfig: { thinkingBudget: 4000 },
         responseMimeType: "application/json",
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -101,14 +77,29 @@ async function runAgenticWorkflow<T>(
       }
     });
 
-    const secondPassResult = await parseAiResponse<T>(response, field);
-    return {
-      data: secondPassResult.data,
-      thinking: finalThinking + "\n\n" + (secondPassResult.thinking || "Final analysis complete.")
-    };
+    const { data, thinking, toolCall } = await parseAiResponse<T>(response, field);
+    finalThinking += (finalThinking ? "\n\n" : "") + (thinking || `Step ${iterations} complete.`);
+
+    if (toolCall) {
+      const mcpRes = await mcpService.handleRequest({
+        jsonrpc: "2.0",
+        method: "tools/call",
+        params: toolCall,
+        id: `mcp-${Date.now()}`
+      });
+
+      const observation = JSON.stringify(mcpRes.result || mcpRes.error);
+      finalThinking += `\n[MCP Skill Call: ${toolCall.name}]\nResult: ${observation}`;
+
+      // Update input for next iteration
+      currentInput += `\n\n[PREVIOUS THOUGHT]: ${thinking}\n[TOOL CALL]: ${toolCall.name}\n[OBSERVATION]: ${observation}\n\nPlease continue or provide the final result.`;
+    } else {
+      finalData = data;
+      break;
+    }
   }
 
-  return { data: data || ([] as unknown as T), thinking: finalThinking };
+  return { data: finalData || ([] as unknown as T), thinking: finalThinking };
 }
 
 /**
