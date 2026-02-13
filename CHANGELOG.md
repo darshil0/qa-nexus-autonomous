@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-02-08
+
+### Added
+- **Agentic Skills Framework**: Introduced a library of executable skills (Jira Search, GitHub Issue Creation, Test Runner) that agents can use autonomously.
+- **Model Context Protocol (MCP) Integration**: Implemented a standardized MCP Service to handle tool discovery and execution.
+- **Tiny GPT Engine**: Integrated a pure, dependency-free Python implementation of a GPT model for educational and reference purposes.
+- **Enhanced System Instructions**: Updated AI agent prompts to support tool-calling and internal reasoning loops.
+
+### Changed
+- **Documentation Overhaul**: Updated `README.md`, `AGENT.md`, and `CHANGELOG.md` to reflect the new agentic capabilities and architecture.
+- **Gemini Service Refactoring**: Unified skill descriptions across all agent pipelines to ensure consistent tool access.
+
 ## [2.4.1] - 2026-02-07
 
 ### Fixed
