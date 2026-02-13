@@ -9,13 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Agentic Skills Framework**: Introduced a library of executable skills (Jira Search, GitHub Issue Creation, Test Runner) that agents can use autonomously.
-- **Model Context Protocol (MCP) Integration**: Implemented a standardized MCP Service to handle tool discovery and execution.
-- **Tiny GPT Engine**: Integrated a pure, dependency-free Python implementation of a GPT model for educational and reference purposes.
-- **Enhanced System Instructions**: Updated AI agent prompts to support tool-calling and internal reasoning loops.
+- **Model Context Protocol (MCP) Integration**: Implemented a standardized MCP Service based on JSON-RPC 2.0 to handle tool discovery and execution.
+- **Autonomous Reasoning Loop**: Developed a robust two-pass reasoning system in `geminiService.ts` allowing agents to call tools and refine their output based on observations.
+- **Tiny GPT Engine**: Integrated a pure, dependency-free Python implementation of a GPT model for educational and reference purposes at `src/engine/tiny_gpt.py`.
+
+### Fixed
+- **CI Stability**: Resolved multiple linting and TypeScript errors across the service layer (lexical declarations, unused variables, type mismatches).
+- **Gemini Response Handling**: Fixed a critical bug in AI response parsing where `.text` was incorrectly accessed as a property instead of a method.
 
 ### Changed
-- **Documentation Overhaul**: Updated `README.md`, `AGENT.md`, and `CHANGELOG.md` to reflect the new agentic capabilities and architecture.
-- **Gemini Service Refactoring**: Unified skill descriptions across all agent pipelines to ensure consistent tool access.
+- **Service Layer Architecture**: Refactored agent pipelines into a universal `runAgenticWorkflow` helper for better maintainability and extensibility.
+- **Documentation Overhaul**: Updated `README.md`, `AGENT.md`, and `CHANGELOG.md` to reflect the v2.5.0 architectural evolution.
 
 ## [2.4.1] - 2026-02-07
 
@@ -523,5 +527,5 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 
 ---
 
-**Last Updated**: February 7, 2026  
-**Version**: 2.4.1
+**Last Updated**: February 8, 2026
+**Version**: 2.5.0
