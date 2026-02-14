@@ -47,6 +47,12 @@ export interface ExecutionResult {
   githubIssueUrl?: string;
 }
 
+export interface AISettings {
+  maxIterations: number;
+  temperature: number;
+  useFlashModel: boolean;
+}
+
 export interface WorkflowState {
   status: WorkflowStatus;
   rawRequirements: string;
@@ -59,4 +65,5 @@ export interface WorkflowState {
     connected: boolean;
     projectKey: string;
   };
+  settings: AISettings;
 }

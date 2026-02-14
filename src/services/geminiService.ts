@@ -1,8 +1,9 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "../constants";
-import { ValidatedSpec, TestCase, ExecutionResult } from "../types";
+import { ValidatedSpec, TestCase, ExecutionResult, AISettings } from "../types";
 import { getSkillDescriptions } from "./agenticSkills";
 import { mcpService } from "./mcpService";
+import { agentMemory } from "./memoryService";
 import { logger } from "../utils/logger";
 import { sanitizeRequirements } from "../utils/sanitizeInput";
 
@@ -93,45 +94,57 @@ async function parseAiResponse<T>(
 }
 
 /**
- * Universal Agentic Loop with improved error handling
+ * Universal Agentic Loop with improved error handling and multi-pass reasoning
  */
 async function runAgenticWorkflow<T>(
   agentModel: string,
   instruction: string,
   input: string,
   field: string,
-  schema: Record<string, unknown>
+  schema: Record<string, unknown>,
+  settings?: AISettings
 ): Promise<{ data: T | null; thinking: string }> {
   if (!ai) {
     throw new Error('GenAI client not initialized. Please set VITE_GEMINI_API_KEY in your .env file.');
   }
 
   const skillDocs = getSkillDescriptions();
-  const fullInput = `${input}\n\nAvailable MCP Skills:\n${skillDocs}`;
+  const sessionMemory = agentMemory.getContext();
 
-  try {
-    // First Pass
-    logger.info(`Running ${agentModel} workflow for field: ${field}`);
+  let currentInput = `[SESSION CONTEXT]\n${sessionMemory}\n\n[CURRENT TASK]\n${input}\n\nAvailable MCP Skills:\n${skillDocs}`;
+  let finalThinking = "";
+  let finalData: T | null = null;
 
-    let response = await ai.models.generateContent({
-      model: agentModel,
-      contents: fullInput,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction + " If you use a tool, provide your 'thought' and 'tool_call'.",
-        thinkingConfig: { thinkingBudget: 4000 },
-        responseMimeType: "application/json",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        responseSchema: schema as any
-      }
-    });
+  const maxIterations = settings?.maxIterations ?? 3;
+  const temperature = settings?.temperature ?? 0.7;
+  const model = settings?.useFlashModel ? 'gemini-1.5-flash' : agentModel;
 
-    const { data, thinking, toolCall } = await parseAiResponse<T>(response, field);
-    let finalThinking = thinking;
+  let iterations = 0;
+  while (iterations < maxIterations) {
+    iterations++;
+    logger.info(`Running ${model} workflow (Pass ${iterations}/${maxIterations}) for field: ${field}`);
 
-    if (toolCall) {
-      logger.info(`Agent requested tool: ${toolCall.name}`);
+    try {
+      const response = await ai.models.generateContent({
+        model: model,
+        contents: currentInput,
+        config: {
+          systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction + " If you use a tool, provide your 'thought' and 'tool_call'. If you have all information, provide the final result.",
+          thinkingConfig: { thinkingBudget: 4000 },
+          responseMimeType: "application/json",
+          temperature,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          responseSchema: schema as any
+        }
+      });
 
-      try {
+      const { data, thinking, toolCall } = await parseAiResponse<T>(response, field);
+      finalThinking += (finalThinking ? "\n\n" : "") + `[Thought Step ${iterations}]: ${thinking}`;
+
+      agentMemory.add('assistant', thinking);
+
+      if (toolCall) {
+        logger.info(`Agent requested tool: ${toolCall.name}`);
         const mcpRes = await mcpService.handleRequest({
           jsonrpc: "2.0",
           method: "tools/call",
@@ -140,55 +153,32 @@ async function runAgenticWorkflow<T>(
         });
 
         const observation = JSON.stringify(mcpRes.result || mcpRes.error);
-        finalThinking += `\n\n[MCP Skill Call: ${toolCall.name}]\nResult: ${observation}`;
+        finalThinking += `\n[Observation]: Tool ${toolCall.name} returned ${observation}`;
 
-        // Second Pass: Incorporate observation
-        const secondPassInput = `${fullInput}\n\n[PREVIOUS THOUGHT]: ${thinking}\n[TOOL CALL]: ${toolCall.name}\n[OBSERVATION]: ${observation}\n\nPlease provide the final result based on this information.`;
+        agentMemory.add('observation', `Tool ${toolCall.name} result: ${observation}`);
 
-        logger.info('Running second pass with observation');
-
-        response = await ai.models.generateContent({
-          model: agentModel,
-          contents: secondPassInput,
-          config: {
-            systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction,
-            thinkingConfig: { thinkingBudget: 4000 },
-            responseMimeType: "application/json",
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            responseSchema: schema as any
-          }
-        });
-
-        const secondPassResult = await parseAiResponse<T>(response, field);
-        return {
-          data: secondPassResult.data,
-          thinking: finalThinking + "\n\n" + (secondPassResult.thinking || "Final analysis complete.")
-        };
-      } catch (mcpError) {
-        logger.error('MCP tool execution failed:', mcpError);
-        // Continue with first pass result even if tool fails
-        finalThinking += `\n\n[MCP Error]: Tool execution failed - ${mcpError instanceof Error ? mcpError.message : String(mcpError)}`;
+        currentInput += `\n\n[PREVIOUS THOUGHT]: ${thinking}\n[TOOL CALL]: ${toolCall.name}\n[OBSERVATION]: ${observation}\n\nPlease continue or provide the final result.`;
+      } else {
+        finalData = data;
+        break;
       }
+    } catch (error) {
+      logger.error(`Workflow pass ${iterations} failed:`, error);
+      finalThinking += `\n[Error]: ${error instanceof Error ? error.message : String(error)}`;
+      break;
     }
-
-    return {
-      data: data || ([] as unknown as T),
-      thinking: finalThinking
-    };
-  } catch (error) {
-    logger.error('Agentic workflow failed:', error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return {
-      data: [] as unknown as T,
-      thinking: `Workflow failed: ${errorMessage}`
-    };
   }
+
+  return {
+    data: finalData || ([] as unknown as T),
+    thinking: finalThinking
+  };
 }
 
 /**
  * Agent 1: Requirements Reviewer
  */
-export const reviewRequirements = async (rawInput: string): Promise<{ specs: ValidatedSpec[], thinking: string }> => {
+export const reviewRequirements = async (rawInput: string, settings?: AISettings): Promise<{ specs: ValidatedSpec[], thinking: string }> => {
   const sanitizedInput = sanitizeRequirements(rawInput);
 
   const schema: Record<string, unknown> = {
@@ -229,7 +219,8 @@ export const reviewRequirements = async (rawInput: string): Promise<{ specs: Val
     "You are Agent 1 (Requirements Reviewer). Normalize and validate requirements. Detect Jira sources.",
     `Analyze requirements: ${sanitizedInput}`,
     "specs",
-    schema
+    schema,
+    settings
   );
 
   return { specs: data || [], thinking };
@@ -238,7 +229,7 @@ export const reviewRequirements = async (rawInput: string): Promise<{ specs: Val
 /**
  * Agent 2: Test Case Writer
  */
-export const generateTestCases = async (specs: ValidatedSpec[]): Promise<{ testCases: TestCase[], thinking: string }> => {
+export const generateTestCases = async (specs: ValidatedSpec[], settings?: AISettings): Promise<{ testCases: TestCase[], thinking: string }> => {
   const schema: Record<string, unknown> = {
     type: Type.OBJECT,
     properties: {
@@ -275,7 +266,8 @@ export const generateTestCases = async (specs: ValidatedSpec[]): Promise<{ testC
     "You are Agent 2 (Test Case Writer). Generate structured test cases.",
     `Convert specs to test cases: ${JSON.stringify(specs)}`,
     "testCases",
-    schema
+    schema,
+    settings
   );
 
   return { testCases: data || [], thinking };
@@ -284,7 +276,7 @@ export const generateTestCases = async (specs: ValidatedSpec[]): Promise<{ testC
 /**
  * Agent 3: Test Executor
  */
-export const executeTests = async (testCases: TestCase[]): Promise<{ results: ExecutionResult[], thinking: string }> => {
+export const executeTests = async (testCases: TestCase[], settings?: AISettings): Promise<{ results: ExecutionResult[], thinking: string }> => {
   const schema: Record<string, unknown> = {
     type: Type.OBJECT,
     properties: {
@@ -318,7 +310,8 @@ export const executeTests = async (testCases: TestCase[]): Promise<{ results: Ex
     "You are Agent 3 (Test Executor). Simulate execution and provide logs.",
     `Execute test cases: ${JSON.stringify(testCases)}`,
     "results",
-    schema
+    schema,
+    settings
   );
 
   return { results: data || [], thinking };

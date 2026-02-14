@@ -6,7 +6,8 @@ import {
   PlayCircle,
   BarChart3,
   RefreshCw,
-  BrainCircuit
+  BrainCircuit,
+  Settings as SettingsIcon
 } from 'lucide-react';
 import {
   WorkflowStatus,
@@ -26,21 +27,33 @@ import { Agent1Tab } from './components/tabs/Agent1Tab';
 import { Agent2Tab } from './components/tabs/Agent2Tab';
 import { Agent3Tab } from './components/tabs/Agent3Tab';
 import { ReportsTab } from './components/tabs/ReportsTab';
+import { SettingsTab } from './components/tabs/SettingsTab';
 import { NavBtn } from './components/NavBtn';
 import { logger } from './utils/logger';
+import { persistenceService } from './services/persistenceService';
+import { agentMemory } from './services/memoryService';
+import { exportTestCasesJson, exportTestCasesCsv, exportResultsJson, exportResultsCsv } from './utils/exportUtils';
 
 const App: React.FC = () => {
-  const [state, setState] = useState<WorkflowState>({
-    status: WorkflowStatus.IDLE,
-    rawRequirements: '',
-    validatedSpecs: [],
-    testCases: [],
-    results: [],
-    thinkingProcess: 'System ready.',
-    jiraIntegration: { connected: true, projectKey: 'QA-AUTO' }
+  const [state, setState] = useState<WorkflowState>(() => {
+    const saved = persistenceService.loadState();
+    return saved || {
+      status: WorkflowStatus.IDLE,
+      rawRequirements: '',
+      validatedSpecs: [],
+      testCases: [],
+      results: [],
+      thinkingProcess: 'System ready.',
+      jiraIntegration: { connected: true, projectKey: 'QA-AUTO' },
+      settings: {
+        maxIterations: 3,
+        temperature: 0.7,
+        useFlashModel: false
+      }
+    };
   });
 
-  const [activeTab, setActiveTab] = useState<'orchestrator' | 'agent1' | 'agent2' | 'agent3' | 'reports'>('orchestrator');
+  const [activeTab, setActiveTab] = useState<'orchestrator' | 'agent1' | 'agent2' | 'agent3' | 'reports' | 'settings'>('orchestrator');
   const [highlightedReqId, setHighlightedReqId] = useState<string | null>(null);
   const [tcSearchTerm, setTcSearchTerm] = useState('');
   const [jiraIssueInput, setJiraIssueInput] = useState('');
@@ -58,7 +71,7 @@ const App: React.FC = () => {
         error: undefined
       }));
 
-      const { specs, thinking: t1 } = await reviewRequirements(state.rawRequirements);
+      const { specs, thinking: t1 } = await reviewRequirements(state.rawRequirements, state.settings);
 
       setState(p => ({
         ...p,
@@ -67,7 +80,7 @@ const App: React.FC = () => {
         thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...`
       }));
 
-      const { testCases, thinking: t2 } = await generateTestCases(specs);
+      const { testCases, thinking: t2 } = await generateTestCases(specs, state.settings);
 
       setState(p => ({
         ...p,
@@ -76,7 +89,7 @@ const App: React.FC = () => {
         thinkingProcess: `[AGENT 2] ${t2}\n[AGENT 3] Running execution...`
       }));
 
-      const { results, thinking: t3 } = await executeTests(testCases);
+      const { results, thinking: t3 } = await executeTests(testCases, state.settings);
 
       setState(p => ({
         ...p,
@@ -178,6 +191,11 @@ const App: React.FC = () => {
 
   const mainContentRef = React.useRef<HTMLDivElement>(null);
 
+  // Save state on change
+  useEffect(() => {
+    persistenceService.saveState(state);
+  }, [state]);
+
   // Focus main content when tab changes for better accessibility
   useEffect(() => {
     mainContentRef.current?.focus();
@@ -229,11 +247,19 @@ const App: React.FC = () => {
             disabled={!state.results.length}
             onClick={() => setActiveTab('reports')}
           />
+          <NavBtn
+            icon={<SettingsIcon size={20} />}
+            label="AI Settings"
+            active={activeTab === 'settings'}
+            onClick={() => setActiveTab('settings')}
+          />
         </nav>
 
         <div style={{ paddingTop: '1.5rem', borderTop: '1px solid var(--glass-border)' }}>
           <button
             onClick={() => {
+              persistenceService.clearState();
+              agentMemory.clear();
               setState({
                 status: WorkflowStatus.IDLE,
                 rawRequirements: '',
@@ -241,7 +267,12 @@ const App: React.FC = () => {
                 testCases: [],
                 results: [],
                 thinkingProcess: 'System ready.',
-                jiraIntegration: { connected: true, projectKey: 'QA-AUTO' }
+              jiraIntegration: { connected: true, projectKey: 'QA-AUTO' },
+              settings: {
+                maxIterations: 3,
+                temperature: 0.7,
+                useFlashModel: false
+              }
               });
             }}
             className="btn-secondary"
@@ -261,6 +292,20 @@ const App: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            {activeTab === 'agent2' && state.testCases.length > 0 && (
+              <div style={{ display: 'flex', gap: '0.5rem', borderRight: '1px solid var(--glass-border)', paddingRight: '1rem' }}>
+                <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, alignSelf: 'center' }}>EXPORT:</span>
+                <button onClick={() => exportTestCasesJson(state.testCases)} className="btn-secondary" style={{ fontSize: '0.6rem', padding: '0.2rem 0.6rem' }}>JSON</button>
+                <button onClick={() => exportTestCasesCsv(state.testCases)} className="btn-secondary" style={{ fontSize: '0.6rem', padding: '0.2rem 0.6rem' }}>CSV</button>
+              </div>
+            )}
+            {(activeTab === 'agent3' || activeTab === 'reports') && state.results.length > 0 && (
+              <div style={{ display: 'flex', gap: '0.5rem', borderRight: '1px solid var(--glass-border)', paddingRight: '1rem' }}>
+                <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 800, alignSelf: 'center' }}>EXPORT:</span>
+                <button onClick={() => exportResultsJson(state.results)} className="btn-secondary" style={{ fontSize: '0.6rem', padding: '0.2rem 0.6rem' }}>JSON</button>
+                <button onClick={() => exportResultsCsv(state.results)} className="btn-secondary" style={{ fontSize: '0.6rem', padding: '0.2rem 0.6rem' }}>CSV</button>
+              </div>
+            )}
             <div className="badge" style={{ background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)', border: '1px solid rgba(99, 102, 241, 0.2)', fontSize: '0.65rem' }}>
               STATUS: {state.status}
             </div>
@@ -327,6 +372,13 @@ const App: React.FC = () => {
               traceability={`${Math.round((new Set(state.testCases.flatMap(tc => tc.linkedRequirementIds)).size / (state.validatedSpecs.length || 1)) * 100)}%`}
               stability={`${Math.round((state.results.filter(r => r.status === 'PASS').length / (state.results.length || 1)) * 100)}%`}
               failures={state.results.filter(r => r.status === 'FAIL').length.toString()}
+            />
+          )}
+
+          {activeTab === 'settings' && (
+            <SettingsTab
+              settings={state.settings}
+              setSettings={(s) => setState(p => ({ ...p, settings: s }))}
             />
           )}
         </div>
