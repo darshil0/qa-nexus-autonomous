@@ -410,7 +410,7 @@ These fixes ensure:
 
 ## Version Information
 
-**Current Version**: 2.7.0
+**Current Version**: 2.8.0
 **Release Date**: February 14, 2026
 **Status**: Production Ready  
 **License**: MIT
@@ -567,5 +567,5 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 
 ---
 
-**Last Updated**: February 14, 2026
-**Version**: 2.7.0
+**Last Updated**: February 15, 2026
+**Version**: 2.8.0

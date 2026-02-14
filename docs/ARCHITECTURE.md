@@ -1,7 +1,7 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 2.7.0
-**Last Updated**: February 14, 2026
+**Version**: 2.8.0
+**Last Updated**: February 15, 2026
 **Status**: Production Ready
 
 ## Table of Contents
@@ -237,29 +237,31 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
 
 ---
 
-## Model Context Protocol (MCP) & Agentic Skills
+## Claude Agent Skills & MCP Integration
 
-QA Nexus Autonomous integrates a subset of the **Model Context Protocol (MCP)**, providing a standardized framework for agents to discover and execute external tools (skills).
+QA Nexus Autonomous implements the **Claude Agent Skills** framework, providing a portable and modular architecture for agent capabilities. This is bridged via the **Model Context Protocol (MCP)** for runtime execution.
 
-### Technical Implementation
+### Claude Skills Framework
 
-- **Protocol**: Based on JSON-RPC 2.0.
-- **Service**: Handled by `MCPService` in `src/services/mcpService.ts`.
-- **Discovery**: Agents can query available capabilities using the `tools/list` method.
-- **Execution**: The `tools/call` method triggers skill execution with named parameters.
+- **Modularity**: Skills are encapsulated in the `/skills` directory, each with its own `SKILL.md` definition.
+- **Portability**: Each skill is a self-contained unit with standardized YAML frontmatter metadata.
+- **Registry**: A root-level `Skills.MD` registry facilitates discovery across the ecosystem.
 
-### Skill Registry
+### Technical MCP Implementation
 
-The `skillRegistry` in `src/services/agenticSkills.ts` serves as the centralized library of autonomous capabilities:
+- **Protocol**: JSON-RPC 2.0 compliant interface.
+- **Service**: Managed by `MCPService` (`src/services/mcpService.ts`).
+- **Discovery**: Agents use `tools/list` to retrieve available skill metadata.
+- **Execution**: `tools/call` maps agent requests to the `skillRegistry` implementations.
 
-| Skill Name | Description | Required Parameters |
-|------------|-------------|---------------------|
-| `jira_search` | Contextual requirement lookup. | `query` |
-| `github_issue_create` | Automated bug reporting. | `title`, `body` |
-| `test_runner` | Real-time execution simulation. | `testCaseId` |
-| `code_analysis` | Deep inspection for security/logic. | `code` |
-| `tiny_gpt_reference` | Technical specs of the GPT engine. | `topic` |
-| `performance_audit` | Automated benchmarking/profiling. | `url` |
+### Active Skill Registry
+
+| Skill Name | Description | Location |
+|------------|-------------|----------|
+| `requirements-reviewer` | Requirements analysis and gap detection. | `skills/requirements-reviewer` |
+| `test-case-writer` | Prioritized test scenario generation. | `skills/test-case-writer` |
+| `test-executor` | Metric-driven execution simulation. | `skills/test-executor` |
+| `tiny-gpt` | Technical reference for the GPT engine. | `skills/tiny-gpt` |
 
 ---
 
@@ -284,19 +286,19 @@ The core orchestration has evolved from a linear pipeline to an iterative reason
 
 ## Tiny GPT Engine
 
-Located in `src/engine/tiny_gpt.py`, the Tiny GPT engine serves as an architectural reference for the fundamental mechanics of Large Language Models.
+The Tiny GPT engine has been relocated to `skills/tiny-gpt/scripts/tiny_gpt.py` as part of the Claude Skills migration. It serves as an architectural reference for LLM fundamentals.
 
 ### Core Implementation Details
 
 - **Dependency-Free**: Pure Python implementation using only `math`, `random`, and `os`.
 - **Atomic Algorithm**: Demonstrates scalar-based Autograd, Attention heads, and Transformer blocks in under 300 lines.
-- **Reference Role**: AI agents can query the logic of this engine using the `tiny_gpt_reference` MCP skill to ensure technical precision during code reviews and test generation.
+- **Reference Role**: AI agents can query the logic of this engine using the `tiny-gpt` skill to ensure technical precision.
 
 ---
 
 ## Observability & Health Dashboard
 
-QA Nexus v2.7.0 introduces deep observability into the agentic reasoning process through the **Loop Health** dashboard.
+QA Nexus v2.8.0 introduces deep observability into the agentic reasoning process through the **Loop Health** dashboard.
 
 ### Real-time Metrics
 
@@ -429,8 +431,11 @@ src/
 │   ├── persistenceService.ts   # LocalStorage management
 │   └── memoryService.ts        # Short-term context buffer
 │
-├── engine/
-│   └── tiny_gpt.py             # Atomic GPT implementation
+├── skills/                      # Claude Agent Skills
+│   ├── requirements-reviewer/  # Requirements Analysis Skill
+│   ├── test-case-writer/       # Test Design Skill
+│   ├── test-executor/          # Execution Simulation Skill
+│   └── tiny-gpt/               # GPT Reference Skill
 │
 ├── types.ts                    # TypeScript interfaces
 │   ├── WorkflowState           # Main state interface
@@ -2164,7 +2169,7 @@ For questions or issues, please open a GitHub issue or contact the maintainers.
 - ✅ Implemented startup environment validation.
 - ✅ Improved error handling in async workflow functions.
 
-### Phase 2: Orchestration & Observability (Completed v2.7.0)
+### Phase 2: Orchestration & Observability (Completed v2.8.0)
 - ✅ Recursive reasoning loops (Thought-Action-Observation).
 - ✅ MCP-compliant tool discovery and execution.
 - ✅ Real-time Health Dashboard and Metrics tracking.

@@ -1,7 +1,7 @@
 # 🤖 AGENT.md - QA Nexus Autonomous Reference Guide
 
-**Version**: 2.7.0
-**Last Updated**: February 14, 2026
+**Version**: 2.8.0
+**Last Updated**: February 15, 2026
 **Status**: Comprehensive Developer Reference
 
 ---
@@ -73,18 +73,26 @@ The system is managed by a centralized React orchestrator (`App.tsx`) that maint
 
 ---
 
-## 🤖 Agentic Skills & MCP Framework
+### 🤖 Agentic Skills & Claude Skills Framework
 
-### 🛠️ Model Context Protocol (MCP)
-QA Nexus now implements a subset of MCP for standardized tool interaction.
-- **Discovery**: Agents can query `tools/list` to see available capabilities.
-- **Execution**: Agents can call `tools/call` with specific arguments to perform actions.
+QA Nexus Autonomous has transitioned to the **Claude Skills** architecture (Standardized by Anthropic). This ensures portability and modularity of agent capabilities.
 
-### 🧰 Skill Registry
-Located in `src/services/agenticSkills.ts`:
-- `jira_search`: Contextual requirement lookup.
-- `github_issue_create`: Automated bug reporting.
-- `test_runner`: Real-time execution simulation.
+### 🛠️ Claude Skills Standard
+- **Directory**: All skills are located in the `/skills` directory.
+- **Structure**: Each skill resides in a kebab-case folder containing a `SKILL.md` file with mandatory YAML frontmatter.
+- **Registry**: The root `Skills.MD` file acts as the primary registry for discovery.
+
+### 🧰 Portable Skill Registry
+Located in the `/skills` directory:
+- `requirements-reviewer`: Logical check and ambiguity detection.
+- `test-case-writer`: Structured scenario generation.
+- `test-executor`: Metric-driven simulation.
+- `tiny-gpt`: Technical reference for the GPT engine.
+
+### 🔌 Model Context Protocol (MCP)
+The system continues to use an MCP-compliant JSON-RPC bridge for runtime execution:
+- **Discovery**: Agents query `tools/list` for dynamic capability discovery.
+- **Execution**: `tools/call` handles the actual execution logic.
 
 ### 🧠 Recursive Reasoning Loop
 Agents use a standardized multi-pass loop implemented in `src/services/geminiService.ts` via `runAgenticWorkflow`:
@@ -95,25 +103,17 @@ Agents use a standardized multi-pass loop implemented in `src/services/geminiSer
 5. **Final Synthesis**: The agent produces the final structured JSON artifact.
 
 ### 📈 Orchestration Observability
-v2.7.0 introduces the `OrchestrationMetrics` interface to track system health:
+v2.8.0 introduces the `OrchestrationMetrics` interface to track system health:
 - `totalToolCalls`: Cumulative count of MCP actions.
 - `averageLoopDepth`: Complexity indicator per task.
 - `totalTokensEstimated`: Context window utilization.
 - `latencyMs`: Performance benchmarking for recursive logic.
 
-### 🛠️ Extending the Skill Registry
-To add a new autonomous skill:
-1.  **Define the Skill**: In `src/services/agenticSkills.ts`, create a new `Skill` object.
-    ```typescript
-    export const myNewSkill: Skill = {
-      name: "my_skill",
-      description: "Performs a specific task.",
-      parameters: { param1: "Description of param1" },
-      execute: async (param1: string) => { /* logic */ }
-    };
-    ```
-2.  **Register the Skill**: Add the skill to the `skillRegistry` object in the same file.
-3.  **Update Prompts**: Ensure the agent system instructions in `src/constants.ts` or `geminiService.ts` mention the availability of the new skill.
+### 🛠️ Adding a New Claude Skill
+1.  **Create Directory**: `mkdir skills/my-new-skill`.
+2.  **Define Skill**: Create `skills/my-new-skill/SKILL.md` with YAML metadata.
+3.  **Register**: Add a link to the new skill in the root `Skills.MD`.
+4.  **Implement**: Add the execution logic to `src/services/agenticSkills.ts` and register it in the `skillRegistry`.
 
 ---
 
