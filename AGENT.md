@@ -109,6 +109,16 @@ To add a new autonomous skill:
 
 ---
 
+### 💾 Persistence & State Management
+QA Nexus v2.6.0 includes a local persistence layer in `src/services/persistenceService.ts`.
+- **Automatic Saving**: The `App.tsx` orchestrator saves the entire `WorkflowState` to `localStorage` on every change.
+- **Hydration**: On application load, the state is restored. Running statuses are automatically reset to `IDLE` to prevent UI lockup.
+
+### 📊 Data Export Utility
+Users can export artifacts using the `src/utils/exportUtils.ts` module.
+- **JSON**: Full object representation for programmatic use.
+- **CSV**: Flattened representation for Excel/Sheets compatibility.
+
 ## 💻 Core Development Patterns
 
 ### 1. Agent Function Implementation

@@ -94,6 +94,9 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 3 per task) to gather complex context before providing a final answer.
 - **Advanced Skill Registry**: Includes new capabilities for **Code Analysis**, **Performance Audits**, and **Tiny GPT Technical Reference**.
 - **Autonomous Reasoning Loop**: Implements a recursive "Thought-Action-Observation" sequence, allowing agents to refine results dynamically based on real-time tool feedback.
+- **Configurable AI Settings**: Adjust maximum reasoning iterations (up to 5), temperature, and model selection (Flash vs Pro) via the new Settings tab.
+- **Data Persistence**: Sessions are automatically saved to LocalStorage, allowing progress to survive page reloads.
+- **Enhanced Export Engine**: Export generated test cases and execution reports to JSON or CSV formats directly from the UI header.
 
 ### 🧠 Tiny GPT Engine
 - **Pure Python Implementation**: Atomic GPT training and inference engine located in `src/engine/tiny_gpt.py`.
