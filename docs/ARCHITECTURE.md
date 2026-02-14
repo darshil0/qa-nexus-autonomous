@@ -1,7 +1,7 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 2.6.0
-**Last Updated**: February 13, 2026
+**Version**: 2.7.0
+**Last Updated**: February 14, 2026
 **Status**: Production Ready
 
 ## Table of Contents
@@ -12,7 +12,9 @@
 4. [Model Context Protocol (MCP) & Agentic Skills](#model-context-protocol-mcp--agentic-skills)
 5. [Recursive Agentic Loop](#recursive-agentic-loop)
 6. [Tiny GPT Engine](#tiny-gpt-engine)
-7. [Component Architecture](#component-architecture)
+7. [Observability & Health Dashboard](#observability--health-dashboard)
+8. [Persistence & Memory](#persistence--memory)
+9. [Component Architecture](#component-architecture)
 8. [Agent Specifications](#agent-specifications)
 9. [Core Development Patterns](#core-development-patterns)
 10. [Integration Points](#integration-points)
@@ -281,6 +283,38 @@ Located in `src/engine/tiny_gpt.py`, the Tiny GPT engine serves as an architectu
 
 ---
 
+## Observability & Health Dashboard
+
+QA Nexus v2.7.0 introduces deep observability into the agentic reasoning process through the **Loop Health** dashboard.
+
+### Real-time Metrics
+
+- **Tool Call Frequency**: Visualizes which MCP skills (Jira, GitHub, etc.) are used most often.
+- **Reasoning Loop Depth**: Monitors how many iterations agents need to solve complex tasks.
+- **Estimated Token Consumption**: Provides a crude estimate of context window utilization to prevent saturation.
+- **Latency Tracking**: Measures the end-to-end time for recursive loops, including tool execution.
+
+### Qualitative Indicators
+
+- **Resource Saturation**: Percentage-based gauge of prompt limit utilization.
+- **Reasoning Efficiency**: Evaluates loop depth vs. successful output to detect potential "infinite thought loops."
+
+---
+
+## Persistence & Memory
+
+### Local Persistence
+The application uses a **Persistence Service** (`src/services/persistenceService.ts`) to manage session state.
+- **LocalStorage**: Entire `WorkflowState` is serialized and saved on every state change.
+- **State Hydration**: On load, the system restores requirements, results, and metrics, ensuring progress isn't lost on refresh.
+
+### Short-term memory
+The **Agent Memory Service** (`src/services/memoryService.ts`) provides agents with a rolling buffer of recent interactions.
+- **Context Preservation**: Agents see their previous thoughts and tool observations from earlier pipeline stages.
+- **Cross-Agent Knowledge**: Agent 3 can reference reasoning performed by Agent 1, leading to more consistent bug reports and execution logs.
+
+---
+
 ## Component Architecture
 
 ### Big Picture: Multi-Agent Workflow
@@ -304,7 +338,8 @@ Located in `src/engine/tiny_gpt.py`, the Tiny GPT engine serves as an architectu
 │  │                                                           │   │
 │  │  Tabs (src/components/tabs/):                             │   │
 │  │  - OrchestratorTab, Agent1Tab, Agent2Tab,                 │   │
-│  │  - Agent3Tab, ReportsTab                                  │   │
+  │  - Agent3Tab, ReportsTab, SettingsTab,                    │   │
+  │  - HealthDashboardTab                                     │   │
 │  │  - Handles errors and retries                             │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
@@ -375,7 +410,9 @@ src/
 ├── services/
 │   ├── geminiService.ts        # Gemini API & Agentic Workflow
 │   ├── mcpService.ts           # Model Context Protocol
-│   └── agenticSkills.ts        # Autonomous Skill Registry
+│   ├── agenticSkills.ts        # Autonomous Skill Registry
+│   ├── persistenceService.ts   # LocalStorage management
+│   └── memoryService.ts        # Short-term context buffer
 │
 ├── engine/
 │   └── tiny_gpt.py             # Atomic GPT implementation
@@ -1481,12 +1518,15 @@ All agent responses now include mandatory `thought` and optional `tool_call` fie
 
 // Workflow State
 export interface WorkflowState {
-  requirements: string;
-  status: 'idle' | 'running' | 'completed' | 'error';
-  agent1: AgentState<RequirementsReview>;
-  agent2: AgentState<TestCaseCollection>;
-  agent3: AgentState<TestResults>;
-  error: string | null;
+  status: WorkflowStatus;
+  rawRequirements: string;
+  validatedSpecs: ValidatedSpec[];
+  testCases: TestCase[];
+  results: ExecutionResult[];
+  error?: string;
+  thinkingProcess: string;
+  settings: AISettings;
+  metrics: OrchestrationMetrics;
 }
 
 // Generic Agent State
@@ -2108,6 +2148,12 @@ For questions or issues, please open a GitHub issue or contact the maintainers.
 - ✅ Added input sanitization via `sanitizeRequirements`.
 - ✅ Implemented startup environment validation.
 - ✅ Improved error handling in async workflow functions.
+
+### Phase 2: Orchestration & Observability (Completed v2.7.0)
+- ✅ Recursive reasoning loops (Thought-Action-Observation).
+- ✅ MCP-compliant tool discovery and execution.
+- ✅ Real-time Health Dashboard and Metrics tracking.
+- ✅ Local Session Persistence and Agent Memory.
 
 ### Phase 2: Code Quality (Ongoing)
 - [ ] Achieve 100% type safety in `geminiService.ts`.
