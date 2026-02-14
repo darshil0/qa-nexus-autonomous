@@ -1,7 +1,7 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 2.4.0  
-**Last Updated**: February 6, 2026  
+**Version**: 2.6.0
+**Last Updated**: February 13, 2026
 **Status**: Production Ready
 
 ## Table of Contents
@@ -126,7 +126,14 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
 │ AGENT 1  │      │   AGENT 2    │      │   AGENT 3    │
 │  Reqs    │──────▶│   Test       │──────▶│   Test       │
 │ Reviewer │      │   Writer     │      │  Executor    │
-└──────────┘      └──────────────┘      └──────────────┘
+└────┬─────┘      └──────┬───────┘      └──────┬───────┘
+     │                   │                     │
+     └──────────┬────────┴─────────────────────┘
+                ▼
+┌──────────────────────────────────────────────┐
+│        MODEL CONTEXT PROTOCOL (MCP)          │
+│   (Skill Registry: Jira, GitHub, Analysis)   │
+└──────────────────────────────────────────────┘
       │                   │                     │
       ▼                   ▼                     ▼
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -243,13 +250,19 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Gemini Service Layer                          │
+│              Autonomous Orchestration Layer                     │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │  geminiService.ts                                         │   │
-│  │  - API client initialization                              │   │
-│  │  - Prompt engineering                                     │   │
-│  │  - Response parsing                                       │   │
-│  │  - Error handling                                         │   │
+│  │  geminiService.ts (runAgenticWorkflow)                   │   │
+│  │  - Multi-step reasoning loops                            │   │
+│  │  - Sequential tool call management                        │   │
+│  │  - Prompt & Observation synthesis                        │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                              │                                  │
+│                              ▼                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  MCP Service & Skill Registry                            │   │
+│  │  - Standardized tool interface (JSON-RPC)                │   │
+│  │  - Executable skills (Jira, GitHub, Code Analysis)       │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -299,10 +312,12 @@ src/
 │   └── UI Rendering            # Agent cards, results display
 │
 ├── services/
-│   └── geminiService.ts        # Gemini API integration
-│       ├── reviewRequirements() # Agent 1 function
-│       ├── generateTestCases()  # Agent 2 function
-│       └── executeTests()       # Agent 3 function
+│   ├── geminiService.ts        # Gemini API & Agentic Workflow
+│   ├── mcpService.ts           # Model Context Protocol
+│   └── agenticSkills.ts        # Autonomous Skill Registry
+│
+├── engine/
+│   └── tiny_gpt.py             # Atomic GPT implementation
 │
 ├── types.ts                    # TypeScript interfaces
 │   ├── WorkflowState           # Main state interface
@@ -1981,8 +1996,8 @@ test(workflow): add integration test for full workflow
 
 ---
 
-**Version**: 2.3.1  
-**Last Updated**: February 6, 2026  
+**Version**: 2.6.0
+**Last Updated**: February 13, 2026
 **Maintained by**: QA Nexus Team
 
 For questions or issues, please open a GitHub issue or contact the maintainers.

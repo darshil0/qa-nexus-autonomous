@@ -33,11 +33,20 @@ QA Nexus Autonomous is a state-of-the-art multi-agent system designed to automat
                                     │                               │
                                     ▼                               ▼
                  ┌──────────────────────────────────────────────────┐
-                 │              Specialized AI Agents               │
+                 │          RECURSIVE AGENTIC WORKFLOW              │
                  ├──────────────────────────────────────────────────┤
                  │ 1. Requirements Reviewer (Logic Check)           │
                  │ 2. Test Case Writer (Scenario Generation)        │
                  │ 3. Test Executor (Simulation & Reporting)         │
+                 └──────────────────┬───────────────────────────────┘
+                                    │
+                                    ▼
+                 ┌──────────────────────────────────────────────────┐
+                 │        MODEL CONTEXT PROTOCOL (MCP)              │
+                 ├──────────────────────────────────────────────────┤
+                 │  - Jira Search        - GitHub Issue Creator     │
+                 │  - Test Runner        - Code Analysis            │
+                 │  - Perf Audit         - Tiny GPT Reference       │
                  └──────────────────────────────────────────────────┘
 ```
 

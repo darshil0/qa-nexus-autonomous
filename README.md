@@ -2,7 +2,7 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
@@ -244,16 +244,27 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 QA Nexus implements a sophisticated multi-agent architecture where three specialized agents work together through a centralized orchestration layer:
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                     ORCHESTRATION LAYER                           │
-│                    (React + App.tsx)                              │
-└────────┬─────────────────────┬─────────────────────┬─────────────┘
-         │                     │                     │
-         ▼                     ▼                     ▼
-   ┌──────────┐         ┌──────────────┐      ┌──────────────┐
-   │ AGENT 1  │────────▶│   AGENT 2    │─────▶│   AGENT 3    │
-   │ Reviewer │         │    Writer    │      │   Executor   │
-   └──────────┘         └──────────────┘      └──────────────┘
+┌────────────────────────────────────────────────────────────────────────────┐
+│                          ORCHESTRATION LAYER                               │
+│                         (React + runAgenticWorkflow)                       │
+└───────────────────┬──────────────────┬───────────────────┬─────────────────┘
+                    │                  │                   │
+                    ▼                  ▼                   ▼
+            ┌──────────────┐   ┌──────────────┐    ┌──────────────┐
+            │   AGENT 1    │   │   AGENT 2    │    │   AGENT 3    │
+            │   Reviewer   │   │    Writer    │    │   Executor   │
+            └──────┬───────┘   └──────┬───────┘    └──────┬───────┘
+                   │                  │                   │
+                   └─────────┬────────┴───────────────────┘
+                             ▼
+            ┌──────────────────────────────────────────────┐
+            │           MODEL CONTEXT PROTOCOL             │
+            │      (MCP Service + Skill Registry)          │
+            └────────────────┬──────────────┬──────────────┘
+                             │              │
+                    ┌────────▼──────┐ ┌─────▼────────┐
+                    │ Jira / GitHub │ │ Code/Perf API│
+                    └───────────────┘ └──────────────┘
 ```
 
 ### Key Components
@@ -462,7 +473,12 @@ qa-nexus-autonomous/
 │   │   └── AgentThinkingLog.tsx
 │   │
 │   ├── services/
-│   │   └── geminiService.ts       # Gemini API integration
+│   │   ├── geminiService.ts       # Gemini API integration
+│   │   ├── mcpService.ts          # Model Context Protocol
+│   │   └── agenticSkills.ts       # Autonomous skill registry
+│   │
+│   ├── engine/
+│   │   └── tiny_gpt.py            # Atomic GPT engine implementation
 │   │
 │   └── __tests__/                 # Test files
 │       ├── NavBtn.spec.tsx
@@ -1018,7 +1034,7 @@ Built with cutting-edge technologies:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
