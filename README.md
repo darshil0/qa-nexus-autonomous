@@ -2,7 +2,7 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-2.7.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.8.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
@@ -89,7 +89,8 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
-### 🤖 Agentic Skills & MCP (v2.7.0)
+### 🤖 Agentic Skills & Claude Skills (v2.8.0)
+- **Claude Skills Integration**: Implemented the official Anthropic "Skills" standard for portable AI workflows.
 - **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0.
 - **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 5 per task) to gather complex context before providing a final answer.
 - **Advanced Skill Registry**: Includes capabilities for **Code Analysis**, **Performance Audits**, **Jira Search**, and **GitHub Issue Creation**.
@@ -100,7 +101,7 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Enhanced Export Engine**: Export generated test cases and execution reports to JSON or CSV formats directly from the UI header.
 
 ### 🧠 Tiny GPT Engine
-- **Pure Python Implementation**: Atomic GPT training and inference engine located in `src/engine/tiny_gpt.py`.
+- **Pure Python Implementation**: Atomic GPT training and inference engine now part of the `tiny-gpt` skill.
 - **Dependency-Free**: Zero external libraries (pure `math`, `random`, `os`) for maximum portability and educational value.
 - **Educational Core**: Demonstrates Autograd, Attention mechanisms, and Transformer blocks in under 300 lines of code.
 
@@ -463,6 +464,12 @@ In the **Test Designer** tab:
 
 ```
 qa-nexus-autonomous/
+├── skills/                        # Claude Agent Skills (Anthropic Standard)
+│   ├── requirements-reviewer/     # Phase 1: Review skill
+│   ├── test-case-writer/          # Phase 2: Writing skill
+│   ├── test-executor/             # Phase 3: Execution skill
+│   └── tiny-gpt/                  # GPT engine skill & scripts
+│
 ├── src/
 │   ├── App.tsx                    # Main orchestrator
 │   ├── index.tsx                  # React entry point
@@ -489,9 +496,6 @@ qa-nexus-autonomous/
 │   │   ├── agenticSkills.ts       # Autonomous skill registry
 │   │   ├── persistenceService.ts  # Local session persistence
 │   │   └── memoryService.ts       # Short-term context buffer
-│   │
-│   ├── engine/
-│   │   └── tiny_gpt.py            # Atomic GPT engine implementation
 │   │
 │   └── __tests__/                 # Test files
 │       ├── NavBtn.spec.tsx

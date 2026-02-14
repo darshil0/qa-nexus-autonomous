@@ -7,10 +7,10 @@ import { agentMemory } from "./memoryService";
 import { logger } from "../utils/logger";
 import { sanitizeRequirements } from "../utils/sanitizeInput";
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string;
 let ai: GoogleGenAI | undefined;
 if (apiKey) {
-  ai = new GoogleGenAI({ apiKey });
+  ai = new GoogleGenAI({ apiKey }) as unknown as GoogleGenAI;
 } else {
   console.warn('VITE_GEMINI_API_KEY is not set. Gemini client will not be initialized.');
 }
@@ -25,17 +25,12 @@ export const setAiClient = (client: GoogleGenAI | undefined) => {
  */
 function extractText(response: GenerateContentResponse): string {
   try {
-    // Handle the actual API response structure
-    if (typeof response.text === 'function') {
-      return response.text();
-    }
-
-    // Handle mock/test responses
+    // Handle the actual API response structure (v1.x uses a getter)
     if (typeof response.text === 'string') {
       return response.text;
     }
 
-    // Fallback: try to access as unknown type
+    // Handle mock/test responses or older SDK versions where text might be a function
     const rawResponse = response as unknown as { text: string | (() => string) };
     if (typeof rawResponse.text === 'function') {
       return rawResponse.text();
@@ -54,14 +49,14 @@ function extractText(response: GenerateContentResponse): string {
 /**
  * Helper to safely extract and parse JSON from Gemini's response.
  */
-async function parseAiResponse<T>(
+function parseAiResponse<T>(
   response: GenerateContentResponse,
   field: string
-): Promise<{
+): {
   data: T | null;
   thinking: string;
   toolCall?: { name: string; arguments: Record<string, string> }
-}> {
+} {
   try {
     const text = extractText(response);
 
@@ -144,7 +139,7 @@ async function runAgenticWorkflow<T>(
         }
       });
 
-      const { data, thinking, toolCall } = await parseAiResponse<T>(response, field);
+      const { data, thinking, toolCall } = parseAiResponse<T>(response, field);
       finalThinking += (finalThinking ? "\n\n" : "") + `[Thought Step ${iterations}]: ${thinking}`;
 
       agentMemory.add('assistant', thinking);

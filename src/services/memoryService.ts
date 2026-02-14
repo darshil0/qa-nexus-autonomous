@@ -38,7 +38,7 @@ class MemoryService {
    * Get all memories formatted for context
    */
   public getContext(): string {
-    if (this.memory.length === 0) return "No previous session context.";
+    if (this.memory.length === 0) {return "No previous session context.";}
 
     return this.memory
       .map(m => `[${m.timestamp}] ${m.role.toUpperCase()}: ${m.content}`)
