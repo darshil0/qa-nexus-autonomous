@@ -1,7 +1,7 @@
 # 🤖 AGENT.md - QA Nexus Autonomous Reference Guide
 
-**Version**: 2.5.0
-**Last Updated**: February 8, 2026
+**Version**: 2.6.0  
+**Last Updated**: February 13, 2026  
 **Status**: Comprehensive Developer Reference
 
 ---
@@ -33,11 +33,20 @@ QA Nexus Autonomous is a state-of-the-art multi-agent system designed to automat
                                     │                               │
                                     ▼                               ▼
                  ┌──────────────────────────────────────────────────┐
-                 │              Specialized AI Agents               │
+                 │          RECURSIVE AGENTIC WORKFLOW              │
                  ├──────────────────────────────────────────────────┤
                  │ 1. Requirements Reviewer (Logic Check)           │
                  │ 2. Test Case Writer (Scenario Generation)        │
                  │ 3. Test Executor (Simulation & Reporting)         │
+                 └──────────────────┬───────────────────────────────┘
+                                    │
+                                    ▼
+                 ┌──────────────────────────────────────────────────┐
+                 │        MODEL CONTEXT PROTOCOL (MCP)              │
+                 ├──────────────────────────────────────────────────┤
+                 │  - Jira Search        - GitHub Issue Creator     │
+                 │  - Test Runner        - Code Analysis            │
+                 │  - Perf Audit         - Tiny GPT Reference       │
                  └──────────────────────────────────────────────────┘
 ```
 
@@ -78,10 +87,25 @@ Located in `src/services/agenticSkills.ts`:
 - `test_runner`: Real-time execution simulation.
 
 ### 🧠 Thought-Action-Observation Loop
-Agents are encouraged to use a reasoning loop:
-1. **Thought**: Analyze the current state and determine if a tool is needed.
-2. **Action**: Call the appropriate MCP tool.
-3. **Observation**: Process the tool output and incorporate it into the final response.
+Agents use a standardized two-pass loop implemented in `src/services/geminiService.ts` via `runAgenticWorkflow`:
+1. **Initial Thought**: The agent analyzes requirements/test cases and decides if an external tool (e.g., `jira_search`) is required to proceed.
+2. **Tool Execution**: If a `tool_call` is requested, the `MCPService` handles the execution.
+3. **Observation Integration**: The output of the tool is fed back to the agent as an `[OBSERVATION]`.
+4. **Final Response**: The agent synthesizes the original task with the new observation to provide a high-fidelity final output.
+
+### 🛠️ Extending the Skill Registry
+To add a new autonomous skill:
+1.  **Define the Skill**: In `src/services/agenticSkills.ts`, create a new `Skill` object.
+    ```typescript
+    export const myNewSkill: Skill = {
+      name: "my_skill",
+      description: "Performs a specific task.",
+      parameters: { param1: "Description of param1" },
+      execute: async (param1: string) => { /* logic */ }
+    };
+    ```
+2.  **Register the Skill**: Add the skill to the `skillRegistry` object in the same file.
+3.  **Update Prompts**: Ensure the agent system instructions in `src/constants.ts` or `geminiService.ts` mention the availability of the new skill.
 
 ---
 

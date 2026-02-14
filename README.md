@@ -2,7 +2,7 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-2.4.1-blue.svg)
+![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
@@ -89,16 +89,16 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
-### 🤖 Agentic Skills & MCP (v2.5)
-- **Model Context Protocol**: Standardized tool discovery and execution framework.
-- **Dynamic Skill Registry**: Agents can now search Jira, create GitHub issues, and run test simulations autonomously.
-- **Thought-Action Loop**: Enhanced AI reasoning with internal tool-calling logic.
-- **Extensible Architecture**: Easily add new skills to the `skillRegistry`.
+### 🤖 Agentic Skills & MCP (v2.6)
+- **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0.
+- **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 3 per task) to gather complex context before providing a final answer.
+- **Advanced Skill Registry**: Includes new capabilities for **Code Analysis**, **Performance Audits**, and **Tiny GPT Technical Reference**.
+- **Autonomous Reasoning Loop**: Implements a recursive "Thought-Action-Observation" sequence, allowing agents to refine results dynamically based on real-time tool feedback.
 
 ### 🧠 Tiny GPT Engine
-- **Pure Python Implementation**: Atomic GPT training and inference engine.
-- **Dependency-Free**: Zero external libraries for maximum portability.
-- **Educational Core**: Demonstrates the fundamental algorithms of modern LLMs.
+- **Pure Python Implementation**: Atomic GPT training and inference engine located in `src/engine/tiny_gpt.py`.
+- **Dependency-Free**: Zero external libraries (pure `math`, `random`, `os`) for maximum portability and educational value.
+- **Educational Core**: Demonstrates Autograd, Attention mechanisms, and Transformer blocks in under 300 lines of code.
 
 ### 🎨 Premium Design System (v2.4)
 - **Glassmorphism UI**: Translucent surfaces with backdrop blur
@@ -244,16 +244,27 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 QA Nexus implements a sophisticated multi-agent architecture where three specialized agents work together through a centralized orchestration layer:
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                     ORCHESTRATION LAYER                           │
-│                    (React + App.tsx)                              │
-└────────┬─────────────────────┬─────────────────────┬─────────────┘
-         │                     │                     │
-         ▼                     ▼                     ▼
-   ┌──────────┐         ┌──────────────┐      ┌──────────────┐
-   │ AGENT 1  │────────▶│   AGENT 2    │─────▶│   AGENT 3    │
-   │ Reviewer │         │    Writer    │      │   Executor   │
-   └──────────┘         └──────────────┘      └──────────────┘
+┌────────────────────────────────────────────────────────────────────────────┐
+│                          ORCHESTRATION LAYER                               │
+│                         (React + runAgenticWorkflow)                       │
+└───────────────────┬──────────────────┬───────────────────┬─────────────────┘
+                    │                  │                   │
+                    ▼                  ▼                   ▼
+            ┌──────────────┐   ┌──────────────┐    ┌──────────────┐
+            │   AGENT 1    │   │   AGENT 2    │    │   AGENT 3    │
+            │   Reviewer   │   │    Writer    │    │   Executor   │
+            └──────┬───────┘   └──────┬───────┘    └──────┬───────┘
+                   │                  │                   │
+                   └─────────┬────────┴───────────────────┘
+                             ▼
+            ┌──────────────────────────────────────────────┐
+            │           MODEL CONTEXT PROTOCOL             │
+            │      (MCP Service + Skill Registry)          │
+            └────────────────┬──────────────┬──────────────┘
+                             │              │
+                    ┌────────▼──────┐ ┌─────▼────────┐
+                    │ Jira / GitHub │ │ Code/Perf API│
+                    └───────────────┘ └──────────────┘
 ```
 
 ### Key Components
@@ -273,6 +284,15 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
 3. **Agent 2** → Generates prioritized test cases
 4. **Agent 3** → Executes tests and reports results
 5. **Output** → Comprehensive test report with metrics
+
+### Agentic Workflow (v2.5)
+
+The system now supports an autonomous loop for each agent:
+1. **Prompt**: The orchestrator sends a task and available MCP skills.
+2. **Thought**: The agent decides if a tool is needed (e.g., `jira_search`).
+3. **Action**: If needed, the agent returns a `tool_call`.
+4. **Execution**: The `MCPService` executes the skill and returns the `observation`.
+5. **Refinement**: The agent receives the observation and produces the final validated result.
 
 📖 **For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
 
@@ -453,7 +473,12 @@ qa-nexus-autonomous/
 │   │   └── AgentThinkingLog.tsx
 │   │
 │   ├── services/
-│   │   └── geminiService.ts       # Gemini API integration
+│   │   ├── geminiService.ts       # Gemini API integration
+│   │   ├── mcpService.ts          # Model Context Protocol
+│   │   └── agenticSkills.ts       # Autonomous skill registry
+│   │
+│   ├── engine/
+│   │   └── tiny_gpt.py            # Atomic GPT engine implementation
 │   │
 │   └── __tests__/                 # Test files
 │       ├── NavBtn.spec.tsx
@@ -1009,7 +1034,7 @@ Built with cutting-edge technologies:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-2.4.1-blue.svg)
+![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
