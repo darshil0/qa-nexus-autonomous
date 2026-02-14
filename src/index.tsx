@@ -2,6 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { validateEnv } from './utils/validateEnv';
+
+// Validate environment before rendering
+try {
+  validateEnv();
+} catch (err) {
+  console.error('Environment validation failed:', err);
+}
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -11,6 +20,8 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>
 );

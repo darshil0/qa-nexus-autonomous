@@ -1,7 +1,7 @@
 # 🚶 QA Nexus Workflow Walkthrough
 
-**Version**: 2.4.0  
-**Last Updated**: February 6, 2026
+**Version**: 2.6.0
+**Last Updated**: February 13, 2026
 
 This guide provides a step-by-step walkthrough of the **QA Nexus Autonomous** user experience.
 
@@ -21,7 +21,7 @@ Click the **"Start Workflow"** button. The system will sequentially trigger:
 2.  **Agent 2**: Generates a set of traceable test cases.
 3.  **Agent 3**: Simulates an execution run and generates logs.
 
-*Note: You can follow the AI's "Chain of Thought" in the **Thinking Log** at the bottom of the screen.*
+*Note: You can follow the AI's "Chain of Thought" in the **Thinking Log** at the bottom of the screen. In v2.6.0, you can see the agents calling multiple MCP tools (Jira, GitHub, Code Analysis) in real-time during this phase.*
 
 ## 4. Reviewing Specs (Agent 1 Tab)
 Navigate to the **Specs** tab to see:

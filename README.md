@@ -89,7 +89,7 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
-### 🤖 Agentic Skills & MCP (v2.6)
+### 🤖 Agentic Skills & MCP (v2.6.0)
 - **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0.
 - **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 3 per task) to gather complex context before providing a final answer.
 - **Advanced Skill Registry**: Includes new capabilities for **Code Analysis**, **Performance Audits**, and **Tiny GPT Technical Reference**.

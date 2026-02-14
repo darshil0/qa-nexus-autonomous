@@ -5,7 +5,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 
 export default ts.config(
     js.configs.recommended,
-    ...ts.configs.recommended,
+    ...ts.configs.recommendedTypeChecked, // More strict type checking
     {
         files: ["**/*.{ts,tsx}"],
         plugins: {
@@ -14,6 +14,8 @@ export default ts.config(
         },
         languageOptions: {
             parserOptions: {
+                project: true, // Enable project-aware type checking
+                tsconfigRootDir: import.meta.dirname,
                 ecmaFeatures: {
                     jsx: true,
                 },
@@ -30,16 +32,62 @@ export default ts.config(
             },
         },
         rules: {
+            // React Rules
             ...react.configs.recommended.rules,
             ...reactHooks.configs.recommended.rules,
+            "react/prop-types": "off", // Using TypeScript for prop validation
+            "react/react-in-jsx-scope": "off", // Not needed in React 19
+
+            // TypeScript Rules
+            "@typescript-eslint/no-explicit-any": "error", // Strict: disallow any
+            "@typescript-eslint/no-unused-vars": ["error", {
+                argsIgnorePattern: "^_",
+                varsIgnorePattern: "^_",
+                caughtErrorsIgnorePattern: "^_"
+            }],
+            "@typescript-eslint/no-floating-promises": "error", // Catch unhandled promises
+            "@typescript-eslint/await-thenable": "error", // Only await promises
+            "@typescript-eslint/no-misused-promises": "error", // Proper promise usage
+            "@typescript-eslint/require-await": "warn", // Functions marked async should use await
+
+            // General Code Quality
             "no-console": ["warn", { allow: ["warn", "error"] }],
-            "@typescript-eslint/no-explicit-any": "warn",
-            "react/prop-types": "off",
-            "react/react-in-jsx-scope": "off",
-            "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+            "prefer-const": "error",
+            "no-var": "error",
+            "eqeqeq": ["error", "always"], // Require === and !==
+            "curly": ["error", "all"], // Require curly braces for all control statements
+
+            // Best Practices
+            "no-throw-literal": "error", // Only throw Error objects
+            "no-return-await": "error", // Don't unnecessarily await in return statements
+            "require-await": "off", // Handled by TypeScript rule
         },
     },
     {
-        ignores: ["dist", "node_modules", ".eslintrc.cjs", "vite.config.ts", "vitest.config.ts"],
+        // Test files - slightly relaxed rules
+        files: ["**/*.spec.{ts,tsx}", "**/*.test.{ts,tsx}"],
+        rules: {
+            "@typescript-eslint/no-explicit-any": "warn", // More lenient in tests
+            "@typescript-eslint/no-floating-promises": "off", // Test frameworks handle this
+        }
+    },
+    {
+        // Configuration files
+        files: ["*.config.{js,ts}", "*.setup.{js,ts}"],
+        rules: {
+            "@typescript-eslint/no-var-requires": "off",
+            "no-console": "off",
+        }
+    },
+    {
+        ignores: [
+            "dist",
+            "node_modules",
+            ".eslintrc.cjs",
+            "vite.config.ts",
+            "vitest.config.ts",
+            "eslint.config.js",
+            "coverage"
+        ],
     }
 );

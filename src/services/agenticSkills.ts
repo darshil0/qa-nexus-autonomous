@@ -1,4 +1,6 @@
 
+import { logger } from "../utils/logger";
+
 /**
  * Interface for an Agentic Skill (Tool)
  */
@@ -20,7 +22,7 @@ export const jiraSearch: Skill = {
     query: "The search query or issue key."
   },
   execute: async (query: string) => {
-    console.warn(`[Skill: jira_search] Searching for: ${query}`);
+    logger.info(`[Skill: jira_search] Searching for: ${query}`);
     await new Promise(resolve => setTimeout(resolve, 500));
     return `Results for "${query}": Found 1 matching requirement (AUTH-101: Biometric Auth).`;
   }
@@ -38,7 +40,7 @@ export const githubIssueCreate: Skill = {
     body: "The issue description/logs."
   },
   execute: async (title: string, _body: string) => {
-    console.warn(`[Skill: github_issue_create] Creating issue: ${title}`);
+    logger.info(`[Skill: github_issue_create] Creating issue: ${title}`);
     await new Promise(resolve => setTimeout(resolve, 800));
     const issueId = Math.floor(Math.random() * 1000) + 100;
     return `Issue created successfully: https://github.com/org/repo/issues/${issueId}`;
@@ -56,7 +58,7 @@ export const testRunner: Skill = {
     testCaseId: "The ID of the test case to run."
   },
   execute: async (testCaseId: string) => {
-    console.warn(`[Skill: test_runner] Running test: ${testCaseId}`);
+    logger.info(`[Skill: test_runner] Running test: ${testCaseId}`);
     await new Promise(resolve => setTimeout(resolve, 1000));
     const status = Math.random() > 0.2 ? "PASSED" : "FAILED";
     return {
@@ -69,12 +71,90 @@ export const testRunner: Skill = {
 };
 
 /**
+ * Skill: Code Analysis
+ * Simulates deep inspection of code for potential issues.
+ */
+export const codeAnalysisSkill: Skill = {
+  name: "code_analysis",
+  description: "Analyze code for security vulnerabilities, logic errors, and best practices.",
+  parameters: {
+    code: "The source code or snippet to analyze."
+  },
+  execute: async (code: string) => {
+    logger.info(`[Skill: code_analysis] Analyzing code...`);
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    const issues = [
+      "Potential memory leak in effect cleanup.",
+      "Insecure direct object reference (IDOR) risk detected in API call.",
+      "Complexity is too high (O(N^2)). Suggest optimization."
+    ];
+    return {
+      snippet: code.substring(0, 50) + "...",
+      issuesDetected: issues,
+      healthScore: 72
+    };
+  }
+};
+
+/**
+ * Skill: Tiny GPT Reference
+ * Allows agents to query the underlying GPT algorithm details.
+ */
+export const tinyGptSkill: Skill = {
+  name: "tiny_gpt_reference",
+  description: "Retrieve technical details about the dependency-free Python GPT implementation.",
+  parameters: {
+    topic: "The topic to query (e.g., 'autograd', 'attention', 'rmsnorm')."
+  },
+  execute: async (topic: string) => {
+    logger.info(`[Skill: tiny_gpt_reference] Querying topic: ${topic}`);
+    await new Promise(resolve => setTimeout(resolve, 600));
+    const data: Record<string, string> = {
+      autograd: "Tiny GPT uses a scalar-based Value class with manual backward pass implementation for automatic differentiation.",
+      attention: "Uses multi-head causal self-attention with a KV cache for efficient inference.",
+      rmsnorm: "Implements Root Mean Square Layer Normalization for improved stability and faster training.",
+      optimizer: "Uses the Adam optimizer with linear learning rate decay."
+    };
+    return data[topic.toLowerCase()] || "Information not available for this topic. Available topics: autograd, attention, rmsnorm, optimizer.";
+  }
+};
+
+/**
+ * Skill: Performance Audit
+ * Simulates performance profiling of an application.
+ */
+export const performanceAuditSkill: Skill = {
+  name: "performance_audit",
+  description: "Run a performance audit and retrieve metrics like FCP, LCP, and TTI.",
+  parameters: {
+    url: "The URL of the application to audit."
+  },
+  execute: async (url: string) => {
+    logger.info(`[Skill: performance_audit] Auditing URL: ${url}`);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    return {
+      url,
+      metrics: {
+        fcp: "0.8s",
+        lcp: "1.2s",
+        tti: "1.4s",
+        totalBlockingTime: "50ms"
+      },
+      recommendations: ["Optimize image sizes.", "Reduce main-thread work."]
+    };
+  }
+};
+
+/**
  * Skill Registry
  */
 export const skillRegistry: Record<string, Skill> = {
   jira_search: jiraSearch,
   github_issue_create: githubIssueCreate,
-  test_runner: testRunner
+  test_runner: testRunner,
+  code_analysis: codeAnalysisSkill,
+  tiny_gpt_reference: tinyGptSkill,
+  performance_audit: performanceAuditSkill
 };
 
 /**

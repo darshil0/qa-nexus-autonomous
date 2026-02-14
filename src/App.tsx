@@ -27,6 +27,7 @@ import { Agent2Tab } from './components/tabs/Agent2Tab';
 import { Agent3Tab } from './components/tabs/Agent3Tab';
 import { ReportsTab } from './components/tabs/ReportsTab';
 import { NavBtn } from './components/NavBtn';
+import { logger } from './utils/logger';
 
 const App: React.FC = () => {
   const [state, setState] = useState<WorkflowState>({
@@ -48,21 +49,53 @@ const App: React.FC = () => {
 
   const runWorkflow = useCallback(async () => {
     if (!state.rawRequirements.trim()) return;
+
     try {
-      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.AGENT1_REVIEWING, thinkingProcess: '[AGENT 1] Reviewing specs...' }));
+      setState(p => ({
+        ...p,
+        status: WorkflowStatus.AGENT1_REVIEWING,
+        thinkingProcess: '[AGENT 1] Reviewing specs...',
+        error: undefined
+      }));
+
       const { specs, thinking: t1 } = await reviewRequirements(state.rawRequirements);
 
-      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.AGENT2_WRITING, validatedSpecs: specs, thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...` }));
+      setState(p => ({
+        ...p,
+        status: WorkflowStatus.AGENT2_WRITING,
+        validatedSpecs: specs,
+        thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...`
+      }));
+
       const { testCases, thinking: t2 } = await generateTestCases(specs);
 
-      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.AGENT3_EXECUTING, testCases, thinkingProcess: `[AGENT 2] ${t2}\n[AGENT 3] Running execution...` }));
+      setState(p => ({
+        ...p,
+        status: WorkflowStatus.AGENT3_EXECUTING,
+        testCases,
+        thinkingProcess: `[AGENT 2] ${t2}\n[AGENT 3] Running execution...`
+      }));
+
       const { results, thinking: t3 } = await executeTests(testCases);
 
-      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.COMPLETED, results, thinkingProcess: `Pipeline complete.\n[AGENT 3] ${t3}` }));
+      setState(p => ({
+        ...p,
+        status: WorkflowStatus.COMPLETED,
+        results,
+        thinkingProcess: `Pipeline complete.\n[AGENT 3] ${t3}`
+      }));
+
       setActiveTab('reports');
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      setState((p: WorkflowState) => ({ ...p, status: WorkflowStatus.FAILED, thinkingProcess: '[ERROR] Workflow aborted.', error: message }));
+      logger.error('Workflow execution failed:', err);
+
+      setState(p => ({
+        ...p,
+        status: WorkflowStatus.FAILED,
+        thinkingProcess: '[ERROR] Workflow aborted. Check console for details.',
+        error: message
+      }));
     }
   }, [state.rawRequirements]);
 
@@ -71,8 +104,11 @@ const App: React.FC = () => {
     setIsJiraLoading(true);
     try {
       const content = await fetchJiraRequirement(jiraIssueInput);
-      setState((p: WorkflowState) => ({ ...p, rawRequirements: (p.rawRequirements ? p.rawRequirements + '\n\n' : '') + content }));
+      setState(p => ({ ...p, rawRequirements: (p.rawRequirements ? p.rawRequirements + '\n\n' : '') + content }));
       setJiraIssueInput('');
+    } catch (err) {
+      logger.error('Jira fetch failed:', err);
+      setState(p => ({ ...p, error: 'Failed to fetch from Jira' }));
     } finally {
       setIsJiraLoading(false);
     }
@@ -82,7 +118,10 @@ const App: React.FC = () => {
     setGithubCreatingId(res.testCaseId);
     try {
       const url = await createGithubIssue(res.testCaseId, res.logs);
-      setState((p: WorkflowState) => ({ ...p, results: p.results.map(r => r.testCaseId === res.testCaseId ? { ...r, githubIssueUrl: url } : r) }));
+      setState(p => ({ ...p, results: p.results.map(r => r.testCaseId === res.testCaseId ? { ...r, githubIssueUrl: url } : r) }));
+    } catch (err) {
+      logger.error('GitHub issue creation failed:', err);
+      setState(p => ({ ...p, error: 'Failed to create GitHub issue' }));
     } finally {
       setGithubCreatingId(null);
     }
@@ -137,6 +176,13 @@ const App: React.FC = () => {
     { name: 'Covered', count: new Set(state.testCases.flatMap(tc => tc.linkedRequirementIds)).size },
   ], [state.validatedSpecs, state.testCases]);
 
+  const mainContentRef = React.useRef<HTMLDivElement>(null);
+
+  // Focus main content when tab changes for better accessibility
+  useEffect(() => {
+    mainContentRef.current?.focus();
+  }, [activeTab]);
+
   return (
     <div className="app-container">
       <aside className="sidebar">
@@ -144,7 +190,7 @@ const App: React.FC = () => {
           <BrainCircuit className="pulse-primary" style={{ color: 'var(--primary)', width: '40px', height: '40px' }} />
           <div>
             <h1 className="brand-text" style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(to right, #6366f1, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>QA NEXUS</h1>
-            <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.1em' }}>AUTONOMOUS V2.4</p>
+            <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.1em' }}>AUTONOMOUS V2.6</p>
           </div>
         </div>
 
@@ -187,7 +233,17 @@ const App: React.FC = () => {
 
         <div style={{ paddingTop: '1.5rem', borderTop: '1px solid var(--glass-border)' }}>
           <button
-            onClick={() => setState({ ...state, status: WorkflowStatus.IDLE, rawRequirements: '', validatedSpecs: [], testCases: [], results: [] })}
+            onClick={() => {
+              setState({
+                status: WorkflowStatus.IDLE,
+                rawRequirements: '',
+                validatedSpecs: [],
+                testCases: [],
+                results: [],
+                thinkingProcess: 'System ready.',
+                jiraIntegration: { connected: true, projectKey: 'QA-AUTO' }
+              });
+            }}
             className="btn-secondary"
             style={{ width: '100%', fontSize: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
           >
@@ -217,16 +273,21 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        <div className="animate-fade-in" style={{ flex: 1, overflowY: 'auto', padding: '2rem' }}>
+        <div
+          ref={mainContentRef}
+          tabIndex={-1}
+          className="animate-fade-in"
+          style={{ flex: 1, overflowY: 'auto', padding: '2rem', outline: 'none' }}
+        >
           {activeTab === 'orchestrator' && (
             <OrchestratorTab
               jiraIssueInput={jiraIssueInput}
               setJiraIssueInput={setJiraIssueInput}
-              handleJiraFetch={handleJiraFetch}
+              handleJiraFetch={() => { void handleJiraFetch(); }}
               isJiraLoading={isJiraLoading}
               rawRequirements={state.rawRequirements}
               setRawRequirements={(val) => setState(p => ({ ...p, rawRequirements: val }))}
-              runWorkflow={runWorkflow}
+              runWorkflow={() => { void runWorkflow(); }}
               status={state.status}
               thinkingProcess={state.thinkingProcess}
             />
@@ -254,7 +315,7 @@ const App: React.FC = () => {
           {activeTab === 'agent3' && (
             <Agent3Tab
               results={state.results}
-              handleGithubIssue={handleGithubIssue}
+              handleGithubIssue={(res) => { void handleGithubIssue(res); }}
               githubCreatingId={githubCreatingId}
             />
           )}
@@ -275,7 +336,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-
-
-

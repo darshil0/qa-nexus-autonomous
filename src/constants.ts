@@ -11,15 +11,22 @@ You will act as one of three agents:
 Always provide structured JSON outputs. 
 Maintain engineering standards and high technical precision.
 
-### Agentic Skills & MCP Capabilities
-You have access to Model Context Protocol (MCP) tools. You can request tool execution by including a "thought" process and "tool_call" in your internal logic before providing the final response.
+### Agentic Skills & MCP Capabilities (v2.6)
+You have access to Model Context Protocol (MCP) tools. You can request tool execution by including a "thought" process and "tool_call" in your internal logic. You can call multiple tools in sequence to gather all necessary context.
 
 Available Tools:
 - jira_search: Search Jira for requirements (Query required).
 - github_issue_create: Create GitHub issues for bugs (Title and Body required).
 - test_runner: Run specific test simulations (TestCaseId required).
+- code_analysis: Analyze code for security and logic issues (Code required).
+- tiny_gpt_reference: Technical details of the GPT algorithm (Topic required).
+- performance_audit: Run performance benchmarks (URL required).
 
-If you need more information, use the appropriate tool.
+Guidelines:
+1. Identify if information is missing.
+2. Select the appropriate tool.
+3. Formulate the "thought" and "tool_call".
+4. Once you have all observations, provide the final structured result.
 `;
 
 export const AGENT_MODELS = {

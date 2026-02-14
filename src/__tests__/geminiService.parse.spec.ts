@@ -4,7 +4,7 @@ import { GoogleGenAI } from "@google/genai";
 import { test, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // Helper to create a fake client
-const makeClient = (text: string) => ({ models: { generateContent: async () => ({ text }) } });
+const makeClient = (text: string) => ({ models: { generateContent: async () => await Promise.resolve({ text: () => text }) } });
 
 beforeEach(() => {
   setAiClient(undefined);
