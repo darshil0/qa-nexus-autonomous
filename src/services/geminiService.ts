@@ -1,9 +1,9 @@
-
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "../constants";
 import { ValidatedSpec, TestCase, ExecutionResult } from "../types";
 import { getSkillDescriptions } from "./agenticSkills";
 import { mcpService } from "./mcpService";
+import { logger } from "../utils/logger";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 let ai: GoogleGenAI | undefined;
@@ -19,17 +19,60 @@ export const setAiClient = (client: GoogleGenAI | undefined) => {
 };
 
 /**
+ * Safely extract text from Gemini response
+ */
+function extractText(response: GenerateContentResponse): string {
+  try {
+    // Handle the actual API response structure
+    if (typeof response.text === 'function') {
+      return response.text();
+    }
+
+    // Handle mock/test responses
+    if (typeof response.text === 'string') {
+      return response.text;
+    }
+
+    // Fallback: try to access as unknown type
+    const rawResponse = response as unknown as { text: string | (() => string) };
+    if (typeof rawResponse.text === 'function') {
+      return rawResponse.text();
+    }
+    if (typeof rawResponse.text === 'string') {
+      return rawResponse.text;
+    }
+
+    return '';
+  } catch (error) {
+    logger.error('Failed to extract text from response:', error);
+    return '';
+  }
+}
+
+/**
  * Helper to safely extract and parse JSON from Gemini's response.
  */
-async function parseAiResponse<T>(response: GenerateContentResponse, field: string): Promise<{ data: T | null; thinking: string; toolCall?: { name: string; arguments: Record<string, string> } }> {
+async function parseAiResponse<T>(
+  response: GenerateContentResponse,
+  field: string
+): Promise<{
+  data: T | null;
+  thinking: string;
+  toolCall?: { name: string; arguments: Record<string, string> }
+}> {
   try {
-    // Handle both property and method access for .text (supports both real API and current test mocks)
-    const rawResponse = response as unknown as { text: string | (() => string) };
-    const text = (typeof rawResponse.text === 'function') ? rawResponse.text() : rawResponse.text;
+    const text = extractText(response);
 
-    if (!text) return { data: null, thinking: 'No response from AI' };
+    if (!text) {
+      logger.warn('No response text from AI');
+      return { data: null, thinking: 'No response from AI' };
+    }
 
-    const parsed = JSON.parse(text) as { thought?: string; tool_call?: { name: string; arguments: Record<string, string> } } & Record<string, T>;
+    const parsed = JSON.parse(text) as {
+      thought?: string;
+      tool_call?: { name: string; arguments: Record<string, string> };
+    } & Record<string, T>;
+
     const thinking = parsed.thought || "Analysis complete.";
     const toolCall = parsed.tool_call;
 
@@ -39,13 +82,17 @@ async function parseAiResponse<T>(response: GenerateContentResponse, field: stri
       toolCall
     };
   } catch (err) {
-    console.error(`AI ${field} parsing error:`, err);
-    return { data: null, thinking: 'Could not parse AI response: ' + (err instanceof Error ? err.message : String(err)) };
+    logger.error(`AI ${field} parsing error:`, err);
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    return {
+      data: null,
+      thinking: `Could not parse AI response: ${errorMessage}`
+    };
   }
 }
 
 /**
- * Universal Agentic Loop (Multi-Step)
+ * Universal Agentic Loop with improved error handling
  */
 async function runAgenticWorkflow<T>(
   agentModel: string,
@@ -54,22 +101,22 @@ async function runAgenticWorkflow<T>(
   field: string,
   schema: Record<string, unknown>
 ): Promise<{ data: T | null; thinking: string }> {
-  if (!ai) throw new Error('GenAI client not initialized.');
+  if (!ai) {
+    throw new Error('GenAI client not initialized. Please set VITE_GEMINI_API_KEY in your .env file.');
+  }
 
   const skillDocs = getSkillDescriptions();
-  let currentInput = `${input}\n\nAvailable MCP Skills:\n${skillDocs}`;
-  let finalThinking = "";
-  let finalData: T | null = null;
-  let iterations = 0;
-  const MAX_ITERATIONS = 3;
+  const fullInput = `${input}\n\nAvailable MCP Skills:\n${skillDocs}`;
 
-  while (iterations < MAX_ITERATIONS) {
-    iterations++;
-    const response = await ai.models.generateContent({
+  try {
+    // First Pass
+    logger.info(`Running ${agentModel} workflow for field: ${field}`);
+
+    let response = await ai.models.generateContent({
       model: agentModel,
-      contents: currentInput,
+      contents: fullInput,
       config: {
-        systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction + " If you use a tool, provide your 'thought' and 'tool_call'. If you have all information, provide the final result.",
+        systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction + " If you use a tool, provide your 'thought' and 'tool_call'.",
         thinkingConfig: { thinkingBudget: 4000 },
         responseMimeType: "application/json",
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,34 +125,92 @@ async function runAgenticWorkflow<T>(
     });
 
     const { data, thinking, toolCall } = await parseAiResponse<T>(response, field);
-    finalThinking += (finalThinking ? "\n\n" : "") + (thinking || `Step ${iterations} complete.`);
+    let finalThinking = thinking;
 
     if (toolCall) {
-      const mcpRes = await mcpService.handleRequest({
-        jsonrpc: "2.0",
-        method: "tools/call",
-        params: toolCall,
-        id: `mcp-${Date.now()}`
-      });
+      logger.info(`Agent requested tool: ${toolCall.name}`);
 
-      const observation = JSON.stringify(mcpRes.result || mcpRes.error);
-      finalThinking += `\n[MCP Skill Call: ${toolCall.name}]\nResult: ${observation}`;
+      try {
+        const mcpRes = await mcpService.handleRequest({
+          jsonrpc: "2.0",
+          method: "tools/call",
+          params: toolCall,
+          id: `mcp-${Date.now()}`
+        });
 
-      // Update input for next iteration
-      currentInput += `\n\n[PREVIOUS THOUGHT]: ${thinking}\n[TOOL CALL]: ${toolCall.name}\n[OBSERVATION]: ${observation}\n\nPlease continue or provide the final result.`;
-    } else {
-      finalData = data;
-      break;
+        const observation = JSON.stringify(mcpRes.result || mcpRes.error);
+        finalThinking += `\n\n[MCP Skill Call: ${toolCall.name}]\nResult: ${observation}`;
+
+        // Second Pass: Incorporate observation
+        const secondPassInput = `${fullInput}\n\n[PREVIOUS THOUGHT]: ${thinking}\n[TOOL CALL]: ${toolCall.name}\n[OBSERVATION]: ${observation}\n\nPlease provide the final result based on this information.`;
+
+        logger.info('Running second pass with observation');
+
+        response = await ai.models.generateContent({
+          model: agentModel,
+          contents: secondPassInput,
+          config: {
+            systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction,
+            thinkingConfig: { thinkingBudget: 4000 },
+            responseMimeType: "application/json",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            responseSchema: schema as any
+          }
+        });
+
+        const secondPassResult = await parseAiResponse<T>(response, field);
+        return {
+          data: secondPassResult.data,
+          thinking: finalThinking + "\n\n" + (secondPassResult.thinking || "Final analysis complete.")
+        };
+      } catch (mcpError) {
+        logger.error('MCP tool execution failed:', mcpError);
+        // Continue with first pass result even if tool fails
+        finalThinking += `\n\n[MCP Error]: Tool execution failed - ${mcpError instanceof Error ? mcpError.message : String(mcpError)}`;
+      }
     }
+
+    return {
+      data: data || ([] as unknown as T),
+      thinking: finalThinking
+    };
+  } catch (error) {
+    logger.error('Agentic workflow failed:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return {
+      data: [] as unknown as T,
+      thinking: `Workflow failed: ${errorMessage}`
+    };
+  }
+}
+
+/**
+ * Sanitize user input to prevent prompt injection
+ */
+function sanitizeInput(input: string): string {
+  let sanitized = input
+    .replace(/\[SYSTEM\]/gi, '')
+    .replace(/\[ADMIN\]/gi, '')
+    .replace(/\[OVERRIDE\]/gi, '')
+    .replace(/<script>/gi, '')
+    .trim();
+
+  // Limit length to prevent DOS
+  const MAX_LENGTH = 50000;
+  if (sanitized.length > MAX_LENGTH) {
+    logger.warn(`Input truncated from ${sanitized.length} to ${MAX_LENGTH} characters`);
+    sanitized = sanitized.substring(0, MAX_LENGTH);
   }
 
-  return { data: finalData || ([] as unknown as T), thinking: finalThinking };
+  return sanitized;
 }
 
 /**
  * Agent 1: Requirements Reviewer
  */
 export const reviewRequirements = async (rawInput: string): Promise<{ specs: ValidatedSpec[], thinking: string }> => {
+  const sanitizedInput = sanitizeInput(rawInput);
+
   const schema: Record<string, unknown> = {
     type: Type.OBJECT,
     properties: {
@@ -142,7 +247,7 @@ export const reviewRequirements = async (rawInput: string): Promise<{ specs: Val
   const { data, thinking } = await runAgenticWorkflow<ValidatedSpec[]>(
     AGENT_MODELS.AGENT1,
     "You are Agent 1 (Requirements Reviewer). Normalize and validate requirements. Detect Jira sources.",
-    `Analyze requirements: ${rawInput}`,
+    `Analyze requirements: ${sanitizedInput}`,
     "specs",
     schema
   );
@@ -243,6 +348,7 @@ export const executeTests = async (testCases: TestCase[]): Promise<{ results: Ex
  * Simulated Jira Service
  */
 export const fetchJiraRequirement = async (issueKey: string): Promise<string> => {
+  logger.info(`Fetching Jira requirement: ${issueKey}`);
   await new Promise(resolve => setTimeout(resolve, 800));
   const mockJiraData = {
     key: issueKey,
@@ -256,6 +362,7 @@ export const fetchJiraRequirement = async (issueKey: string): Promise<string> =>
  * Simulated GitHub Service
  */
 export const createGithubIssue = async (_testCaseId: string, _logs: string): Promise<string> => {
+  logger.info(`Creating GitHub issue for test: ${_testCaseId}`);
   await new Promise(resolve => setTimeout(resolve, 1000));
   const issueNumber = Math.floor(Math.random() * 1000) + 100;
   return `https://github.com/org/project/issues/${issueNumber}`;

@@ -1,4 +1,6 @@
 
+import { logger } from "../utils/logger";
+
 /**
  * Interface for an Agentic Skill (Tool)
  */
@@ -20,7 +22,7 @@ export const jiraSearch: Skill = {
     query: "The search query or issue key."
   },
   execute: async (query: string) => {
-    console.warn(`[Skill: jira_search] Searching for: ${query}`);
+    logger.info(`[Skill: jira_search] Searching for: ${query}`);
     await new Promise(resolve => setTimeout(resolve, 500));
     return `Results for "${query}": Found 1 matching requirement (AUTH-101: Biometric Auth).`;
   }
@@ -38,7 +40,7 @@ export const githubIssueCreate: Skill = {
     body: "The issue description/logs."
   },
   execute: async (title: string, _body: string) => {
-    console.warn(`[Skill: github_issue_create] Creating issue: ${title}`);
+    logger.info(`[Skill: github_issue_create] Creating issue: ${title}`);
     await new Promise(resolve => setTimeout(resolve, 800));
     const issueId = Math.floor(Math.random() * 1000) + 100;
     return `Issue created successfully: https://github.com/org/repo/issues/${issueId}`;
@@ -56,7 +58,7 @@ export const testRunner: Skill = {
     testCaseId: "The ID of the test case to run."
   },
   execute: async (testCaseId: string) => {
-    console.warn(`[Skill: test_runner] Running test: ${testCaseId}`);
+    logger.info(`[Skill: test_runner] Running test: ${testCaseId}`);
     await new Promise(resolve => setTimeout(resolve, 1000));
     const status = Math.random() > 0.2 ? "PASSED" : "FAILED";
     return {
@@ -79,7 +81,7 @@ export const codeAnalysisSkill: Skill = {
     code: "The source code or snippet to analyze."
   },
   execute: async (code: string) => {
-    console.warn(`[Skill: code_analysis] Analyzing code...`);
+    logger.info(`[Skill: code_analysis] Analyzing code...`);
     await new Promise(resolve => setTimeout(resolve, 1200));
     const issues = [
       "Potential memory leak in effect cleanup.",
@@ -105,7 +107,7 @@ export const tinyGptSkill: Skill = {
     topic: "The topic to query (e.g., 'autograd', 'attention', 'rmsnorm')."
   },
   execute: async (topic: string) => {
-    console.warn(`[Skill: tiny_gpt_reference] Querying topic: ${topic}`);
+    logger.info(`[Skill: tiny_gpt_reference] Querying topic: ${topic}`);
     await new Promise(resolve => setTimeout(resolve, 600));
     const data: Record<string, string> = {
       autograd: "Tiny GPT uses a scalar-based Value class with manual backward pass implementation for automatic differentiation.",
@@ -128,7 +130,7 @@ export const performanceAuditSkill: Skill = {
     url: "The URL of the application to audit."
   },
   execute: async (url: string) => {
-    console.warn(`[Skill: performance_audit] Auditing URL: ${url}`);
+    logger.info(`[Skill: performance_audit] Auditing URL: ${url}`);
     await new Promise(resolve => setTimeout(resolve, 1500));
     return {
       url,

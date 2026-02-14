@@ -17,6 +17,19 @@ export const Agent1Tab: React.FC<Agent1TabProps> = ({
     highlightedReqId,
     navigateToTests
 }) => {
+    if (!validatedSpecs || validatedSpecs.length === 0) {
+        return (
+            <div className="card" style={{ textAlign: 'center', padding: '3rem', maxWidth: '900px', margin: '0 auto' }}>
+                <h3 style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                    No Requirements Analyzed
+                </h3>
+                <p style={{ color: 'var(--text-secondary)' }}>
+                    Run the orchestrator pipeline to see validated requirements here.
+                </p>
+            </div>
+        );
+    }
+
     const resMap = new Map<string, string>(results.map(r => [r.testCaseId, r.status]));
 
     return (

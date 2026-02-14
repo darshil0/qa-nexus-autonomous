@@ -24,6 +24,7 @@
 16. [Troubleshooting](#troubleshooting)
 17. [Best Practices](#best-practices)
 18. [Contributing](#contributing)
+19. [Development Roadmap](#development-roadmap)
 
 ---
 
@@ -1194,6 +1195,8 @@ async function callGeminiAPI(prompt: string): Promise<string> {
 | `JSON parse error` | Malformed JSON from model | Use try-catch with fallback |
 | `Timeout` | Request took too long | Increase timeout or reduce prompt size |
 | `Network error` | No internet connection | Check connectivity |
+| `Type error: Cannot find module '@/types'` | Path alias not recognized | Restart TS server or check `tsconfig.json` |
+| `GenAI client not initialized` | Missing `VITE_GEMINI_API_KEY` | Ensure `.env` is populated and server restarted |
 
 ---
 
@@ -1989,14 +1992,17 @@ async function debugAgentCall(agentFn: () => Promise<any>, agentName: string) {
 8. **Document all agent prompts** and expected outputs
 9. **Implement rate limiting** to avoid quota issues
 10. **Monitor API usage** and set up alerts
+11. **Sanitize all user inputs** to prevent prompt injection
+12. **Use Error Boundaries** to prevent application-wide crashes
+13. **Validate Environment Variables** at application startup
 
 ### DON'Ts ❌
 
-1. **Don't commit `.env` file** to version control
+1. **Don't commit `.env` file** to version control (CRITICAL)
 2. **Don't trust AI responses** without validation
 3. **Don't expose API keys** in client-side code
 4. **Don't skip error handling** for API calls
-5. **Don't use `any` type** unless absolutely necessary
+5. **Don't use `any` type** (Enforced by ESLint)
 6. **Don't ignore TypeScript errors**
 7. **Don't deploy** without running tests
 8. **Don't hardcode** configuration values
@@ -2092,3 +2098,28 @@ test(workflow): add integration test for full workflow
 **Maintained by**: QA Nexus Team
 
 For questions or issues, please open a GitHub issue or contact the maintainers.
+
+---
+
+## Development Roadmap
+
+### Phase 1: Security & Stability (Completed v2.6.0)
+- ✅ Implemented `ErrorBoundary` component.
+- ✅ Added input sanitization via `sanitizeRequirements`.
+- ✅ Implemented startup environment validation.
+- ✅ Improved error handling in async workflow functions.
+
+### Phase 2: Code Quality (Ongoing)
+- [ ] Achieve 100% type safety in `geminiService.ts`.
+- [ ] Implement empty state handling for all UI components.
+- [ ] Expand centralized `logger` usage across entire codebase.
+
+### Phase 3: Testing & Documentation
+- [ ] Add Playwright/Cypress E2E test suite.
+- [ ] Increase unit test coverage for MCP and Agentic loops.
+- [ ] Generate OpenAPI documentation for the internal service layer.
+
+### Phase 4: Performance & Optimization
+- [ ] Implement advanced rate limiting with token bucket algorithm.
+- [ ] Optimize production bundle size via tree-shaking and lazy loading.
+- [ ] Add performance monitoring for AI response latency.

@@ -1,5 +1,6 @@
 
 import { skillRegistry, Skill } from "./agenticSkills";
+import { logger } from "../utils/logger";
 
 /**
  * MCP Request types
@@ -40,7 +41,7 @@ export class MCPService {
    * Handle an MCP request
    */
   public async handleRequest(request: MCPRequest): Promise<MCPResponse> {
-    console.warn(`[MCP] Handling request: ${request.method}`, request.params);
+    logger.info(`[MCP] Handling request: ${request.method}`, request.params);
 
     try {
       switch (request.method) {
@@ -83,7 +84,7 @@ export class MCPService {
         }
       }
     } catch (error) {
-      console.error(`[MCP] Error handling request:`, error);
+      logger.error(`[MCP] Error handling request:`, error);
       return {
         jsonrpc: "2.0",
         error: { code: -32603, message: "Internal error" },
