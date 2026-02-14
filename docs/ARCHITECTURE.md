@@ -1,7 +1,7 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 2.4.0  
-**Last Updated**: February 6, 2026  
+**Version**: 2.6.0  
+**Last Updated**: February 13, 2026  
 **Status**: Production Ready
 
 ## Table of Contents
@@ -9,18 +9,21 @@
 1. [Overview](#overview)
 2. [Prerequisites](#prerequisites)
 3. [System Architecture](#system-architecture)
-4. [Component Architecture](#component-architecture)
-5. [Agent Specifications](#agent-specifications)
-6. [Core Development Patterns](#core-development-patterns)
-7. [Integration Points](#integration-points)
-8. [Response Schemas](#response-schemas)
-9. [TypeScript Type Definitions](#typescript-type-definitions)
-10. [Testing & Validation](#testing--validation)
-11. [Security & Production](#security--production)
-12. [Deployment Guide](#deployment-guide)
-13. [Troubleshooting](#troubleshooting)
-14. [Best Practices](#best-practices)
-15. [Contributing](#contributing)
+4. [Model Context Protocol (MCP) & Agentic Skills](#model-context-protocol-mcp--agentic-skills)
+5. [Recursive Agentic Loop](#recursive-agentic-loop)
+6. [Tiny GPT Engine](#tiny-gpt-engine)
+7. [Component Architecture](#component-architecture)
+8. [Agent Specifications](#agent-specifications)
+9. [Core Development Patterns](#core-development-patterns)
+10. [Integration Points](#integration-points)
+11. [Response Schemas](#response-schemas)
+12. [TypeScript Type Definitions](#typescript-type-definitions)
+13. [Testing & Validation](#testing--validation)
+14. [Security & Production](#security--production)
+15. [Deployment Guide](#deployment-guide)
+16. [Troubleshooting](#troubleshooting)
+17. [Best Practices](#best-practices)
+18. [Contributing](#contributing)
 
 ---
 
@@ -126,7 +129,14 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
 │ AGENT 1  │      │   AGENT 2    │      │   AGENT 3    │
 │  Reqs    │──────▶│   Test       │──────▶│   Test       │
 │ Reviewer │      │   Writer     │      │  Executor    │
-└──────────┘      └──────────────┘      └──────────────┘
+└────┬─────┘      └──────┬───────┘      └──────┬───────┘
+     │                   │                     │
+     └──────────┬────────┴─────────────────────┘
+                ▼
+┌──────────────────────────────────────────────┐
+│        MODEL CONTEXT PROTOCOL (MCP)          │
+│   (Skill Registry: Jira, GitHub, Analysis)   │
+└──────────────────────────────────────────────┘
       │                   │                     │
       ▼                   ▼                     ▼
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -213,6 +223,63 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
 
 ---
 
+## Model Context Protocol (MCP) & Agentic Skills
+
+QA Nexus Autonomous integrates a subset of the **Model Context Protocol (MCP)**, providing a standardized framework for agents to discover and execute external tools (skills).
+
+### Technical Implementation
+
+- **Protocol**: Based on JSON-RPC 2.0.
+- **Service**: Handled by `MCPService` in `src/services/mcpService.ts`.
+- **Discovery**: Agents can query available capabilities using the `tools/list` method.
+- **Execution**: The `tools/call` method triggers skill execution with named parameters.
+
+### Skill Registry
+
+The `skillRegistry` in `src/services/agenticSkills.ts` serves as the centralized library of autonomous capabilities:
+
+| Skill Name | Description | Required Parameters |
+|------------|-------------|---------------------|
+| `jira_search` | Contextual requirement lookup. | `query` |
+| `github_issue_create` | Automated bug reporting. | `title`, `body` |
+| `test_runner` | Real-time execution simulation. | `testCaseId` |
+| `code_analysis` | Deep inspection for security/logic. | `code` |
+| `tiny_gpt_reference` | Technical specs of the GPT engine. | `topic` |
+| `performance_audit` | Automated benchmarking/profiling. | `url` |
+
+---
+
+## Recursive Agentic Loop
+
+The core orchestration has evolved from a linear pipeline to an iterative reasoning sequence. This is implemented via the `runAgenticWorkflow` helper in `src/services/geminiService.ts`.
+
+### Loop Sequence
+
+1.  **Contextual Analysis**: The agent evaluates the user prompt alongside the available MCP skill documentation.
+2.  **Multi-Pass Iteration**: The system supports up to **3 sequential iterations** per request.
+3.  **Thought & Action**: In each pass, the agent generates a `thought` (internal reasoning) and an optional `tool_call`.
+4.  **Observation Integration**: If a tool is called, the `MCPService` executes it, and the result is appended to the next pass as an `[OBSERVATION]`.
+5.  **Final Synthesis**: Once the agent has sufficient context (or reaches the iteration limit), it produces the final structured JSON artifact.
+
+### State Management
+
+- Conversation history is preserved across passes to maintain context.
+- Recursive logic allows for complex information gathering (e.g., searching Jira for a requirement, then analyzing the related code snippet).
+
+---
+
+## Tiny GPT Engine
+
+Located in `src/engine/tiny_gpt.py`, the Tiny GPT engine serves as an architectural reference for the fundamental mechanics of Large Language Models.
+
+### Core Implementation Details
+
+- **Dependency-Free**: Pure Python implementation using only `math`, `random`, and `os`.
+- **Atomic Algorithm**: Demonstrates scalar-based Autograd, Attention heads, and Transformer blocks in under 300 lines.
+- **Reference Role**: AI agents can query the logic of this engine using the `tiny_gpt_reference` MCP skill to ensure technical precision during code reviews and test generation.
+
+---
+
 ## Component Architecture
 
 ### Big Picture: Multi-Agent Workflow
@@ -243,13 +310,19 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Gemini Service Layer                          │
+│              Autonomous Orchestration Layer                     │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │  geminiService.ts                                         │   │
-│  │  - API client initialization                              │   │
-│  │  - Prompt engineering                                     │   │
-│  │  - Response parsing                                       │   │
-│  │  - Error handling                                         │   │
+│  │  geminiService.ts (runAgenticWorkflow)                   │   │
+│  │  - Multi-step reasoning loops                            │   │
+│  │  - Sequential tool call management                        │   │
+│  │  - Prompt & Observation synthesis                        │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                              │                                  │
+│                              ▼                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  MCP Service & Skill Registry                            │   │
+│  │  - Standardized tool interface (JSON-RPC)                │   │
+│  │  - Executable skills (Jira, GitHub, Code Analysis)       │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -299,10 +372,12 @@ src/
 │   └── UI Rendering            # Agent cards, results display
 │
 ├── services/
-│   └── geminiService.ts        # Gemini API integration
-│       ├── reviewRequirements() # Agent 1 function
-│       ├── generateTestCases()  # Agent 2 function
-│       └── executeTests()       # Agent 3 function
+│   ├── geminiService.ts        # Gemini API & Agentic Workflow
+│   ├── mcpService.ts           # Model Context Protocol
+│   └── agenticSkills.ts        # Autonomous Skill Registry
+│
+├── engine/
+│   └── tiny_gpt.py             # Atomic GPT implementation
 │
 ├── types.ts                    # TypeScript interfaces
 │   ├── WorkflowState           # Main state interface
@@ -323,15 +398,16 @@ src/
 
 ### Agent 1: Requirements Reviewer
 
-**Purpose**: Analyze project requirements and identify potential issues, gaps, and areas for improvement.
+**Purpose**: Analyze project requirements and identify potential issues, gaps, and areas for improvement using autonomous reasoning.
 
 #### Responsibilities
 
-1. **Completeness Check**: Verify all necessary requirements are present
-2. **Clarity Assessment**: Identify ambiguous or unclear specifications
-3. **Consistency Validation**: Find contradictory requirements
-4. **Risk Identification**: Highlight potential implementation challenges
-5. **Recommendation Generation**: Suggest improvements and additions
+1. **Completeness Check**: Verify all necessary requirements are present.
+2. **Clarity Assessment**: Identify ambiguous or unclear specifications.
+3. **Consistency Validation**: Find contradictory requirements.
+4. **Risk Identification**: Highlight potential implementation challenges.
+5. **Autonomous Search**: Uses `jira_search` to fetch external context or verify existing tickets.
+6. **Code Alignment**: Uses `code_analysis` to ensure requirements align with existing architecture.
 
 #### Input Format
 
@@ -442,11 +518,12 @@ Focus on:
 
 #### Responsibilities
 
-1. **Test Case Generation**: Create detailed test scenarios
-2. **Priority Assignment**: Rank tests by importance (P0, P1, P2, P3)
-3. **Coverage Analysis**: Ensure all requirements are tested
-4. **Test Data Specification**: Define input data and expected outputs
-5. **Edge Case Identification**: Include boundary and negative tests
+1. **Test Case Generation**: Create detailed test scenarios.
+2. **Priority Assignment**: Rank tests by importance (P0, P1, P2, P3).
+3. **Coverage Analysis**: Ensure all requirements are tested.
+4. **Test Data Specification**: Define input data and expected outputs.
+5. **Edge Case Identification**: Include boundary and negative tests.
+6. **Algorithm Reference**: Uses `tiny_gpt_reference` to ensure correctness for complex logic tests.
 
 #### Input Format
 
@@ -639,11 +716,13 @@ Prioritization Guide:
 
 #### Responsibilities
 
-1. **Execution Simulation**: Simulate running each test case
-2. **Result Generation**: Determine pass/fail with realistic distribution
-3. **Metrics Calculation**: Compute success rate, duration, coverage
-4. **Failure Analysis**: Provide failure reasons and debugging hints
-5. **Report Generation**: Create comprehensive execution report
+1. **Execution Simulation**: Simulate running each test case.
+2. **Result Generation**: Determine pass/fail with realistic distribution.
+3. **Metrics Calculation**: Compute success rate, duration, coverage.
+4. **Failure Analysis**: Provide failure reasons and debugging hints.
+5. **Report Generation**: Create comprehensive execution report.
+6. **Automated Reporting**: Uses `github_issue_create` to autonomously log bugs for failed tests.
+7. **Performance Benchmarking**: Uses `performance_audit` to include real-world latency metrics in reports.
 
 #### Input Format
 
@@ -808,42 +887,27 @@ Simulation Rules:
 
 ## Core Development Patterns
 
-### 1. Agent Function Pattern
+### 1. Recursive Agent Function Pattern
 
-All agent functions follow this pattern:
+All agent functions utilize the `runAgenticWorkflow` helper to support multi-step reasoning:
 
 ```typescript
 // src/services/geminiService.ts
 
-import { GoogleGenAI } from '@google/genai';
-
-const genAI = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-
-export async function reviewRequirements(
-  requirements: string
-): Promise<RequirementsReview> {
-  try {
-    // 1. Initialize model
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-pro-preview' });
-
-    // 2. Construct prompt
-    const prompt = buildReviewPrompt(requirements);
-
-    // 3. Call API
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-
-    // 4. Parse response
-    const review = parseReviewResponse(text);
-
-    // 5. Validate and return
-    return validateReview(review);
-  } catch (error) {
-    console.error('Requirements review failed:', error);
-    throw new Error('Failed to review requirements');
-  }
+async function runAgenticWorkflow<T>(
+  agentModel: string,
+  instruction: string,
+  input: string,
+  field: string,
+  schema: Record<string, unknown>
+): Promise<{ data: T | null; thinking: string }> {
+  // 1. Initialize multi-pass reasoning loop (max 3 iterations)
+  // 2. Construct dynamic prompt with MCP skill documentation
+  // 3. Intercept tool_calls and execute via MCPService
+  // 4. Feed observations back into the conversation history
+  // 5. Return final synthesized data and full reasoning trace
 }
+```
 
 function buildReviewPrompt(requirements: string): string {
   return `
@@ -852,20 +916,13 @@ You are an expert QA analyst...
 `;
 }
 
-function parseReviewResponse(text: string): RequirementsReview {
+function parseAiResponse<T>(response: GenerateContentResponse, field: string): Promise<{ data: T | null; thinking: string; toolCall?: any }> {
   try {
-    // Remove markdown code blocks if present
-    const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    const parsed = JSON.parse(cleaned);
-    return parsed;
+    // 1. Extract text from Gemini response (supports method or property)
+    // 2. Parse JSON schema with optional 'thought' and 'tool_call' fields
+    // 3. Return structured data for the orchestrator
   } catch (error) {
-    // Return safe fallback
-    return {
-      issues: [],
-      completeness: { score: 50, missingAreas: [] },
-      recommendations: [],
-      overallAssessment: 'Unable to parse review results'
-    };
+    // Return standardized error state
   }
 }
 
@@ -1027,6 +1084,23 @@ function parseAndValidateReview(text: string): RequirementsReview {
 
 ## Integration Points
 
+### Model Context Protocol (MCP) Integration
+
+The `MCPService` acts as a JSON-RPC 2.0 bridge between the AI agents and the local environment.
+
+```typescript
+// Example: Executing a tool via MCP
+const response = await mcpService.handleRequest({
+  jsonrpc: "2.0",
+  method: "tools/call",
+  params: {
+    name: "jira_search",
+    arguments: { query: "AUTH-101" }
+  },
+  id: Date.now()
+});
+```
+
 ### Gemini API Integration
 
 ```typescript
@@ -1125,14 +1199,26 @@ async function callGeminiAPI(prompt: string): Promise<string> {
 
 ## Response Schemas
 
+All agent responses now include mandatory `thought` and optional `tool_call` fields to support the recursive reasoning loop.
+
 ### Complete Agent 1 Response Schema
 
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["issues", "completeness", "recommendations", "overallAssessment"],
+  "required": ["thought", "specs"],
   "properties": {
+    "thought": {
+      "type": "string"
+    },
+    "tool_call": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "arguments": { "type": "object" }
+      }
+    },
     "issues": {
       "type": "array",
       "items": {
@@ -1192,8 +1278,18 @@ async function callGeminiAPI(prompt: string): Promise<string> {
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["testCases"],
+  "required": ["thought", "testCases"],
   "properties": {
+    "thought": {
+      "type": "string"
+    },
+    "tool_call": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "arguments": { "type": "object" }
+      }
+    },
     "testCases": {
       "type": "array",
       "items": {
@@ -1272,8 +1368,18 @@ async function callGeminiAPI(prompt: string): Promise<string> {
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["summary", "results", "coverage"],
+  "required": ["thought", "results"],
   "properties": {
+    "thought": {
+      "type": "string"
+    },
+    "tool_call": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "arguments": { "type": "object" }
+      }
+    },
     "summary": {
       "type": "object",
       "required": ["total", "passed", "failed", "skipped", "successRate", "totalDuration"],
@@ -1981,8 +2087,8 @@ test(workflow): add integration test for full workflow
 
 ---
 
-**Version**: 2.3.1  
-**Last Updated**: February 6, 2026  
+**Version**: 2.6.0  
+**Last Updated**: February 13, 2026  
 **Maintained by**: QA Nexus Team
 
 For questions or issues, please open a GitHub issue or contact the maintainers.
