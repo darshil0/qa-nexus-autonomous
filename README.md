@@ -2,7 +2,7 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.7.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
@@ -89,13 +89,14 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
-### 🤖 Agentic Skills & MCP (v2.6.0)
+### 🤖 Agentic Skills & MCP (v2.7.0)
 - **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0.
-- **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 3 per task) to gather complex context before providing a final answer.
-- **Advanced Skill Registry**: Includes new capabilities for **Code Analysis**, **Performance Audits**, and **Tiny GPT Technical Reference**.
+- **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 5 per task) to gather complex context before providing a final answer.
+- **Advanced Skill Registry**: Includes capabilities for **Code Analysis**, **Performance Audits**, **Jira Search**, and **GitHub Issue Creation**.
 - **Autonomous Reasoning Loop**: Implements a recursive "Thought-Action-Observation" sequence, allowing agents to refine results dynamically based on real-time tool feedback.
-- **Configurable AI Settings**: Adjust maximum reasoning iterations (up to 5), temperature, and model selection (Flash vs Pro) via the new Settings tab.
-- **Data Persistence**: Sessions are automatically saved to LocalStorage, allowing progress to survive page reloads.
+- **Agentic Health Dashboard**: Real-time monitoring of reasoning loop depth, tool usage frequency, estimated token consumption, and average latency.
+- **Data Persistence & Memory**: Sessions are automatically saved to LocalStorage, and a short-term memory buffer preserves context across pipeline stages.
+- **Configurable AI Settings**: Adjust maximum reasoning iterations, temperature, and model selection (Flash vs Pro) via the new Settings tab.
 - **Enhanced Export Engine**: Export generated test cases and execution reports to JSON or CSV formats directly from the UI header.
 
 ### 🧠 Tiny GPT Engine
@@ -257,6 +258,11 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
             │   AGENT 1    │   │   AGENT 2    │    │   AGENT 3    │
             │   Reviewer   │   │    Writer    │    │   Executor   │
             └──────┬───────┘   └──────┬───────┘    └──────┬───────┘
+                   │                  │                   │
+            ┌──────▼──────────────────▼───────────────────▼──────┐
+            │           AGENT MEMORY & PERSISTENCE                │
+            │      (Short-term context + LocalStorage Sync)       │
+            └──────┬──────────────────┬───────────────────┬──────┘
                    │                  │                   │
                    └─────────┬────────┴───────────────────┘
                              ▼
@@ -470,7 +476,9 @@ qa-nexus-autonomous/
 │   │   │   ├── Agent1Tab.tsx
 │   │   │   ├── Agent2Tab.tsx
 │   │   │   ├── Agent3Tab.tsx
-│   │   │   └── ReportsTab.tsx
+│   │   │   ├── ReportsTab.tsx
+│   │   │   ├── SettingsTab.tsx
+│   │   │   └── HealthDashboardTab.tsx
 │   │   ├── NavBtn.tsx
 │   │   ├── StatCard.tsx
 │   │   └── AgentThinkingLog.tsx
@@ -478,7 +486,9 @@ qa-nexus-autonomous/
 │   ├── services/
 │   │   ├── geminiService.ts       # Gemini API integration
 │   │   ├── mcpService.ts          # Model Context Protocol
-│   │   └── agenticSkills.ts       # Autonomous skill registry
+│   │   ├── agenticSkills.ts       # Autonomous skill registry
+│   │   ├── persistenceService.ts  # Local session persistence
+│   │   └── memoryService.ts       # Short-term context buffer
 │   │
 │   ├── engine/
 │   │   └── tiny_gpt.py            # Atomic GPT engine implementation
@@ -1037,7 +1047,7 @@ Built with cutting-edge technologies:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.7.0-blue.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)

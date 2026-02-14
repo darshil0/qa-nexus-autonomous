@@ -1,7 +1,7 @@
 # 🤖 AGENT.md - QA Nexus Autonomous Reference Guide
 
-**Version**: 2.6.0  
-**Last Updated**: February 13, 2026  
+**Version**: 2.7.0  
+**Last Updated**: February 14, 2026  
 **Status**: Comprehensive Developer Reference
 
 ---
@@ -86,12 +86,20 @@ Located in `src/services/agenticSkills.ts`:
 - `github_issue_create`: Automated bug reporting.
 - `test_runner`: Real-time execution simulation.
 
-### 🧠 Thought-Action-Observation Loop
-Agents use a standardized two-pass loop implemented in `src/services/geminiService.ts` via `runAgenticWorkflow`:
-1. **Initial Thought**: The agent analyzes requirements/test cases and decides if an external tool (e.g., `jira_search`) is required to proceed.
-2. **Tool Execution**: If a `tool_call` is requested, the `MCPService` handles the execution.
-3. **Observation Integration**: The output of the tool is fed back to the agent as an `[OBSERVATION]`.
-4. **Final Response**: The agent synthesizes the original task with the new observation to provide a high-fidelity final output.
+### 🧠 Recursive Reasoning Loop
+Agents use a standardized multi-pass loop implemented in `src/services/geminiService.ts` via `runAgenticWorkflow`:
+1. **Contextual Analysis**: The agent evaluates the task against available MCP skills and session memory.
+2. **Thought & Action**: The agent generates a reasoning trace and an optional `tool_call`.
+3. **Tool Execution**: If requested, the `MCPService` handles execution and tracks metrics.
+4. **Recursive Feedback**: Observations are fed back into the loop (up to 5 iterations).
+5. **Final Synthesis**: The agent produces the final structured JSON artifact.
+
+### 📈 Orchestration Observability
+v2.7.0 introduces the `OrchestrationMetrics` interface to track system health:
+- `totalToolCalls`: Cumulative count of MCP actions.
+- `averageLoopDepth`: Complexity indicator per task.
+- `totalTokensEstimated`: Context window utilization.
+- `latencyMs`: Performance benchmarking for recursive logic.
 
 ### 🛠️ Extending the Skill Registry
 To add a new autonomous skill:
@@ -118,6 +126,12 @@ QA Nexus v2.6.0 includes a local persistence layer in `src/services/persistenceS
 Users can export artifacts using the `src/utils/exportUtils.ts` module.
 - **JSON**: Full object representation for programmatic use.
 - **CSV**: Flattened representation for Excel/Sheets compatibility.
+
+### ⚙️ AI Scenario Tuning
+Developers and users can fine-tune agents via the `Settings` tab:
+- **Depth (Iterations)**: Cap the reasoning complexity.
+- **Determinism (Temperature)**: Balance between consistency and creative edge-case discovery.
+- **Model Agility**: Switch between high-accuracy (Pro) and high-speed (Flash) reasoning on the fly.
 
 ## 💻 Core Development Patterns
 

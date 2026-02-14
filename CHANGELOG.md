@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-02-14
+
+### Added
+- **Agentic Health Dashboard**: New diagnostic tab for monitoring reasoning loop depth, latency, and token saturation.
+- **MCP Tool Analytics**: Visual breakdown of tool call frequency (Jira, GitHub, etc.).
+- **Scenario-Based Tuning**: Comprehensive guide for configuring AI parameters based on specific QA objectives.
+- **Real-time Loop Monitoring**: Added `activeLoops` tracking to the orchestrator.
+
+### Changed
+- **Version bump**: Upgraded platform to v2.7.0.
+- **UI Enhancements**: Added sidebar shortcut for Health metrics and updated StatCard iconography.
+
 ## [2.6.0] - 2026-02-13
 
 ### Added
@@ -383,8 +395,8 @@ These fixes ensure:
 
 ## Version Information
 
-**Current Version**: 2.6.0  
-**Release Date**: February 13, 2026  
+**Current Version**: 2.7.0  
+**Release Date**: February 14, 2026  
 **Status**: Production Ready  
 **License**: MIT
 
@@ -540,5 +552,5 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 
 ---
 
-**Last Updated**: February 13, 2026  
-**Version**: 2.6.0
+**Last Updated**: February 14, 2026  
+**Version**: 2.7.0
