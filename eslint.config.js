@@ -37,10 +37,10 @@ export default ts.config(
             ...reactHooks.configs.recommended.rules,
             "react/prop-types": "off", // Using TypeScript for prop validation
             "react/react-in-jsx-scope": "off", // Not needed in React 19
-
+            
             // TypeScript Rules
             "@typescript-eslint/no-explicit-any": "error", // Strict: disallow any
-            "@typescript-eslint/no-unused-vars": ["error", {
+            "@typescript-eslint/no-unused-vars": ["error", { 
                 argsIgnorePattern: "^_",
                 varsIgnorePattern: "^_",
                 caughtErrorsIgnorePattern: "^_"
@@ -49,14 +49,14 @@ export default ts.config(
             "@typescript-eslint/await-thenable": "error", // Only await promises
             "@typescript-eslint/no-misused-promises": "error", // Proper promise usage
             "@typescript-eslint/require-await": "warn", // Functions marked async should use await
-
+            
             // General Code Quality
             "no-console": ["warn", { allow: ["warn", "error"] }],
             "prefer-const": "error",
             "no-var": "error",
             "eqeqeq": ["error", "always"], // Require === and !==
             "curly": ["error", "all"], // Require curly braces for all control statements
-
+            
             // Best Practices
             "no-throw-literal": "error", // Only throw Error objects
             "no-return-await": "error", // Don't unnecessarily await in return statements
