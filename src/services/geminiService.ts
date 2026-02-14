@@ -4,6 +4,7 @@ import { ValidatedSpec, TestCase, ExecutionResult } from "../types";
 import { getSkillDescriptions } from "./agenticSkills";
 import { mcpService } from "./mcpService";
 import { logger } from "../utils/logger";
+import { sanitizeRequirements } from "../utils/sanitizeInput";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 let ai: GoogleGenAI | undefined;
@@ -185,31 +186,10 @@ async function runAgenticWorkflow<T>(
 }
 
 /**
- * Sanitize user input to prevent prompt injection
- */
-function sanitizeInput(input: string): string {
-  let sanitized = input
-    .replace(/\[SYSTEM\]/gi, '')
-    .replace(/\[ADMIN\]/gi, '')
-    .replace(/\[OVERRIDE\]/gi, '')
-    .replace(/<script>/gi, '')
-    .trim();
-
-  // Limit length to prevent DOS
-  const MAX_LENGTH = 50000;
-  if (sanitized.length > MAX_LENGTH) {
-    logger.warn(`Input truncated from ${sanitized.length} to ${MAX_LENGTH} characters`);
-    sanitized = sanitized.substring(0, MAX_LENGTH);
-  }
-
-  return sanitized;
-}
-
-/**
  * Agent 1: Requirements Reviewer
  */
 export const reviewRequirements = async (rawInput: string): Promise<{ specs: ValidatedSpec[], thinking: string }> => {
-  const sanitizedInput = sanitizeInput(rawInput);
+  const sanitizedInput = sanitizeRequirements(rawInput);
 
   const schema: Record<string, unknown> = {
     type: Type.OBJECT,
