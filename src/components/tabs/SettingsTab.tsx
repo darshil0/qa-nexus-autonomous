@@ -8,7 +8,7 @@ interface SettingsTabProps {
 }
 
 export const SettingsTab: React.FC<SettingsTabProps> = ({ settings, setSettings }) => {
-    const updateSetting = (key: keyof AISettings, value: any) => {
+    const updateSetting = <K extends keyof AISettings>(key: K, value: AISettings[K]) => {
         setSettings({ ...settings, [key]: value });
     };
 

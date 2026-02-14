@@ -28,7 +28,7 @@ export function exportTestCasesJson(testCases: TestCase[]): void {
  * Export test cases to CSV
  */
 export function exportTestCasesCsv(testCases: TestCase[]): void {
-  if (testCases.length === 0) return;
+  if (testCases.length === 0) {return;}
 
   const headers = ['ID', 'Category', 'Preconditions', 'Steps', 'Expected Outcomes', 'Automation Candidate'];
   const rows = testCases.map(tc => [
@@ -56,7 +56,7 @@ export function exportResultsJson(results: ExecutionResult[]): void {
  * Export execution results to CSV
  */
 export function exportResultsCsv(results: ExecutionResult[]): void {
-  if (results.length === 0) return;
+  if (results.length === 0) {return;}
 
   const headers = ['TestCaseId', 'Status', 'Timestamp', 'Logs', 'GitHub Issue'];
   const rows = results.map(res => [

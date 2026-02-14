@@ -19,7 +19,7 @@ export function validateEnv(): void {
   const required = ['VITE_GEMINI_API_KEY'];
 
   for (const key of required) {
-    const value = import.meta.env[key];
+    const value = import.meta.env[key] as string | undefined;
 
     if (!value) {
       errors.push({
@@ -44,8 +44,8 @@ export function validateEnv(): void {
   const warnings: string[] = [];
 
   for (const key of optional) {
-    const value = import.meta.env[key];
-    if (!value || value.includes('your_')) {
+    const value = import.meta.env[key] as string | undefined;
+    if (!value || (typeof value === 'string' && value.includes('your_'))) {
       warnings.push(key);
     }
   }
@@ -84,7 +84,7 @@ export function validateEnv(): void {
 
   // Success
   if (import.meta.env.DEV) {
-    console.log('✅ Environment variables validated successfully');
+    console.warn('✅ Environment variables validated successfully');
   }
 }
 
@@ -197,8 +197,8 @@ function showEnvError(errors: EnvValidationError[]): void {
  * Get environment mode
  */
 export function getEnvMode(): 'development' | 'production' | 'test' {
-  if (import.meta.env.MODE === 'test') return 'test';
-  if (import.meta.env.PROD) return 'production';
+  if (import.meta.env.MODE === 'test') {return 'test';}
+  if (import.meta.env.PROD) {return 'production';}
   return 'development';
 }
 
@@ -220,7 +220,7 @@ export function isProduction(): boolean {
  * Get environment variable with type safety
  */
 export function getEnvVar(key: string, defaultValue?: string): string {
-  const value = import.meta.env[key];
+  const value = import.meta.env[key] as string | undefined;
 
   if (value === undefined) {
     if (defaultValue !== undefined) {

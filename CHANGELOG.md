@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.0] - 2026-02-15
+
+### Added
+- **Claude Skills Integration**: Restructured the project to support the [Anthropic Agent Skills](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) standard.
+- **Skills Directory**: Introduced `skills/` directory with specialized `SKILL.md` definitions for Requirements Reviewer, Test Case Writer, Test Executor, and Tiny GPT.
+- **Skills Registry**: Added a root-level `Skills.MD` for easier navigation of available AI capabilities.
+
+### Fixed
+- **Gemini SDK Compatibility**: Fixed a type error where `response.text()` was called as a function instead of a getter in the `@google/genai` v1.x SDK.
+- **Linting & Code Quality**: Resolved 20+ linting errors including missing curly braces, unsafe `any` usages, and redundant `await` statements.
+- **Type Safety**: Improved type safety in `SettingsTab.tsx` and `validateEnv.ts`.
+
+### Changed
+- **Project Structure**: Moved `src/engine/tiny_gpt.py` to `skills/tiny-gpt/scripts/tiny_gpt.py` to align with the Skills standard.
+
 ## [2.7.0] - 2026-02-14
 
 ### Added

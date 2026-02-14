@@ -71,7 +71,7 @@ const App: React.FC = () => {
   const [githubCreatingId, setGithubCreatingId] = useState<string | null>(null);
 
   const runWorkflow = useCallback(async () => {
-    if (!state.rawRequirements.trim()) return;
+    if (!state.rawRequirements.trim()) {return;}
 
     try {
       setState(p => ({
@@ -147,7 +147,7 @@ const App: React.FC = () => {
   }, [state.rawRequirements, state.settings]);
 
   const handleJiraFetch = useCallback(async () => {
-    if (!jiraIssueInput.trim()) return;
+    if (!jiraIssueInput.trim()) {return;}
     setIsJiraLoading(true);
     try {
       const content = await fetchJiraRequirement(jiraIssueInput);
@@ -187,9 +187,9 @@ const App: React.FC = () => {
 
   const filteredTestCases = useMemo(() => {
     let list = state.testCases;
-    if (highlightedReqId) list = list.filter(tc => tc.linkedRequirementIds.includes(highlightedReqId));
+    if (highlightedReqId) {list = list.filter(tc => tc.linkedRequirementIds.includes(highlightedReqId));}
     const term = tcSearchTerm.toLowerCase();
-    if (term) list = list.filter(tc => tc.id.toLowerCase().includes(term) || tc.category.toLowerCase().includes(term));
+    if (term) {list = list.filter(tc => tc.id.toLowerCase().includes(term) || tc.category.toLowerCase().includes(term));}
     return list;
   }, [state.testCases, tcSearchTerm, highlightedReqId]);
 
@@ -197,7 +197,7 @@ const App: React.FC = () => {
     const map: Record<string, TestCase[]> = {};
     state.testCases.forEach(tc => {
       tc.linkedRequirementIds.forEach(rid => {
-        if (!map[rid]) map[rid] = [];
+        if (!map[rid]) {map[rid] = [];}
         map[rid].push(tc);
       });
     });
@@ -209,7 +209,7 @@ const App: React.FC = () => {
       const prefix = activeTab === 'agent1' ? 'spec-' : 'tc-card-';
       const targetId = prefix + (activeTab === 'agent1' ? highlightedReqId : (filteredTestCases[0]?.id || ''));
       const el = document.getElementById(targetId);
-      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+      if (el) {setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);}
     }
   }, [activeTab, highlightedReqId, filteredTestCases]);
 
@@ -242,7 +242,7 @@ const App: React.FC = () => {
           <BrainCircuit className="pulse-primary" style={{ color: 'var(--primary)', width: '40px', height: '40px' }} />
           <div>
             <h1 className="brand-text" style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(to right, #6366f1, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>QA NEXUS</h1>
-            <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.1em' }}>AUTONOMOUS V2.7</p>
+            <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.1em' }}>AUTONOMOUS V2.8</p>
           </div>
         </div>
 
