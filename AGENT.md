@@ -1,7 +1,7 @@
 # 🤖 AGENT.md - QA Nexus Autonomous Reference Guide
 
-**Version**: 2.7.0  
-**Last Updated**: February 14, 2026  
+**Version**: 2.7.0
+**Last Updated**: February 14, 2026
 **Status**: Comprehensive Developer Reference
 
 ---
