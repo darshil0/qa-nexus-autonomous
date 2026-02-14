@@ -30,11 +30,20 @@ export type MCPResponse = {
  * Implements a subset of the Model Context Protocol for tool discovery and execution.
  */
 export class MCPService {
+  private toolUsage: Record<string, number> = {};
+
   /**
    * List available tools (skills)
    */
   public listTools(): Skill[] {
     return Object.values(skillRegistry);
+  }
+
+  /**
+   * Get tool usage statistics
+   */
+  public getToolUsage(): Record<string, number> {
+    return { ...this.toolUsage };
   }
 
   /**
@@ -57,6 +66,9 @@ export class MCPService {
           const params = request.params as { name: string; arguments: Record<string, string> };
           const { name, arguments: args } = params;
           const skill = skillRegistry[name];
+
+          // Track usage
+          this.toolUsage[name] = (this.toolUsage[name] || 0) + 1;
 
           if (!skill) {
             return {

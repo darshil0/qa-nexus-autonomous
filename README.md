@@ -2,7 +2,7 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.7.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
@@ -97,6 +97,8 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Configurable AI Settings**: Adjust maximum reasoning iterations (up to 5), temperature, and model selection (Flash vs Pro) via the new Settings tab.
 - **Data Persistence**: Sessions are automatically saved to LocalStorage, allowing progress to survive page reloads.
 - **Enhanced Export Engine**: Export generated test cases and execution reports to JSON or CSV formats directly from the UI header.
+- **Agentic Health Dashboard**: Real-time monitoring of reasoning loop depth, tool usage frequency, and token saturation metrics.
+- **AI Scenario Tuning**: Guided configuration for scenarios like "Deep Logic Review" and "Creative Edge-Case Hunting."
 
 ### 🧠 Tiny GPT Engine
 - **Pure Python Implementation**: Atomic GPT training and inference engine located in `src/engine/tiny_gpt.py`.
@@ -1037,7 +1039,7 @@ Built with cutting-edge technologies:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.7.0-blue.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)

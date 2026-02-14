@@ -41,3 +41,36 @@ The **Tests** tab allows you to:
 
 ## 7. System Reset
 Use the **"Reset System"** button in the sidebar to clear all previous agent data and start a new session.
+
+---
+
+## 🛠️ AI Tuning Guide (v2.7)
+
+The **Settings** tab allows you to fine-tune the "brain" of QA Nexus. Here are recommended configurations for different QA scenarios:
+
+### 🎯 Scenario: Deep Logic Review
+*When you have complex, mission-critical business rules.*
+- **Reasoning Iterations**: 5 (Max)
+- **Temperature**: 0.2 (Low randomness)
+- **Model**: Pro (Flash disabled)
+- **Goal**: High accuracy, exhaustive tool calls to Jira and Code Analysis.
+
+### ⚡ Scenario: Quick Smoke Test
+*When you just want a fast set of basic tests for a simple UI change.*
+- **Reasoning Iterations**: 1-2
+- **Temperature**: 0.7 (Default)
+- **Model**: Flash (Enable High-Performance Mode)
+- **Goal**: Speed and low token consumption.
+
+### 🧪 Scenario: Creative Edge-Case Hunting
+*When you're looking for weird bugs or security gaps.*
+- **Reasoning Iterations**: 3-4
+- **Temperature**: 0.9 (High creativity)
+- **Model**: Pro
+- **Goal**: Varied, non-deterministic scenarios that human testers might miss.
+
+### 📈 Monitoring Loop Health
+Use the **Loop Health** tab to keep an eye on:
+- **Resource Saturation**: How close you are to exhausting typical prompt limits.
+- **Reasoning Efficiency**: Whether the agents are finding answers quickly or struggling in deep loops.
+- **Tool Frequency**: Which MCP skills are being utilized most often.

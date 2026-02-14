@@ -53,6 +53,15 @@ export interface AISettings {
   useFlashModel: boolean;
 }
 
+export interface OrchestrationMetrics {
+  totalToolCalls: number;
+  averageLoopDepth: number;
+  totalTokensEstimated: number;
+  latencyMs: number;
+  toolFrequency: Record<string, number>;
+  activeLoops: number;
+}
+
 export interface WorkflowState {
   status: WorkflowStatus;
   rawRequirements: string;
@@ -66,4 +75,5 @@ export interface WorkflowState {
     projectKey: string;
   };
   settings: AISettings;
+  metrics: OrchestrationMetrics;
 }

@@ -7,7 +7,8 @@ import {
   BarChart3,
   RefreshCw,
   BrainCircuit,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Activity
 } from 'lucide-react';
 import {
   WorkflowStatus,
@@ -28,6 +29,7 @@ import { Agent2Tab } from './components/tabs/Agent2Tab';
 import { Agent3Tab } from './components/tabs/Agent3Tab';
 import { ReportsTab } from './components/tabs/ReportsTab';
 import { SettingsTab } from './components/tabs/SettingsTab';
+import { HealthDashboardTab } from './components/tabs/HealthDashboardTab';
 import { NavBtn } from './components/NavBtn';
 import { logger } from './utils/logger';
 import { persistenceService } from './services/persistenceService';
@@ -49,11 +51,19 @@ const App: React.FC = () => {
         maxIterations: 3,
         temperature: 0.7,
         useFlashModel: false
+      },
+      metrics: {
+        totalToolCalls: 0,
+        averageLoopDepth: 0,
+        totalTokensEstimated: 0,
+        latencyMs: 0,
+        toolFrequency: {},
+        activeLoops: 0
       }
     };
   });
 
-  const [activeTab, setActiveTab] = useState<'orchestrator' | 'agent1' | 'agent2' | 'agent3' | 'reports' | 'settings'>('orchestrator');
+  const [activeTab, setActiveTab] = useState<'orchestrator' | 'agent1' | 'agent2' | 'agent3' | 'reports' | 'settings' | 'health'>('orchestrator');
   const [highlightedReqId, setHighlightedReqId] = useState<string | null>(null);
   const [tcSearchTerm, setTcSearchTerm] = useState('');
   const [jiraIssueInput, setJiraIssueInput] = useState('');
@@ -68,34 +78,58 @@ const App: React.FC = () => {
         ...p,
         status: WorkflowStatus.AGENT1_REVIEWING,
         thinkingProcess: '[AGENT 1] Reviewing specs...',
+        metrics: { ...p.metrics, activeLoops: 1 },
         error: undefined
       }));
 
-      const { specs, thinking: t1 } = await reviewRequirements(state.rawRequirements, state.settings);
+      const { specs, thinking: t1, metrics: m1 } = await reviewRequirements(state.rawRequirements, state.settings);
 
       setState(p => ({
         ...p,
         status: WorkflowStatus.AGENT2_WRITING,
         validatedSpecs: specs,
-        thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...`
+        thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...`,
+        metrics: {
+          ...p.metrics,
+          totalToolCalls: p.metrics.totalToolCalls + m1.totalToolCalls,
+          totalTokensEstimated: p.metrics.totalTokensEstimated + m1.totalTokensEstimated,
+          latencyMs: (p.metrics.latencyMs + m1.latencyMs) / 2,
+          toolFrequency: { ...p.metrics.toolFrequency, ...m1.toolFrequency }
+        }
       }));
 
-      const { testCases, thinking: t2 } = await generateTestCases(specs, state.settings);
+      const { testCases, thinking: t2, metrics: m2 } = await generateTestCases(specs, state.settings);
 
       setState(p => ({
         ...p,
         status: WorkflowStatus.AGENT3_EXECUTING,
         testCases,
-        thinkingProcess: `[AGENT 2] ${t2}\n[AGENT 3] Running execution...`
+        thinkingProcess: `[AGENT 2] ${t2}\n[AGENT 3] Running execution...`,
+        metrics: {
+          ...p.metrics,
+          totalToolCalls: p.metrics.totalToolCalls + m2.totalToolCalls,
+          totalTokensEstimated: p.metrics.totalTokensEstimated + m2.totalTokensEstimated,
+          latencyMs: (p.metrics.latencyMs + m2.latencyMs) / 2,
+          toolFrequency: { ...p.metrics.toolFrequency, ...m2.toolFrequency }
+        }
       }));
 
-      const { results, thinking: t3 } = await executeTests(testCases, state.settings);
+      const { results, thinking: t3, metrics: m3 } = await executeTests(testCases, state.settings);
 
       setState(p => ({
         ...p,
         status: WorkflowStatus.COMPLETED,
         results,
-        thinkingProcess: `Pipeline complete.\n[AGENT 3] ${t3}`
+        thinkingProcess: `Pipeline complete.\n[AGENT 3] ${t3}`,
+        metrics: {
+          ...p.metrics,
+          totalToolCalls: p.metrics.totalToolCalls + m3.totalToolCalls,
+          totalTokensEstimated: p.metrics.totalTokensEstimated + m3.totalTokensEstimated,
+          latencyMs: (p.metrics.latencyMs + m3.latencyMs) / 2,
+          toolFrequency: { ...p.metrics.toolFrequency, ...m3.toolFrequency },
+          averageLoopDepth: (m1.averageLoopDepth + m2.averageLoopDepth + m3.averageLoopDepth) / 3,
+          activeLoops: 0
+        }
       }));
 
       setActiveTab('reports');
@@ -110,7 +144,7 @@ const App: React.FC = () => {
         error: message
       }));
     }
-  }, [state.rawRequirements]);
+  }, [state.rawRequirements, state.settings]);
 
   const handleJiraFetch = useCallback(async () => {
     if (!jiraIssueInput.trim()) return;
@@ -208,7 +242,7 @@ const App: React.FC = () => {
           <BrainCircuit className="pulse-primary" style={{ color: 'var(--primary)', width: '40px', height: '40px' }} />
           <div>
             <h1 className="brand-text" style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(to right, #6366f1, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>QA NEXUS</h1>
-            <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.1em' }}>AUTONOMOUS V2.6</p>
+            <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.1em' }}>AUTONOMOUS V2.7</p>
           </div>
         </div>
 
@@ -253,6 +287,12 @@ const App: React.FC = () => {
             active={activeTab === 'settings'}
             onClick={() => setActiveTab('settings')}
           />
+          <NavBtn
+            icon={<Activity size={20} />}
+            label="Loop Health"
+            active={activeTab === 'health'}
+            onClick={() => setActiveTab('health')}
+          />
         </nav>
 
         <div style={{ paddingTop: '1.5rem', borderTop: '1px solid var(--glass-border)' }}>
@@ -272,6 +312,14 @@ const App: React.FC = () => {
                 maxIterations: 3,
                 temperature: 0.7,
                 useFlashModel: false
+              },
+              metrics: {
+                totalToolCalls: 0,
+                averageLoopDepth: 0,
+                totalTokensEstimated: 0,
+                latencyMs: 0,
+                toolFrequency: {},
+                activeLoops: 0
               }
               });
             }}
@@ -380,6 +428,10 @@ const App: React.FC = () => {
               settings={state.settings}
               setSettings={(s) => setState(p => ({ ...p, settings: s }))}
             />
+          )}
+
+          {activeTab === 'health' && (
+            <HealthDashboardTab metrics={state.metrics} />
           )}
         </div>
       </main>

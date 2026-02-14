@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "../constants";
-import { ValidatedSpec, TestCase, ExecutionResult, AISettings } from "../types";
+import { ValidatedSpec, TestCase, ExecutionResult, AISettings, OrchestrationMetrics } from "../types";
 import { getSkillDescriptions } from "./agenticSkills";
 import { mcpService } from "./mcpService";
 import { agentMemory } from "./memoryService";
@@ -103,17 +103,20 @@ async function runAgenticWorkflow<T>(
   field: string,
   schema: Record<string, unknown>,
   settings?: AISettings
-): Promise<{ data: T | null; thinking: string }> {
+): Promise<{ data: T | null; thinking: string; metrics: OrchestrationMetrics }> {
   if (!ai) {
     throw new Error('GenAI client not initialized. Please set VITE_GEMINI_API_KEY in your .env file.');
   }
 
+  const startTime = Date.now();
   const skillDocs = getSkillDescriptions();
   const sessionMemory = agentMemory.getContext();
 
   let currentInput = `[SESSION CONTEXT]\n${sessionMemory}\n\n[CURRENT TASK]\n${input}\n\nAvailable MCP Skills:\n${skillDocs}`;
   let finalThinking = "";
   let finalData: T | null = null;
+  let totalToolCalls = 0;
+  let totalTokensEstimated = 0;
 
   const maxIterations = settings?.maxIterations ?? 3;
   const temperature = settings?.temperature ?? 0.7;
@@ -125,6 +128,9 @@ async function runAgenticWorkflow<T>(
     logger.info(`Running ${model} workflow (Pass ${iterations}/${maxIterations}) for field: ${field}`);
 
     try {
+      // Crude token estimation: ~4 chars per token
+      totalTokensEstimated += (currentInput.length / 4);
+
       const response = await ai.models.generateContent({
         model: model,
         contents: currentInput,
@@ -144,6 +150,7 @@ async function runAgenticWorkflow<T>(
       agentMemory.add('assistant', thinking);
 
       if (toolCall) {
+        totalToolCalls++;
         logger.info(`Agent requested tool: ${toolCall.name}`);
         const mcpRes = await mcpService.handleRequest({
           jsonrpc: "2.0",
@@ -169,16 +176,26 @@ async function runAgenticWorkflow<T>(
     }
   }
 
+  const latencyMs = Date.now() - startTime;
+
   return {
     data: finalData || ([] as unknown as T),
-    thinking: finalThinking
+    thinking: finalThinking,
+    metrics: {
+      totalToolCalls,
+      averageLoopDepth: iterations,
+      totalTokensEstimated: Math.round(totalTokensEstimated),
+      latencyMs,
+      toolFrequency: mcpService.getToolUsage(),
+      activeLoops: 0
+    }
   };
 }
 
 /**
  * Agent 1: Requirements Reviewer
  */
-export const reviewRequirements = async (rawInput: string, settings?: AISettings): Promise<{ specs: ValidatedSpec[], thinking: string }> => {
+export const reviewRequirements = async (rawInput: string, settings?: AISettings): Promise<{ specs: ValidatedSpec[], thinking: string, metrics: OrchestrationMetrics }> => {
   const sanitizedInput = sanitizeRequirements(rawInput);
 
   const schema: Record<string, unknown> = {
@@ -214,7 +231,7 @@ export const reviewRequirements = async (rawInput: string, settings?: AISettings
     required: ["specs"]
   };
 
-  const { data, thinking } = await runAgenticWorkflow<ValidatedSpec[]>(
+  const { data, thinking, metrics } = await runAgenticWorkflow<ValidatedSpec[]>(
     AGENT_MODELS.AGENT1,
     "You are Agent 1 (Requirements Reviewer). Normalize and validate requirements. Detect Jira sources.",
     `Analyze requirements: ${sanitizedInput}`,
@@ -223,13 +240,13 @@ export const reviewRequirements = async (rawInput: string, settings?: AISettings
     settings
   );
 
-  return { specs: data || [], thinking };
+  return { specs: data || [], thinking, metrics };
 };
 
 /**
  * Agent 2: Test Case Writer
  */
-export const generateTestCases = async (specs: ValidatedSpec[], settings?: AISettings): Promise<{ testCases: TestCase[], thinking: string }> => {
+export const generateTestCases = async (specs: ValidatedSpec[], settings?: AISettings): Promise<{ testCases: TestCase[], thinking: string, metrics: OrchestrationMetrics }> => {
   const schema: Record<string, unknown> = {
     type: Type.OBJECT,
     properties: {
@@ -261,7 +278,7 @@ export const generateTestCases = async (specs: ValidatedSpec[], settings?: AISet
     required: ["testCases"]
   };
 
-  const { data, thinking } = await runAgenticWorkflow<TestCase[]>(
+  const { data, thinking, metrics } = await runAgenticWorkflow<TestCase[]>(
     AGENT_MODELS.AGENT2,
     "You are Agent 2 (Test Case Writer). Generate structured test cases.",
     `Convert specs to test cases: ${JSON.stringify(specs)}`,
@@ -270,13 +287,13 @@ export const generateTestCases = async (specs: ValidatedSpec[], settings?: AISet
     settings
   );
 
-  return { testCases: data || [], thinking };
+  return { testCases: data || [], thinking, metrics };
 };
 
 /**
  * Agent 3: Test Executor
  */
-export const executeTests = async (testCases: TestCase[], settings?: AISettings): Promise<{ results: ExecutionResult[], thinking: string }> => {
+export const executeTests = async (testCases: TestCase[], settings?: AISettings): Promise<{ results: ExecutionResult[], thinking: string, metrics: OrchestrationMetrics }> => {
   const schema: Record<string, unknown> = {
     type: Type.OBJECT,
     properties: {
@@ -305,7 +322,7 @@ export const executeTests = async (testCases: TestCase[], settings?: AISettings)
     required: ["results"]
   };
 
-  const { data, thinking } = await runAgenticWorkflow<ExecutionResult[]>(
+  const { data, thinking, metrics } = await runAgenticWorkflow<ExecutionResult[]>(
     AGENT_MODELS.AGENT3,
     "You are Agent 3 (Test Executor). Simulate execution and provide logs.",
     `Execute test cases: ${JSON.stringify(testCases)}`,
@@ -314,7 +331,7 @@ export const executeTests = async (testCases: TestCase[], settings?: AISettings)
     settings
   );
 
-  return { results: data || [], thinking };
+  return { results: data || [], thinking, metrics };
 };
 
 /**
