@@ -1,9 +1,9 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "@/constants";
 import { ValidatedSpec, TestCase, ExecutionResult, AISettings, OrchestrationMetrics } from "@/types";
-import { getSkillDescriptions } from "./agenticSkills";
-import { mcpService } from "./mcpService";
-import { agentMemory } from "./memoryService";
+import { getSkillDescriptions } from "@/services/agenticSkills";
+import { mcpService } from "@/services/mcpService";
+import { agentMemory } from "@/services/memoryService";
 import { logger } from "@/utils/logger";
 import { sanitizeRequirements } from "@/utils/sanitizeInput";
 

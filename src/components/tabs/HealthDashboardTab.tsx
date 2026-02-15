@@ -1,6 +1,6 @@
 import React from 'react';
 import { Activity, Zap, Layers, Cpu, Clock, MousePointer2 } from 'lucide-react';
-import { OrchestrationMetrics } from '@/types';
+import type { OrchestrationMetrics } from '@/types';
 import { StatCard } from '@/components/common/StatCard';
 import {
   BarChart,

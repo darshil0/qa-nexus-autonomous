@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
-import { ExecutionResult } from '@/types';
+import type { ExecutionResult } from '@/types';
 
 interface Agent3TabProps {
     results: ExecutionResult[];

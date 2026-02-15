@@ -1,5 +1,5 @@
 
-import { skillRegistry, Skill } from "./agenticSkills";
+import { skillRegistry, Skill } from "@/services/agenticSkills";
 import { logger } from "@/utils/logger";
 
 /**
