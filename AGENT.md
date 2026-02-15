@@ -1,7 +1,7 @@
 # 🤖 AGENT.md - QA Nexus Autonomous Reference Guide
 
-**Version**: 2.9.0
-**Last Updated**: February 16, 2026
+**Version**: 2.10.0
+**Last Updated**: February 17, 2026
 **Status**: Comprehensive Developer Reference
 
 ---
@@ -57,7 +57,7 @@ graph TD
 ```
 
 ### Data Flow & Orchestration
-The system is managed by a centralized React orchestrator (`App.tsx`) that maintains a unified state machine. Each agent receives the context of the previous agent's output, ensuring a "chain-of-thought" progression.
+The system is managed by a centralized React orchestrator (`App.tsx`) using the robust `useWorkflow` hook (`@/hooks/useWorkflow.ts`). It maintains a unified state machine with strict TypeScript definitions. The project utilizes standardized path aliases (`@/`) to ensure architectural integrity and prevent brittle relative import chains.
 
 ---
 
@@ -155,6 +155,7 @@ async function callAgent(prompt: string) {
 ```
 
 ### 2. React State Management
+- **Hook-Based Orchestration**: The main logic is encapsulated in `src/hooks/useWorkflow.ts`, allowing `App.tsx` to focus on layout and routing.
 - **Monolithic State**: The orchestrator uses a single `WorkflowState` object to prevent synchronization bugs.
 - **Memoization**: Heavy analytics and list filtering in the UI must use `useMemo`.
 - **HMR Compliance**: Ensure all side effects in `useEffect` have proper cleanup functions.

@@ -1,4 +1,4 @@
-# QA Nexus Gemini Skills Registry
+# QA Nexus Gemini Skills Registry (v2.10.0)
 
 This project implements the [Anthropic Agent Skills](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) standard, optimized for Google Gemini 3.
 

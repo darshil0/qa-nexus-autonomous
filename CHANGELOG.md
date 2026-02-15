@@ -5,16 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.9.0] - 2026-02-16
+## [2.10.0] - 2026-02-17
 
 ### Added
-- **Gemini Skills Integration**: Rebranded and enhanced Agent Skills for Google Gemini 3 models.
-- **Gemini Knowledge Base Skill**: Introduced a specialized skill for retrieving technical details and prompt optimization strategies for Gemini.
-- **Mermaid Diagrams**: Replaced legacy ASCII architecture diagrams with modern Mermaid.js visualizations across all core documentation.
+- **Path Alias Implementation**: Configured `@/` path alias for the entire project, mapping to the `src/` directory.
+- **ESM-Ready Configuration**: Updated `vite.config.ts` and `vitest.config.ts` to use `fileURLToPath` for robust path resolution in ECMAScript Modules.
 
 ### Changed
-- **Documentation Overhaul**: Updated `README.md`, `ARCHITECTURE.md`, `AGENT.md`, and `Skills.MD` to reflect the transition to Gemini-centric skills.
-- **Version Synchronization**: Unified all documentation versions to v2.9.0.
+- **Global Import Refactoring**: Systematically replaced relative imports (e.g., `../../components/...`) with standardized `@/` path aliases across all Tab components, services, and the main entry point.
+- **Project Documentation Sync**: Updated all Markdown documentation to reflect the new project structure and path alias standards.
+- **Version bump**: Upgraded platform to v2.10.0.
+
+## [2.9.0] - 2026-02-16
 
 ## [2.8.0] - 2026-02-15
 
@@ -578,5 +580,5 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 
 ---
 
-**Last Updated**: February 14, 2026
-**Version**: 2.9.0
+**Last Updated**: February 17, 2026
+**Version**: 2.10.0

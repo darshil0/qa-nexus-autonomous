@@ -2,7 +2,7 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-2.9.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.10.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
@@ -89,7 +89,7 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
-### 🤖 Agentic Skills & Gemini Skills (v2.9.0)
+### 🤖 Agentic Skills & Gemini Skills (v2.10.0)
 - **Gemini Skills Integration**: Enhanced the official Agent Skills standard for portable AI workflows, optimized for Gemini 3.
 - **Gemini Knowledge Base**: New skill providing technical details and prompt optimization for Gemini models.
 - **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0.
@@ -253,9 +253,11 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
 graph TD
     Orch[ORCHESTRATION LAYER<br/>React + runAgenticWorkflow]
 
-    A1[AGENT 1<br/>Reviewer]
-    A2[AGENT 2<br/>Writer]
-    A3[AGENT 3<br/>Executor]
+    subgraph AGENTS [Autonomous Agents]
+        A1[AGENT 1<br/>Reviewer]
+        A2[AGENT 2<br/>Writer]
+        A3[AGENT 3<br/>Executor]
+    end
 
     Orch --> A1
     Orch --> A2
@@ -265,15 +267,20 @@ graph TD
 
     Memory --> MCP[MODEL CONTEXT PROTOCOL<br/>MCP Service + Skill Registry]
 
-    MCP --> Jira[Jira / GitHub]
-    MCP --> Code[Code / Perf API]
+    subgraph TOOLS [Standardized Tools]
+        Jira[Jira / GitHub]
+        Code[Code / Perf API]
+    end
+
+    MCP --> Jira
+    MCP --> Code
 
     style Orch fill:#f9f,stroke:#333,stroke-width:2px
-    style A1 fill:#bbf,stroke:#333,stroke-width:1px
-    style A2 fill:#bbf,stroke:#333,stroke-width:1px
-    style A3 fill:#bbf,stroke:#333,stroke-width:1px
-    style Memory fill:#dfd,stroke:#333,stroke-width:1px
-    style MCP fill:#fdd,stroke:#333,stroke-width:1px
+    style A1 fill:#6366f1,stroke:#fff,color:#fff
+    style A2 fill:#6366f1,stroke:#fff,color:#fff
+    style A3 fill:#6366f1,stroke:#fff,color:#fff
+    style Memory fill:#10b981,stroke:#fff,color:#fff
+    style MCP fill:#f43f5e,stroke:#fff,color:#fff
 ```
 
 ### Key Components
@@ -470,24 +477,30 @@ qa-nexus-autonomous/
 │   └── tiny-gpt/                  # GPT engine skill & scripts
 │
 ├── src/
-│   ├── App.tsx                    # Main orchestrator
-│   ├── index.tsx                  # React entry point
-│   ├── index.css                  # Custom design system
-│   ├── constants.ts               # App configuration
-│   ├── types.ts                   # TypeScript interfaces
+│   ├── App.tsx                    # Main orchestrator (Root Component)
+│   ├── main.tsx                   # React entry point
+│   ├── assets/
+│   │   └── styles/
+│   │       └── index.css          # Custom design system
+│   ├── constants/
+│   │   └── index.ts               # App configuration
+│   ├── types/
+│   │   └── index.ts               # TypeScript interfaces
 │   │
 │   ├── components/                # UI components
-│   │   ├── tabs/                  # Tab views
-│   │   │   ├── OrchestratorTab.tsx
-│   │   │   ├── Agent1Tab.tsx
-│   │   │   ├── Agent2Tab.tsx
-│   │   │   ├── Agent3Tab.tsx
-│   │   │   ├── ReportsTab.tsx
-│   │   │   ├── SettingsTab.tsx
-│   │   │   └── HealthDashboardTab.tsx
-│   │   ├── NavBtn.tsx
-│   │   ├── StatCard.tsx
-│   │   └── AgentThinkingLog.tsx
+│   │   ├── common/                # Reusable atoms (StatCard, NavBtn)
+│   │   ├── layout/                # Layout components (Header, Sidebar)
+│   │   └── tabs/                  # Tab views
+│   │       ├── OrchestratorTab.tsx
+│   │       ├── Agent1Tab.tsx
+│   │       ├── Agent2Tab.tsx
+│   │       ├── Agent3Tab.tsx
+│   │       ├── ReportsTab.tsx
+│   │       ├── SettingsTab.tsx
+│   │       └── HealthDashboardTab.tsx
+│   │
+│   ├── hooks/
+│   │   └── useWorkflow.ts         # Main workflow logic hook
 │   │
 │   ├── services/
 │   │   ├── geminiService.ts       # Gemini API integration
@@ -496,10 +509,15 @@ qa-nexus-autonomous/
 │   │   ├── persistenceService.ts  # Local session persistence
 │   │   └── memoryService.ts       # Short-term context buffer
 │   │
-│   └── __tests__/                 # Test files
-│       ├── NavBtn.spec.tsx
-│       ├── StatCard.spec.tsx
-│       └── geminiService.spec.ts
+│   ├── tests/                     # Unit and Integration tests
+│   │   ├── NavBtn.spec.tsx
+│   │   ├── StatCard.spec.tsx
+│   │   └── geminiService.spec.ts
+│   │
+│   └── utils/                     # Helper functions
+│       ├── exportUtils.ts
+│       ├── logger.ts
+│       └── sanitizeInput.ts
 │
 ├── docs/                          # Documentation
 │   ├── ARCHITECTURE.md            # Technical deep-dive
@@ -522,15 +540,17 @@ qa-nexus-autonomous/
 
 ### Import Aliases
 
-The project uses `@/` alias for cleaner imports:
+The project uses the `@/` path alias for standardized imports across the codebase:
 
 ```typescript
-// Instead of:
+// Instead of brittle relative paths:
 import { reviewRequirements } from '../../services/geminiService';
 
-// Use:
+// Use robust path aliases:
 import { reviewRequirements } from '@/services/geminiService';
 ```
+
+This configuration is maintained across `vite.config.ts`, `tsconfig.json`, and `vitest.config.ts`.
 
 ---
 
@@ -1050,7 +1070,7 @@ Built with cutting-edge technologies:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-2.9.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.10.0-blue.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
