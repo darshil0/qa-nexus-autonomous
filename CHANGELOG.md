@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.0] - 2026-02-16
+
+### Added
+- **Gemini Skills Integration**: Rebranded and enhanced Agent Skills for Google Gemini 3 models.
+- **Gemini Knowledge Base Skill**: Introduced a specialized skill for retrieving technical details and prompt optimization strategies for Gemini.
+- **Mermaid Diagrams**: Replaced legacy ASCII architecture diagrams with modern Mermaid.js visualizations across all core documentation.
+
+### Changed
+- **Documentation Overhaul**: Updated `README.md`, `ARCHITECTURE.md`, `AGENT.md`, and `Skills.MD` to reflect the transition to Gemini-centric skills.
+- **Version Synchronization**: Unified all documentation versions to v2.9.0.
+
 ## [2.8.0] - 2026-02-15
 
 ### Added
@@ -410,7 +421,7 @@ These fixes ensure:
 
 ## Version Information
 
-**Current Version**: 2.7.0
+**Current Version**: 2.9.0
 **Release Date**: February 14, 2026
 **Status**: Production Ready  
 **License**: MIT
@@ -568,4 +579,4 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 ---
 
 **Last Updated**: February 14, 2026
-**Version**: 2.7.0
+**Version**: 2.9.0

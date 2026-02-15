@@ -146,6 +146,29 @@ export const performanceAuditSkill: Skill = {
 };
 
 /**
+ * Skill: Gemini Knowledge Base
+ * Provides technical details about Gemini 3 models.
+ */
+export const geminiKnowledgeBaseSkill: Skill = {
+  name: "gemini_knowledge_base",
+  description: "Retrieve technical details about Gemini 3 models, context limits, and prompt optimization.",
+  parameters: {
+    topic: "The topic to query (e.g., 'models', 'tokens', 'json', 'reasoning')."
+  },
+  execute: async (topic: string) => {
+    logger.info(`[Skill: gemini_knowledge_base] Querying topic: ${topic}`);
+    await new Promise(resolve => setTimeout(resolve, 700));
+    const data: Record<string, string> = {
+      models: "Gemini 3 Pro is optimized for complex reasoning; Gemini 3 Flash is built for speed and efficiency.",
+      tokens: "Gemini 3 supports a context window of up to 2 million tokens for Pro and 1 million for Flash.",
+      json: "For best JSON results, use system instructions and provide a clear TypeScript-like schema.",
+      reasoning: "Gemini 3 features advanced multi-pass reasoning capabilities and improved multi-modal understanding."
+    };
+    return data[topic.toLowerCase()] || "Information not available for this topic. Available topics: models, tokens, json, reasoning.";
+  }
+};
+
+/**
  * Skill Registry
  */
 export const skillRegistry: Record<string, Skill> = {
@@ -154,7 +177,8 @@ export const skillRegistry: Record<string, Skill> = {
   test_runner: testRunner,
   code_analysis: codeAnalysisSkill,
   tiny_gpt_reference: tinyGptSkill,
-  performance_audit: performanceAuditSkill
+  performance_audit: performanceAuditSkill,
+  gemini_knowledge_base: geminiKnowledgeBaseSkill
 };
 
 /**

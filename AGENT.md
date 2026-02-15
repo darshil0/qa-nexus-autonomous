@@ -1,7 +1,7 @@
 # 🤖 AGENT.md - QA Nexus Autonomous Reference Guide
 
-**Version**: 2.7.0
-**Last Updated**: February 14, 2026
+**Version**: 2.9.0
+**Last Updated**: February 16, 2026
 **Status**: Comprehensive Developer Reference
 
 ---
@@ -26,28 +26,34 @@ QA Nexus Autonomous is a state-of-the-art multi-agent system designed to automat
 ## 🏗️ Multi-Agent Architecture
 
 ### High-Level System Flow
-```
-┌─────────────────┐      ┌──────────────────────────┐      ┌─────────────────┐
-│  User Input     │ ───> │ Orchestrator (React/App) │ ───> │  Gemini API     │
-└─────────────────┘      └──────────┬───────────────┘      └────────┬────────┘
-                                    │                               │
-                                    ▼                               ▼
-                 ┌──────────────────────────────────────────────────┐
-                 │          RECURSIVE AGENTIC WORKFLOW              │
-                 ├──────────────────────────────────────────────────┤
-                 │ 1. Requirements Reviewer (Logic Check)           │
-                 │ 2. Test Case Writer (Scenario Generation)        │
-                 │ 3. Test Executor (Simulation & Reporting)         │
-                 └──────────────────┬───────────────────────────────┘
-                                    │
-                                    ▼
-                 ┌──────────────────────────────────────────────────┐
-                 │        MODEL CONTEXT PROTOCOL (MCP)              │
-                 ├──────────────────────────────────────────────────┤
-                 │  - Jira Search        - GitHub Issue Creator     │
-                 │  - Test Runner        - Code Analysis            │
-                 │  - Perf Audit         - Tiny GPT Reference       │
-                 └──────────────────────────────────────────────────┘
+
+```mermaid
+graph TD
+    Input[User Input] --> Orch[Orchestrator<br/>React/App]
+    Orch --> API[Gemini API]
+
+    subgraph WORKFLOW [RECURSIVE AGENTIC WORKFLOW]
+        direction TB
+        A1[1. Requirements Reviewer]
+        A2[2. Test Case Writer]
+        A3[3. Test Executor]
+        A1 --> A2 --> A3
+    end
+
+    API --> WORKFLOW
+
+    subgraph MCP [MODEL CONTEXT PROTOCOL]
+        direction LR
+        Jira[Jira Search]
+        Git[GitHub Creator]
+        Run[Test Runner]
+        Code[Code Analysis]
+        Perf[Perf Audit]
+        GPT[Tiny GPT]
+        KB[Gemini KB]
+    end
+
+    WORKFLOW --> MCP
 ```
 
 ### Data Flow & Orchestration
@@ -85,6 +91,7 @@ Located in `src/services/agenticSkills.ts`:
 - `jira_search`: Contextual requirement lookup.
 - `github_issue_create`: Automated bug reporting.
 - `test_runner`: Real-time execution simulation.
+- `gemini_knowledge_base`: Gemini 3 technical specs & optimization.
 
 ### 🧠 Recursive Reasoning Loop
 Agents use a standardized multi-pass loop implemented in `src/services/geminiService.ts` via `runAgenticWorkflow`:
@@ -227,6 +234,7 @@ We follow Conventional Commits:
 - [ ] Mobile-responsive Vanilla CSS UI.
 - [ ] Proper error boundary implementation.
 - [ ] Updated `AGENT.md` if structure changes.
+- [ ] Maintain Mermaid diagrams for all architectural flows.
 
 ---
 
