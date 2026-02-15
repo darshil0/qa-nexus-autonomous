@@ -1,8 +1,9 @@
 # 🤖 AGENT.md - QA Nexus Autonomous Reference Guide
 
-**Version**: 2.10.0
-**Last Updated**: February 17, 2026
-**Status**: Comprehensive Developer Reference
+**Version**: 3.0.0-beta  
+**Last Updated**: February 14, 2026  
+**Status**: Active Development  
+**Target Release**: February 18, 2026
 
 ---
 
@@ -29,31 +30,25 @@ QA Nexus Autonomous is a state-of-the-art multi-agent system designed to automat
 
 ```mermaid
 graph TD
-    Input[User Input] --> Orch[Orchestrator<br/>React/App]
+    Input[User Input] --> Orch[Orchestrator<br/>React App]
     Orch --> API[Gemini API]
 
-    subgraph WORKFLOW [RECURSIVE AGENTIC WORKFLOW]
-        direction TB
-        A1[1. Requirements Reviewer]
-        A2[2. Test Case Writer]
-        A3[3. Test Executor]
-        A1 --> A2 --> A3
-    end
+    API --> A1[Agent 1: Requirements Reviewer]
+    A1 --> A2[Agent 2: Test Case Writer]
+    A2 --> A3[Agent 3: Test Executor]
 
-    API --> WORKFLOW
+    A1 & A2 & A3 --> MCP[Model Context Protocol]
 
-    subgraph MCP [MODEL CONTEXT PROTOCOL]
-        direction LR
-        Jira[Jira Search]
-        Git[GitHub Creator]
-        Run[Test Runner]
-        Code[Code Analysis]
-        Perf[Perf Audit]
-        GPT[Tiny GPT]
-        KB[Gemini KB]
-    end
+    MCP --> Jira[Jira Search]
+    MCP --> Git[GitHub Creator]
+    MCP --> Run[Test Runner]
+    MCP --> Code[Code Analysis]
+    MCP --> Perf[Perf Audit]
+    MCP --> KB[Gemini KB]
 
-    WORKFLOW --> MCP
+    style Orch fill:#667eea,stroke:#333,stroke-width:2px
+    style API fill:#48bb78,stroke:#333,stroke-width:2px
+    style MCP fill:#ed8936,stroke:#333,stroke-width:2px
 ```
 
 ### Data Flow & Orchestration
@@ -82,7 +77,7 @@ The system is managed by a centralized React orchestrator (`App.tsx`) using the 
 ## 🤖 Agentic Skills & MCP Framework
 
 ### 🛠️ Model Context Protocol (MCP)
-QA Nexus now implements a subset of MCP for standardized tool interaction.
+QA Nexus implements a subset of MCP for standardized tool interaction.
 - **Discovery**: Agents can query `tools/list` to see available capabilities.
 - **Execution**: Agents can call `tools/call` with specific arguments to perform actions.
 
@@ -240,4 +235,4 @@ We follow Conventional Commits:
 ---
 
 > *"The quality of the code is the quality of the product."*  
-> **QA Nexus Developer Team**
+> **Darshil**

@@ -1,4 +1,3 @@
-
 /**
  * Utility to sanitize user input for requirements to prevent prompt injection
  * and ensure data integrity.
