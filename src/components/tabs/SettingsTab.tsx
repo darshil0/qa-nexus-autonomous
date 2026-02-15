@@ -1,6 +1,6 @@
 import React from 'react';
 import { Settings as SettingsIcon, BrainCircuit, Thermometer, IterationCcw, Zap } from 'lucide-react';
-import { AISettings } from '@/types';
+import type { AISettings } from '@/types';
 
 interface SettingsTabProps {
     settings: AISettings;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Workflow, X, ArrowRight } from 'lucide-react';
-import { TestCase } from '@/types';
+import type { TestCase } from '@/types';
 
 interface Agent2TabProps {
     filteredTestCases: TestCase[];
