@@ -1,7 +1,7 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 3.0.0
-**Last Updated**: February 18, 2026
+**Version**: 3.0.1
+**Last Updated**: February 20, 2026
 **Status**: Production Ready
 
 ## Table of Contents
@@ -15,18 +15,18 @@
 7. [Observability & Health Dashboard](#observability--health-dashboard)
 8. [Persistence & Memory](#persistence--memory)
 9. [Component Architecture](#component-architecture)
-8. [Agent Specifications](#agent-specifications)
-9. [Core Development Patterns](#core-development-patterns)
-10. [Integration Points](#integration-points)
-11. [Response Schemas](#response-schemas)
-12. [TypeScript Type Definitions](#typescript-type-definitions)
-13. [Testing & Validation](#testing--validation)
-14. [Security & Production](#security--production)
-15. [Deployment Guide](#deployment-guide)
-16. [Troubleshooting](#troubleshooting)
-17. [Best Practices](#best-practices)
-18. [Contributing](#contributing)
-19. [Development Roadmap](#development-roadmap)
+10. [Agent Specifications](#agent-specifications)
+11. [Core Development Patterns](#core-development-patterns)
+12. [Integration Points](#integration-points)
+13. [Response Schemas](#response-schemas)
+14. [TypeScript Type Definitions](#typescript-type-definitions)
+15. [Testing & Validation](#testing--validation)
+16. [Security & Production](#security--production)
+17. [Deployment Guide](#deployment-guide)
+18. [Troubleshooting](#troubleshooting)
+19. [Best Practices](#best-practices)
+20. [Contributing](#contributing)
+21. [Development Roadmap](#development-roadmap)
 
 ---
 
@@ -2083,8 +2083,8 @@ test(workflow): add integration test for full workflow
 
 ---
 
-**Version**: 3.0.0
-**Last Updated**: February 18, 2026
+**Version**: 3.0.1
+**Last Updated**: February 20, 2026
 **Maintained by**: QA Nexus Team
 
 For questions or issues, please open a GitHub issue or contact the maintainers.

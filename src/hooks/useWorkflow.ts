@@ -64,53 +64,74 @@ export const useWorkflow = () => {
 
       const { specs, thinking: t1, metrics: m1 } = await reviewRequirements(state.rawRequirements, state.settings);
 
-      setState(p => ({
-        ...p,
-        status: WorkflowStatus.AGENT2_WRITING,
-        validatedSpecs: specs,
-        thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...`,
-        metrics: {
-          ...p.metrics,
-          totalToolCalls: p.metrics.totalToolCalls + m1.totalToolCalls,
-          totalTokensEstimated: p.metrics.totalTokensEstimated + m1.totalTokensEstimated,
-          latencyMs: (p.metrics.latencyMs + m1.latencyMs) / 2,
-          toolFrequency: { ...p.metrics.toolFrequency, ...m1.toolFrequency }
-        }
-      }));
+      setState(p => {
+        const mergedFreq = { ...p.metrics.toolFrequency };
+        Object.entries(m1.toolFrequency).forEach(([k, v]) => {
+          mergedFreq[k] = (mergedFreq[k] || 0) + v;
+        });
+
+        return {
+          ...p,
+          status: WorkflowStatus.AGENT2_WRITING,
+          validatedSpecs: specs,
+          thinkingProcess: `[AGENT 1] ${t1}\n[AGENT 2] Designing tests...`,
+          metrics: {
+            ...p.metrics,
+            totalToolCalls: p.metrics.totalToolCalls + m1.totalToolCalls,
+            totalTokensEstimated: p.metrics.totalTokensEstimated + m1.totalTokensEstimated,
+            latencyMs: p.metrics.latencyMs + m1.latencyMs,
+            toolFrequency: mergedFreq
+          }
+        };
+      });
 
       const { testCases, thinking: t2, metrics: m2 } = await generateTestCases(specs, state.settings);
 
-      setState(p => ({
-        ...p,
-        status: WorkflowStatus.AGENT3_EXECUTING,
-        testCases,
-        thinkingProcess: `[AGENT 2] ${t2}\n[AGENT 3] Running execution...`,
-        metrics: {
-          ...p.metrics,
-          totalToolCalls: p.metrics.totalToolCalls + m2.totalToolCalls,
-          totalTokensEstimated: p.metrics.totalTokensEstimated + m2.totalTokensEstimated,
-          latencyMs: (p.metrics.latencyMs + m2.latencyMs) / 2,
-          toolFrequency: { ...p.metrics.toolFrequency, ...m2.toolFrequency }
-        }
-      }));
+      setState(p => {
+        const mergedFreq = { ...p.metrics.toolFrequency };
+        Object.entries(m2.toolFrequency).forEach(([k, v]) => {
+          mergedFreq[k] = (mergedFreq[k] || 0) + v;
+        });
+
+        return {
+          ...p,
+          status: WorkflowStatus.AGENT3_EXECUTING,
+          testCases,
+          thinkingProcess: `[AGENT 2] ${t2}\n[AGENT 3] Running execution...`,
+          metrics: {
+            ...p.metrics,
+            totalToolCalls: p.metrics.totalToolCalls + m2.totalToolCalls,
+            totalTokensEstimated: p.metrics.totalTokensEstimated + m2.totalTokensEstimated,
+            latencyMs: p.metrics.latencyMs + m2.latencyMs,
+            toolFrequency: mergedFreq
+          }
+        };
+      });
 
       const { results, thinking: t3, metrics: m3 } = await executeTests(testCases, state.settings);
 
-      setState(p => ({
-        ...p,
-        status: WorkflowStatus.COMPLETED,
-        results,
-        thinkingProcess: `Pipeline complete.\n[AGENT 3] ${t3}`,
-        metrics: {
-          ...p.metrics,
-          totalToolCalls: p.metrics.totalToolCalls + m3.totalToolCalls,
-          totalTokensEstimated: p.metrics.totalTokensEstimated + m3.totalTokensEstimated,
-          latencyMs: (p.metrics.latencyMs + m3.latencyMs) / 2,
-          toolFrequency: { ...p.metrics.toolFrequency, ...m3.toolFrequency },
-          averageLoopDepth: (m1.averageLoopDepth + m2.averageLoopDepth + m3.averageLoopDepth) / 3,
-          activeLoops: 0
-        }
-      }));
+      setState(p => {
+        const mergedFreq = { ...p.metrics.toolFrequency };
+        Object.entries(m3.toolFrequency).forEach(([k, v]) => {
+          mergedFreq[k] = (mergedFreq[k] || 0) + v;
+        });
+
+        return {
+          ...p,
+          status: WorkflowStatus.COMPLETED,
+          results,
+          thinkingProcess: `Pipeline complete.\n[AGENT 3] ${t3}`,
+          metrics: {
+            ...p.metrics,
+            totalToolCalls: p.metrics.totalToolCalls + m3.totalToolCalls,
+            totalTokensEstimated: p.metrics.totalTokensEstimated + m3.totalTokensEstimated,
+            latencyMs: p.metrics.latencyMs + m3.latencyMs,
+            toolFrequency: mergedFreq,
+            averageLoopDepth: (m1.averageLoopDepth + m2.averageLoopDepth + m3.averageLoopDepth) / 3,
+            activeLoops: 0
+          }
+        };
+      });
 
       setActiveTab('reports');
     } catch (err) {

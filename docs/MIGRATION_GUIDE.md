@@ -36,9 +36,9 @@ npm run typecheck
 npm run dev
 ```
 
-## Migrating to 3.0.0
+## Migrating to 3.0.1
 
-Version 3.0.0 introduced a major architectural shift to Agentic Skills and the Model Context Protocol (MCP).
+Version 3.0.1 (following 3.0.0) introduced a major architectural shift to Agentic Skills and the Model Context Protocol (MCP), along with critical bug fixes in metrics tracking and model consistency.
 
 ### New Directory Structure
 
