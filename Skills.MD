@@ -1,4 +1,4 @@
-# QA Nexus Gemini Skills Registry
+# QA Nexus Gemini Skills Registry (v2.10.0)
 
 **Version**: 3.0.0-beta  
 **Last Updated**: February 14, 2026

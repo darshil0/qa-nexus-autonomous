@@ -507,24 +507,30 @@ qa-nexus-autonomous/
 │   └── tiny-gpt/                  # Educational GPT engine
 │
 ├── src/
-│   ├── App.tsx                    # Main orchestrator
-│   ├── index.tsx                  # React entry point
-│   ├── index.css                  # Custom design system
-│   ├── constants.ts               # App configuration
-│   ├── types.ts                   # TypeScript interfaces
+│   ├── App.tsx                    # Main orchestrator (Root Component)
+│   ├── main.tsx                   # React entry point
+│   ├── assets/
+│   │   └── styles/
+│   │       └── index.css          # Custom design system
+│   ├── constants/
+│   │   └── index.ts               # App configuration
+│   ├── types/
+│   │   └── index.ts               # TypeScript interfaces
 │   │
 │   ├── components/                # UI components
-│   │   ├── tabs/                  # Tab views
-│   │   │   ├── OrchestratorTab.tsx
-│   │   │   ├── Agent1Tab.tsx
-│   │   │   ├── Agent2Tab.tsx
-│   │   │   ├── Agent3Tab.tsx
-│   │   │   ├── ReportsTab.tsx
-│   │   │   ├── SettingsTab.tsx
-│   │   │   └── HealthDashboardTab.tsx
-│   │   ├── NavBtn.tsx
-│   │   ├── StatCard.tsx
-│   │   └── AgentThinkingLog.tsx
+│   │   ├── common/                # Reusable atoms (StatCard, NavBtn)
+│   │   ├── layout/                # Layout components (Header, Sidebar)
+│   │   └── tabs/                  # Tab views
+│   │       ├── OrchestratorTab.tsx
+│   │       ├── Agent1Tab.tsx
+│   │       ├── Agent2Tab.tsx
+│   │       ├── Agent3Tab.tsx
+│   │       ├── ReportsTab.tsx
+│   │       ├── SettingsTab.tsx
+│   │       └── HealthDashboardTab.tsx
+│   │
+│   ├── hooks/
+│   │   └── useWorkflow.ts         # Main workflow logic hook
 │   │
 │   ├── services/
 │   │   ├── geminiService.ts       # Gemini API integration
@@ -533,10 +539,15 @@ qa-nexus-autonomous/
 │   │   ├── persistenceService.ts  # Local session persistence
 │   │   └── memoryService.ts       # Short-term context buffer
 │   │
-│   └── __tests__/                 # Test files
-│       ├── NavBtn.spec.tsx
-│       ├── StatCard.spec.tsx
-│       └── geminiService.spec.ts
+│   ├── tests/                     # Unit and Integration tests
+│   │   ├── NavBtn.spec.tsx
+│   │   ├── StatCard.spec.tsx
+│   │   └── geminiService.spec.ts
+│   │
+│   └── utils/                     # Helper functions
+│       ├── exportUtils.ts
+│       ├── logger.ts
+│       └── sanitizeInput.ts
 │
 ├── docs/                          # Documentation
 │   ├── ARCHITECTURE.md            # Technical deep-dive
@@ -562,15 +573,17 @@ qa-nexus-autonomous/
 
 ### Import Aliases
 
-The project uses `@/` alias for cleaner imports:
+The project uses the `@/` path alias for standardized imports across the codebase:
 
 ```typescript
-// Instead of:
+// Instead of brittle relative paths:
 import { reviewRequirements } from '../../services/geminiService';
 
-// Use:
+// Use robust path aliases:
 import { reviewRequirements } from '@/services/geminiService';
 ```
+
+This configuration is maintained across `vite.config.ts`, `tsconfig.json`, and `vitest.config.ts`.
 
 ---
 

@@ -114,14 +114,16 @@ graph TD
     Input[INPUT LAYER<br/>Requirements: PRD, User Stories, Jira, Swagger]
 
     subgraph ORCHESTRATION [ORCHESTRATION LAYER]
-        Orch[Central Orchestrator<br/>Workflow Management & Coordination]
+        Orch[Central Orchestrator<br/>React + Hook Orchestration]
     end
 
     Input --> Orch
 
-    A1[AGENT 1<br/>Reqs Reviewer]
-    A2[AGENT 2<br/>Test Writer]
-    A3[AGENT 3<br/>Test Executor]
+    subgraph AGENTS [AUTONOMOUS AGENTS]
+        A1[AGENT 1<br/>Reqs Reviewer]
+        A2[AGENT 2<br/>Test Writer]
+        A3[AGENT 3<br/>Test Executor]
+    end
 
     Orch --> A1
     A1 --> A2
@@ -147,6 +149,10 @@ graph TD
     end
 
     Vector & Relational & CtxStore --> JiraGit & CICD
+
+    style Orch fill:#6366f1,color:#fff
+    style AGENTS fill:#1e293b,color:#fff,stroke:#6366f1
+    style MCP fill:#f43f5e,color:#fff
 ```
 
 ### Workflow Steps
@@ -345,34 +351,33 @@ graph TD
 
 ### Component Architecture
 
+The project utilizes a modular architecture with robust path aliasing (`@/`) to ensure maintainability and clean imports.
+
 ```
 src/
-├── App.tsx                      # Main orchestrator component
-│   ├── State Management         # React useState for workflow state
-│   ├── Agent Coordination       # Sequential agent execution
-│   └── UI Rendering            # Agent cards, results display
+├── App.tsx                      # Root component (Layout & Routing)
+├── main.tsx                     # Entry point (Env Validation & Mounting)
+│
+├── components/                  # UI components
+│   ├── common/                  # Atomic units (NavBtn, StatCard)
+│   ├── layout/                  # Page structure (Header, Sidebar)
+│   └── tabs/                    # Specialized agentic views
+│
+├── hooks/
+│   └── useWorkflow.ts           # Central orchestration logic
 │
 ├── services/
-│   ├── geminiService.ts        # Gemini API & Agentic Workflow
+│   ├── geminiService.ts        # Gemini API & Recursive Loops
 │   ├── mcpService.ts           # Model Context Protocol
 │   ├── agenticSkills.ts        # Autonomous Skill Registry
 │   ├── persistenceService.ts   # LocalStorage management
 │   └── memoryService.ts        # Short-term context buffer
 │
-├── engine/
-│   └── tiny_gpt.py             # Atomic GPT implementation
+├── types/
+│   └── index.ts                # Unified TypeScript definitions
 │
-├── types.ts                    # TypeScript interfaces
-│   ├── WorkflowState           # Main state interface
-│   ├── AgentStatus             # Status tracking
-│   ├── RequirementsReview      # Agent 1 output
-│   ├── TestCase                # Agent 2 output
-│   └── TestResults             # Agent 3 output
-│
-└── constants.ts                # Configuration
-    ├── AGENT_MODELS            # Model assignments (Gemini 3)
-    ├── STATUS_MESSAGES         # UI messages
-    └── DEFAULT_VALUES          # Fallback values
+└── constants/
+    └── index.ts                # Global configuration & Model settings
 ```
 
 ---
