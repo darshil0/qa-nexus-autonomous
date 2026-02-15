@@ -1,9 +1,27 @@
 """
-The most atomic way to train and inference a GPT in pure, dependency-free Python.
-This file is the complete algorithm.
-Everything else is just efficiency.
+Tiny GPT - Minimal GPT Implementation in Pure Python
 
-@karpathy
+Based on the educational GPT implementation by Andrej Karpathy.
+Original concept: https://github.com/karpathy/nanoGPT
+
+This implementation demonstrates:
+- Pure Python transformer architecture (no external ML libraries)
+- Dependency-free autograd engine
+- Educational GPT training loop
+- Attention mechanism from first principles
+
+Attribution:
+    Original Author: Andrej Karpathy (@karpathy)
+    Original Project: nanoGPT
+    Repository: https://github.com/karpathy/nanoGPT
+    License: MIT
+
+Adapted for:
+    QA Nexus Autonomous Skills System
+    Purpose: Educational reference and architecture demonstration
+    
+The most atomic way to train and inference a GPT in pure, dependency-free Python.
+This file is the complete algorithm. Everything else is just efficiency.
 """
 
 import os       # os.path.exists
