@@ -1,6 +1,6 @@
-# QA Nexus Skills Registry
+# QA Nexus Gemini Skills Registry
 
-This project implements the [Anthropic Agent Skills](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) standard.
+This project implements the [Anthropic Agent Skills](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) standard, optimized for Google Gemini 3.
 
 ## Available Skills
 
@@ -12,6 +12,9 @@ Generates structured test cases from reviewed requirements.
 
 ### [Test Executor](./skills/test-executor/SKILL.md)
 Simulates the execution of test cases and reports results.
+
+### [Gemini Knowledge Base](./skills/gemini-knowledge-base/SKILL.md)
+Provides technical details and prompt optimization for Gemini 3 models.
 
 ### [Tiny GPT](./skills/tiny-gpt/SKILL.md)
 Dependency-free Python GPT implementation for educational and reference purposes.

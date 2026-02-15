@@ -2,7 +2,7 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-2.8.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.9.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
@@ -89,8 +89,9 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
-### 🤖 Agentic Skills & Claude Skills (v2.8.0)
-- **Claude Skills Integration**: Implemented the official Anthropic "Skills" standard for portable AI workflows.
+### 🤖 Agentic Skills & Gemini Skills (v2.9.0)
+- **Gemini Skills Integration**: Enhanced the official Agent Skills standard for portable AI workflows, optimized for Gemini 3.
+- **Gemini Knowledge Base**: New skill providing technical details and prompt optimization for Gemini models.
 - **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0.
 - **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 5 per task) to gather complex context before providing a final answer.
 - **Advanced Skill Registry**: Includes capabilities for **Code Analysis**, **Performance Audits**, **Jira Search**, and **GitHub Issue Creation**.
@@ -248,33 +249,31 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 QA Nexus implements a sophisticated multi-agent architecture where three specialized agents work together through a centralized orchestration layer:
 
-```
-┌────────────────────────────────────────────────────────────────────────────┐
-│                          ORCHESTRATION LAYER                               │
-│                         (React + runAgenticWorkflow)                       │
-└───────────────────┬──────────────────┬───────────────────┬─────────────────┘
-                    │                  │                   │
-                    ▼                  ▼                   ▼
-            ┌──────────────┐   ┌──────────────┐    ┌──────────────┐
-            │   AGENT 1    │   │   AGENT 2    │    │   AGENT 3    │
-            │   Reviewer   │   │    Writer    │    │   Executor   │
-            └──────┬───────┘   └──────┬───────┘    └──────┬───────┘
-                   │                  │                   │
-            ┌──────▼──────────────────▼───────────────────▼──────┐
-            │           AGENT MEMORY & PERSISTENCE                │
-            │      (Short-term context + LocalStorage Sync)       │
-            └──────┬──────────────────┬───────────────────┬──────┘
-                   │                  │                   │
-                   └─────────┬────────┴───────────────────┘
-                             ▼
-            ┌──────────────────────────────────────────────┐
-            │           MODEL CONTEXT PROTOCOL             │
-            │      (MCP Service + Skill Registry)          │
-            └────────────────┬──────────────┬──────────────┘
-                             │              │
-                    ┌────────▼──────┐ ┌─────▼────────┐
-                    │ Jira / GitHub │ │ Code/Perf API│
-                    └───────────────┘ └──────────────┘
+```mermaid
+graph TD
+    Orch[ORCHESTRATION LAYER<br/>React + runAgenticWorkflow]
+
+    A1[AGENT 1<br/>Reviewer]
+    A2[AGENT 2<br/>Writer]
+    A3[AGENT 3<br/>Executor]
+
+    Orch --> A1
+    Orch --> A2
+    Orch --> A3
+
+    A1 & A2 & A3 --> Memory[AGENT MEMORY & PERSISTENCE<br/>Short-term context + LocalStorage Sync]
+
+    Memory --> MCP[MODEL CONTEXT PROTOCOL<br/>MCP Service + Skill Registry]
+
+    MCP --> Jira[Jira / GitHub]
+    MCP --> Code[Code / Perf API]
+
+    style Orch fill:#f9f,stroke:#333,stroke-width:2px
+    style A1 fill:#bbf,stroke:#333,stroke-width:1px
+    style A2 fill:#bbf,stroke:#333,stroke-width:1px
+    style A3 fill:#bbf,stroke:#333,stroke-width:1px
+    style Memory fill:#dfd,stroke:#333,stroke-width:1px
+    style MCP fill:#fdd,stroke:#333,stroke-width:1px
 ```
 
 ### Key Components
@@ -464,7 +463,7 @@ In the **Test Designer** tab:
 
 ```
 qa-nexus-autonomous/
-├── skills/                        # Claude Agent Skills (Anthropic Standard)
+├── skills/                        # Gemini Agent Skills (Anthropic Standard)
 │   ├── requirements-reviewer/     # Phase 1: Review skill
 │   ├── test-case-writer/          # Phase 2: Writing skill
 │   ├── test-executor/             # Phase 3: Execution skill
@@ -1051,7 +1050,7 @@ Built with cutting-edge technologies:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-2.7.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.9.0-blue.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)

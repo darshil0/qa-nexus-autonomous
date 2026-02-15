@@ -1,7 +1,7 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 2.7.0
-**Last Updated**: February 14, 2026
+**Version**: 2.9.0
+**Last Updated**: February 16, 2026
 **Status**: Production Ready
 
 ## Table of Contents
@@ -109,63 +109,44 @@ npm run dev
 
 QA Nexus implements a sophisticated multi-agent architecture where three specialized agents work together through a centralized orchestration layer.
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          INPUT LAYER                                 │
-│  Requirements (PRD, User Stories, Jira, Swagger, API Docs)          │
-└─────────────────────┬───────────────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    ORCHESTRATION LAYER                               │
-│  ┌────────────────────────────────────────────────────────────┐     │
-│  │  Central Orchestrator                                       │     │
-│  │  • Parses tasks and stores artifacts                        │     │
-│  │  • Manages workflow state and transitions                   │     │
-│  │  • Handles retries, timeouts, and fallbacks                │     │
-│  │  • Coordinates agent execution                              │     │
-│  └────────────────────────────────────────────────────────────┘     │
-└─────┬───────────────────┬─────────────────────┬─────────────────────┘
-      │                   │                     │
-      ▼                   ▼                     ▼
-┌──────────┐      ┌──────────────┐      ┌──────────────┐
-│ AGENT 1  │      │   AGENT 2    │      │   AGENT 3    │
-│  Reqs    │──────▶│   Test       │──────▶│   Test       │
-│ Reviewer │      │   Writer     │      │  Executor    │
-└────┬─────┘      └──────┬───────┘      └──────┬───────┘
-     │                   │                     │
-     ▼                   ▼                     ▼
-┌──────────────────────────────────────────────┐
-│        AGENT MEMORY & CONTEXT BUFFER         │
-│     (Short-term session history tracking)     │
-└──────────────────────┬───────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────┐
-│        MODEL CONTEXT PROTOCOL (MCP)          │
-│   (Skill Registry: Jira, GitHub, Analysis)   │
-└──────────────────────┬───────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────┐
-│        LOCAL PERSISTENCE LAYER               │
-│     (LocalStorage Sync & State Hydration)    │
-└──────────────────────────────────────────────┘
-      │                   │                     │
-      ▼                   ▼                     ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    KNOWLEDGE & MEMORY LAYER                          │
-│  ┌────────────────┐  ┌─────────────┐  ┌───────────────────────┐    │
-│  │  Vector DB     │  │ Relational  │  │  Agent Memory         │    │
-│  │  (Documents)   │  │    DB       │  │  (Context Store)      │    │
-│  └────────────────┘  └─────────────┘  └───────────────────────┘    │
-└─────────────────────────────────────────────────────────────────────┘
-      │                   │                     │
-      ▼                   ▼                     ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    INTEGRATION LAYER                                 │
-│  Jira │ GitHub │ TestRail │ CI/CD │ Automation Frameworks           │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    Input[INPUT LAYER<br/>Requirements: PRD, User Stories, Jira, Swagger]
+
+    subgraph ORCHESTRATION [ORCHESTRATION LAYER]
+        Orch[Central Orchestrator<br/>Workflow Management & Coordination]
+    end
+
+    Input --> Orch
+
+    A1[AGENT 1<br/>Reqs Reviewer]
+    A2[AGENT 2<br/>Test Writer]
+    A3[AGENT 3<br/>Test Executor]
+
+    Orch --> A1
+    A1 --> A2
+    A2 --> A3
+
+    A1 & A2 & A3 --> Memory[AGENT MEMORY & CONTEXT BUFFER<br/>Short-term session history]
+
+    Memory --> MCP[MODEL CONTEXT PROTOCOL (MCP)<br/>Skill Registry: Jira, GitHub, Analysis]
+
+    MCP --> Persistence[LOCAL PERSISTENCE LAYER<br/>LocalStorage Sync & Hydration]
+
+    subgraph KNOWLEDGE [KNOWLEDGE & MEMORY LAYER]
+        Vector[Vector DB]
+        Relational[Relational DB]
+        CtxStore[Agent Context Store]
+    end
+
+    Persistence --> Vector & Relational & CtxStore
+
+    subgraph INTEGRATION [INTEGRATION LAYER]
+        JiraGit[Jira | GitHub]
+        CICD[CI/CD | TestRail]
+    end
+
+    Vector & Relational & CtxStore --> JiraGit & CICD
 ```
 
 ### Workflow Steps
@@ -237,9 +218,9 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
 
 ---
 
-## Model Context Protocol (MCP) & Agentic Skills
+## Model Context Protocol (MCP) & Gemini Skills
 
-QA Nexus Autonomous integrates a subset of the **Model Context Protocol (MCP)**, providing a standardized framework for agents to discover and execute external tools (skills).
+QA Nexus Autonomous integrates a subset of the **Model Context Protocol (MCP)**, providing a standardized framework for agents to discover and execute external tools (Gemini Skills).
 
 ### Technical Implementation
 
@@ -260,6 +241,7 @@ The `skillRegistry` in `src/services/agenticSkills.ts` serves as the centralized
 | `code_analysis` | Deep inspection for security/logic. | `code` |
 | `tiny_gpt_reference` | Technical specs of the GPT engine. | `topic` |
 | `performance_audit` | Automated benchmarking/profiling. | `url` |
+| `gemini_knowledge_base` | Gemini technical specs & optimization. | `topic` |
 
 ---
 
@@ -330,87 +312,35 @@ The **Agent Memory Service** (`src/services/memoryService.ts`) provides agents w
 
 ### Big Picture: Multi-Agent Workflow
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        User Interface                            │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Requirements Input Textarea                              │   │
-│  │  - Project requirements                                   │   │
-│  │  - User stories                                           │   │
-│  │  - Feature specifications                                 │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│                              │                                    │
-│                              ▼                                    │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Orchestrator (App.tsx)                                   │   │
-│  │  - Decomposed into modular tab components (v2.2)          │   │
-│  │  - Manages workflow state using memoized handlers         │   │
-│  │  - Coordinates agent execution via centralized hooks      │   │
-│  │                                                           │   │
-│  │  Tabs (src/components/tabs/):                             │   │
-  │  - OrchestratorTab (Workflow control)                     │   │
-  │  - Agent1Tab (Requirements Review)                        │   │
-  │  - Agent2Tab (Test Case Design & Export)                  │   │
-  │  - Agent3Tab (Execution Logs & Reporting)                 │   │
-  │  - ReportsTab (Analytics & Visualizations)                │   │
-  │  - SettingsTab (AI Parameter Tuning)                      │   │
-  │  - HealthDashboardTab (Loop Monitoring)                   │   │
-│  │  - Handles errors and retries                             │   │
-│  └──────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              Autonomous Orchestration Layer                     │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  geminiService.ts (runAgenticWorkflow)                   │   │
-│  │  - Multi-step reasoning loops                            │   │
-│  │  - Sequential tool call management                        │   │
-│  │  - Prompt & Observation synthesis                        │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│                              │                                  │
-│                              ▼                                  │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  MCP Service & Skill Registry                            │   │
-│  │  - Standardized tool interface (JSON-RPC)                │   │
-│  │  - Executable skills (Jira, GitHub, Code Analysis)       │   │
-│  └──────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        ▼                     ▼                     ▼
-┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│    AGENT 1       │  │    AGENT 2       │  │    AGENT 3       │
-│   Requirements   │  │   Test Case      │  │   Test           │
-│   Reviewer       │  │   Writer         │  │   Executor       │
-├──────────────────┤  ├──────────────────┤  ├──────────────────┤
-│ Model:           │  │ Model:           │  │ Model:           │
-│ gemini-3-pro-prev│  │ gemini-3-pro-prev│  │ gemini-3-flash-pr│
-│                  │  │                  │  │                  │
-│ Input:           │  │ Input:           │  │ Input:           │
-│ - Requirements   │  │ - Requirements   │  │ - Test cases     │
-│                  │  │ - Review results │  │                  │
-│ Output:          │  │                  │  │ Output:          │
-│ - Issues found   │  │ Output:          │  │ - Pass/fail      │
-│ - Recommendations│  │ - Test cases     │  │ - Metrics        │
-│ - Completeness   │  │ - Priorities     │  │ - Duration       │
-└──────────────────┘  └──────────────────┘  └──────────────────┘
-        │                     │                     │
-        └─────────────────────┴─────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    Results Dashboard                             │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Agent Cards with Status Indicators                       │   │
-│  ├──────────────────────────────────────────────────────────┤   │
-│  │  Requirements Review Results                              │   │
-│  ├──────────────────────────────────────────────────────────┤   │
-│  │  Generated Test Cases                                     │   │
-│  ├──────────────────────────────────────────────────────────┤   │
-│  │  Execution Metrics & Visualizations                       │   │
-│  └──────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    UI[User Interface<br/>Requirements Input & Settings]
+
+    subgraph AUTONOMOUS [Autonomous Orchestration Layer]
+        GS[geminiService.ts<br/>runAgenticWorkflow]
+        MCP[MCP Service & Skill Registry]
+    end
+
+    UI --> GS
+    GS <--> MCP
+
+    subgraph AGENTS [Specialized Agents]
+        A1[AGENT 1<br/>Reqs Reviewer<br/>Gemini 3 Pro]
+        A2[AGENT 2<br/>Test Writer<br/>Gemini 3 Pro]
+        A3[AGENT 3<br/>Executor<br/>Gemini 3 Flash]
+    end
+
+    MCP <--> A1 & A2 & A3
+
+    A1 --> A2
+    A2 --> A3
+
+    subgraph DASHBOARD [Results Dashboard]
+        Stats[Status Indicators & Analytics]
+        Reports[Generated Tests & Logs]
+    end
+
+    A3 --> DASHBOARD
 ```
 
 ### Component Architecture
@@ -2148,8 +2078,8 @@ test(workflow): add integration test for full workflow
 
 ---
 
-**Version**: 2.6.0
-**Last Updated**: February 13, 2026
+**Version**: 2.9.0
+**Last Updated**: February 16, 2026
 **Maintained by**: QA Nexus Team
 
 For questions or issues, please open a GitHub issue or contact the maintainers.
