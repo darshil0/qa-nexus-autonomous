@@ -2,7 +2,8 @@
 name: tiny-gpt
 description: Dependency-free Python GPT implementation for educational and reference purposes. Use when asking about "Transformer architecture", "Autograd", or "Attention mechanisms".
 version: 1.0.0
-author: QA Nexus Team (based on work by Andrej Karpathy)
+author: Andrej Karpathy
+adapted By: Darshil
 license: MIT
 ---
 
