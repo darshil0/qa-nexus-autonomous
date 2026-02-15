@@ -10,39 +10,68 @@ on:
         description: 'If true, runs eslint --fix and commits changes'
         required: false
         default: 'false'
+        type: boolean
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+      
       - name: Install dependencies
         run: npm ci
+      
       - name: Run ESLint
         run: npm run lint
 
   autofix:
     needs: lint
-    if: "github.event_name == 'workflow_dispatch' && github.event.inputs.auto_fix == 'true'"
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.auto_fix == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          persist-credentials: true
-      - name: Use Node.js
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+      
       - name: Install dependencies
         run: npm ci
+      
       - name: Run ESLint autofix
-        run: npm run lint:fix
-      - name: Commit autofixes
-        uses: EndBug/add-and-commit@v9
-        with:
-          message: "chore(lint): apply ESLint autofixes via workflow"
-          add: "src/**"
+        run: npm run lint:fix || true
+      
+      - name: Check for changes
+        id: verify_diff
+        run: |
+          git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit and push changes
+        if: steps.verify_diff.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "chore(lint): apply ESLint autofixes [skip ci]"
+          git push
+      
+      - name: No changes detected
+        if: steps.verify_diff.outputs.changed != 'true'
+        run: echo "No linting issues to fix - code is already clean!"
