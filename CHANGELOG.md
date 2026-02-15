@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.1] - 2026-02-20
+
+### Fixed
+- **Metrics Calculation**: Corrected cumulative latency tracking and tool frequency summation in the orchestrator hook.
+- **Model Consistency**: Resolved inconsistency where the flash model was hardcoded instead of using project-wide constants.
+- **Dependency Management**: Added missing `@eslint/js` to development dependencies to resolve linting configuration errors.
+- **Documentation Sync**: Synchronized versions, dates, and structural integrity across all architectural and user guides.
+
 ## [3.0.0] - 2026-02-18
 
 ### Added
@@ -26,12 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Global Import Refactoring**: Systematically replaced relative imports (e.g., `../../components/...`) with standardized `@/` path aliases across all Tab components, services, and the main entry point.
 - **Project Documentation Sync**: Updated all Markdown documentation to reflect the new project structure and path alias standards.
-- **Version bump**: Upgraded platform to v2.10.0.
+- **Version bump**: Upgraded platform to v2.9.0.
 
 ## [2.8.0] - 2026-02-15
 
 ### Added
-- **Claude Skills Integration**: Restructured the project to support the [Anthropic Agent Skills](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) standard.
+- **Gemini Skills Integration**: Restructured the project to support the modular agent skills standard.
 - **Skills Directory**: Introduced `skills/` directory with specialized `SKILL.md` definitions for Requirements Reviewer, Test Case Writer, Test Executor, and Tiny GPT.
 - **Skills Registry**: Added a root-level `Skills.MD` for easier navigation of available AI capabilities.
 
@@ -271,5 +279,5 @@ These fixes ensure:
 
 ---
 
-**Last Updated**: February 18, 2026
-**Version**: 3.0.0
+**Last Updated**: February 20, 2026
+**Version**: 3.0.1

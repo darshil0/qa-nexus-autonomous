@@ -1,7 +1,7 @@
-# QA Nexus Gemini Skills Registry (v2.10.0)
+# QA Nexus Gemini Skills Registry (v3.0.1)
 
-**Version**: 3.0.0-beta  
-**Last Updated**: February 14, 2026
+**Version**: 3.0.1
+**Last Updated**: February 20, 2026
 
 This project implements a modular skills architecture specifically designed for Google Gemini 3 models. The system enables AI agents to access specialized capabilities through a standardized interface.
 

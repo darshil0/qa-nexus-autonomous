@@ -117,7 +117,7 @@ async function runAgenticWorkflow<T>(
 
   const maxIterations = settings?.maxIterations ?? 3;
   const temperature = settings?.temperature ?? 0.7;
-  const model = settings?.useFlashModel ? 'gemini-1.5-flash' : agentModel;
+  const model = settings?.useFlashModel ? AGENT_MODELS.AGENT3 : agentModel;
 
   let iterations = 0;
   while (iterations < maxIterations) {
