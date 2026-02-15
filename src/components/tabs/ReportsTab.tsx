@@ -11,7 +11,7 @@ import {
     Pie,
     Cell
 } from 'recharts';
-import { StatCard } from '../StatCard';
+import { StatCard } from '@/components/common/StatCard';
 
 interface ReportsTabProps {
     chartData: { name: string; value: number; color: string }[];

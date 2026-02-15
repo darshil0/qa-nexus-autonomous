@@ -1,7 +1,7 @@
 import React from 'react';
 import { Database, Loader2, Github, ChevronRight } from 'lucide-react';
 import { WorkflowStatus } from '@/types';
-import { AgentThinkingLog } from '../AgentThinkingLog';
+import { AgentThinkingLog } from '@/components/layout/AgentThinkingLog';
 
 interface OrchestratorTabProps {
     jiraIssueInput: string;

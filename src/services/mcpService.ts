@@ -1,6 +1,6 @@
 
 import { skillRegistry, Skill } from "./agenticSkills";
-import { logger } from "../utils/logger";
+import { logger } from "@/utils/logger";
 
 /**
  * MCP Request types

@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './index.css';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { validateEnv } from './utils/validateEnv';
+import '@/assets/styles/index.css';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { validateEnv } from '@/utils/validateEnv';
 
 // Validate environment before rendering
 try {

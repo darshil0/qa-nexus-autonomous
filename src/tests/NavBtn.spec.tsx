@@ -2,7 +2,7 @@
 
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, test, expect } from 'vitest';
-import { NavBtn } from '../components/NavBtn';
+import { NavBtn } from '@/components/common/NavBtn';
 
 test('NavBtn calls onClick when clicked', () => {
   const onClick = vi.fn();
