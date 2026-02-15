@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-02-18
+
+### Added
+- **Agentic Memory System**: Integrated a stateful memory buffer (`memoryService.ts`) to provide session-long context for AI agents, improving reasoning continuity across multi-step workflows.
+- **Advanced Orchestration Metrics**: Real-time tracking of loop depth, latency, tool call frequency, and estimated token consumption, visualized in the Health Dashboard.
+- **Input Sanitization Layer**: Implementation of `sanitizeRequirements` to protect against prompt injection and ensure data integrity.
+- **UI Accessibility & UX Enhancements**: Added automated focus management, smooth scrolling to highlighted requirements, and refined glassmorphism animations.
+- **Unified Export Engine**: Standardized JSON and CSV export for both test cases and execution results.
+
+### Changed
+- **Project Synchronization**: Unified all project documentation, badges, and UI references to version 3.0.0.
+
 ## [2.9.0] - 2026-02-16
 
 ### Added
@@ -421,8 +433,10 @@ These fixes ensure:
 
 ## Version Information
 
-**Current Version**: 2.9.0
-**Release Date**: February 14, 2026
+**Current Version**: 3.0.0
+**Release Date**: February 18, 2026
+**Version**: 3.0.0
+**Last Updated**: February 18, 2026
 **Status**: Production Ready  
 **License**: MIT
 
@@ -578,5 +592,5 @@ See [README.md](README.md#future-enhancements) for planned features and improvem
 
 ---
 
-**Last Updated**: February 14, 2026
-**Version**: 2.9.0
+**Last Updated**: February 18, 2026
+**Version**: 3.0.0
