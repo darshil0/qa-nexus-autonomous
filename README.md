@@ -2,7 +2,7 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-2.9.0-blue.svg)
+![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
 
@@ -89,7 +89,7 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
-### 🤖 Agentic Skills & Gemini Skills (v2.9.0)
+### 🤖 Agentic Skills & Gemini Skills (v3.0.0)
 - **Gemini Skills Integration**: Enhanced the official Agent Skills standard for portable AI workflows, optimized for Gemini 3.
 - **Gemini Knowledge Base**: New skill providing technical details and prompt optimization for Gemini models.
 - **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0.
@@ -1050,7 +1050,7 @@ Built with cutting-edge technologies:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-2.9.0-blue.svg)
+![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
