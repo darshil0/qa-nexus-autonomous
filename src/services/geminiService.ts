@@ -21,27 +21,29 @@ export const setAiClient = (client: GoogleGenAI | undefined) => {
 };
 
 /**
- * Safely extract text from Gemini response
+ * Safely extract text from Gemini response.
+ * Supports both function call and property access for maximum SDK version compatibility.
  */
 function extractText(response: GenerateContentResponse): string {
   try {
-    // Handle the actual API response structure (v1.x uses a getter)
-    if (typeof response.text === 'string') {
-      return response.text;
+    // Standard SDK v1.x uses a .text() method or a getter.
+    // We check both to be resilient against environment variations.
+    const res = response as unknown as { text: string | (() => string) };
+    if (typeof res.text === 'function') {
+      return res.text();
+    }
+    if (typeof res.text === 'string') {
+      return res.text;
     }
 
-    // Handle mock/test responses or older SDK versions where text might be a function
-    const rawResponse = response as unknown as { text: string | (() => string) };
-    if (typeof rawResponse.text === 'function') {
-      return rawResponse.text();
-    }
-    if (typeof rawResponse.text === 'string') {
-      return rawResponse.text;
+    // Fallback for candidates structure
+    if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return response.candidates[0].content.parts[0].text;
     }
 
     return '';
   } catch (error) {
-    logger.error('Failed to extract text from response:', error);
+    logger.error('Failed to extract text from Gemini response:', error);
     return '';
   }
 }

@@ -38,24 +38,27 @@ export class ErrorBoundary extends Component<Props, State> {
 
     // Send to error tracking service in production
     if (!import.meta.env.DEV) {
-      // TODO: Send to Sentry, LogRocket, etc.
       this.reportError(error, errorInfo);
     }
   }
 
+  /**
+   * Placeholder for a production error reporting service (e.g., Sentry, LogRocket).
+   * Currently routes to the centralized logger.
+   */
   private reportError(error: Error, errorInfo: ErrorInfo): void {
-    // Placeholder for error reporting service
     const errorReport = {
       message: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
-      url: window.location.href
+      url: window.location.href,
+      projectName: 'qa-nexus-autonomous'
     };
 
-    // In production, send this to your error tracking service
-    logger.error('Error report:', errorReport);
+    // In production, this would be an API call to a telemetry endpoint.
+    logger.error('Production Error Report:', JSON.stringify(errorReport, null, 2));
   }
 
   private handleReload = (): void => {
