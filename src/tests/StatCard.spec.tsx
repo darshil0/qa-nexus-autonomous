@@ -2,7 +2,7 @@
 
 import { render, screen } from '@testing-library/react';
 import { expect, test } from 'vitest';
-import { StatCard } from '../components/StatCard';
+import { StatCard } from '@/components/common/StatCard';
 
 test('StatCard renders value and applies color class', () => {
   render(<StatCard label="Metric" value="42" color="rose" />);

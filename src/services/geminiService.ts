@@ -1,11 +1,11 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
-import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "../constants";
-import { ValidatedSpec, TestCase, ExecutionResult, AISettings, OrchestrationMetrics } from "../types";
+import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "@/constants";
+import { ValidatedSpec, TestCase, ExecutionResult, AISettings, OrchestrationMetrics } from "@/types";
 import { getSkillDescriptions } from "./agenticSkills";
 import { mcpService } from "./mcpService";
 import { agentMemory } from "./memoryService";
-import { logger } from "../utils/logger";
-import { sanitizeRequirements } from "../utils/sanitizeInput";
+import { logger } from "@/utils/logger";
+import { sanitizeRequirements } from "@/utils/sanitizeInput";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string;
 let ai: GoogleGenAI | undefined;

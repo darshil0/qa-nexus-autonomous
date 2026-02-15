@@ -1,5 +1,5 @@
 
-import { fetchJiraRequirement, reviewRequirements, setAiClient } from '../services/geminiService';
+import { fetchJiraRequirement, reviewRequirements, setAiClient } from '@/services/geminiService';
 import { test, expect, beforeEach } from 'vitest';
 
 beforeEach(() => {

@@ -1,5 +1,5 @@
 
-import { logger } from "../utils/logger";
+import { logger } from "@/utils/logger";
 
 /**
  * Interface for an Agentic Skill (Tool)

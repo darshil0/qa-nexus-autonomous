@@ -1,5 +1,5 @@
 
-import { logger } from "../utils/logger";
+import { logger } from "@/utils/logger";
 
 interface MemoryEntry {
   role: 'user' | 'assistant' | 'observation';

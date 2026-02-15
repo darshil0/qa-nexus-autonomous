@@ -1,6 +1,6 @@
 
-import { WorkflowState, WorkflowStatus } from "../types";
-import { logger } from "../utils/logger";
+import { WorkflowState, WorkflowStatus } from "@/types";
+import { logger } from "@/utils/logger";
 
 const STORAGE_KEY = 'qa_nexus_state';
 

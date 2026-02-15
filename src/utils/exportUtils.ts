@@ -1,5 +1,5 @@
 
-import { TestCase, ExecutionResult } from "../types";
+import { TestCase, ExecutionResult } from "@/types";
 
 /**
  * Trigger a browser download for a file

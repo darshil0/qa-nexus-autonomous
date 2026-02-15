@@ -1,5 +1,5 @@
 
-import { setAiClient, reviewRequirements, generateTestCases, executeTests } from '../services/geminiService';
+import { setAiClient, reviewRequirements, generateTestCases, executeTests } from '@/services/geminiService';
 import { GoogleGenAI } from "@google/genai";
 import { test, expect, beforeEach, afterEach, vi } from 'vitest';
 
