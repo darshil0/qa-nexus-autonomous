@@ -2,9 +2,10 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-3.0.0--beta-yellow.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Status](https://img.shields.io/badge/status-production--ready-brightgreen.svg)
+![Status](https://img.shields.io/badge/status-beta-yellow.svg)
+![Release](https://img.shields.io/badge/release-feb%2018-blue.svg)
 
 ---
 
@@ -12,6 +13,7 @@
 
 ### Getting Started
 - [Overview](#-overview)
+- [Release Status](#-release-status)
 - [Key Features](#-key-features)
 - [Quick Start](#-quick-start)
 - [Prerequisites](#-prerequisites)
@@ -66,6 +68,38 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 ---
 
+## 🎯 Release Status
+
+**Current Version**: 3.0.0-beta  
+**Status**: Feature complete, undergoing final testing  
+**Last Updated**: February 14, 2026  
+**Target Stable Release**: February 18, 2026
+
+### What "Beta" Means
+
+- ✅ All v3.0.0 features are implemented and functional
+- ✅ System is stable for testing and evaluation
+- ✅ Core functionality is production-ready
+- ⚠️ API may have minor breaking changes before stable release
+- ⚠️ Documentation is being finalized
+- 💡 We welcome feedback and bug reports
+
+### Upgrade Path
+
+Beta users can upgrade to stable v3.0.0 with minimal changes:
+1. Update package.json version when v3.0.0 stable is released
+2. Review any API changes documented in [CHANGELOG.md](CHANGELOG.md)
+3. Re-run tests to ensure compatibility
+4. No data migration required (LocalStorage schema is stable)
+
+### Known Limitations (Beta)
+
+- Some edge cases in multi-tool reasoning may need refinement
+- Performance optimizations ongoing for large test suites (>100 cases)
+- Health Dashboard metrics are estimates (not precise measurements)
+
+---
+
 ## ✨ Key Features
 
 ### 🔍 Agent 1: Requirements Reviewer
@@ -89,22 +123,23 @@ QA Nexus Autonomous automates the entire QA workflow:
 - **Issue Creation**: Automatically creates GitHub issues for failures
 - **Result Visualization**: Charts and graphs for test results
 
-### 🤖 Agentic Skills & Gemini Skills (v3.0.0)
-- **Gemini Skills Integration**: Enhanced the official Agent Skills standard for portable AI workflows, optimized for Gemini 3.
-- **Gemini Knowledge Base**: New skill providing technical details and prompt optimization for Gemini models.
-- **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0.
-- **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 5 per task) to gather complex context before providing a final answer.
-- **Advanced Skill Registry**: Includes capabilities for **Code Analysis**, **Performance Audits**, **Jira Search**, and **GitHub Issue Creation**.
-- **Autonomous Reasoning Loop**: Implements a recursive "Thought-Action-Observation" sequence, allowing agents to refine results dynamically based on real-time tool feedback.
-- **Agentic Health Dashboard**: Real-time monitoring of reasoning loop depth, tool usage frequency, estimated token consumption, and average latency.
-- **Data Persistence & Memory**: Sessions are automatically saved to LocalStorage, and a short-term memory buffer preserves context across pipeline stages.
-- **Configurable AI Settings**: Adjust maximum reasoning iterations, temperature, and model selection (Flash vs Pro) via the new Settings tab.
-- **Enhanced Export Engine**: Export generated test cases and execution reports to JSON or CSV formats directly from the UI header.
+### 🤖 Agentic Skills & MCP Framework (v3.0.0-beta)
+- **Gemini Skills Architecture**: Modular skills system designed specifically for Gemini 3, inspired by industry best practices for AI agent capabilities
+- **Gemini Knowledge Base**: New skill providing technical details and prompt optimization for Gemini models
+- **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0
+- **Sequential Multi-Tool Execution**: Agents can now call multiple tools in sequence (up to 5 per task) to gather complex context before providing a final answer
+- **Advanced Skill Registry**: Includes capabilities for **Code Analysis**, **Performance Audits**, **Jira Search**, and **GitHub Issue Creation**
+- **Autonomous Reasoning Loop**: Implements a recursive "Thought-Action-Observation" sequence, allowing agents to refine results dynamically based on real-time tool feedback
+- **Agentic Health Dashboard**: Real-time monitoring of reasoning loop depth, tool usage frequency, estimated token consumption, and average latency
+- **Data Persistence & Memory**: Sessions are automatically saved to LocalStorage, and a short-term memory buffer preserves context across pipeline stages
+- **Configurable AI Settings**: Adjust maximum reasoning iterations, temperature, and model selection (Flash vs Pro) via the new Settings tab
+- **Enhanced Export Engine**: Export generated test cases and execution reports to JSON or CSV formats directly from the UI header
 
 ### 🧠 Tiny GPT Engine
-- **Pure Python Implementation**: Atomic GPT training and inference engine now part of the `tiny-gpt` skill.
-- **Dependency-Free**: Zero external libraries (pure `math`, `random`, `os`) for maximum portability and educational value.
-- **Educational Core**: Demonstrates Autograd, Attention mechanisms, and Transformer blocks in under 300 lines of code.
+- **Pure Python Implementation**: Atomic GPT training and inference engine as an educational skill
+- **Dependency-Free**: Zero external libraries (pure `math`, `random`, `os`) for maximum portability and educational value
+- **Educational Core**: Demonstrates Autograd, Attention mechanisms, and Transformer blocks in under 300 lines of code
+- **Attribution**: Based on educational work by Andrej Karpathy ([@karpathy](https://github.com/karpathy/nanoGPT))
 
 ### 🎨 Premium Design System (v2.4)
 - **Glassmorphism UI**: Translucent surfaces with backdrop blur
@@ -251,29 +286,27 @@ QA Nexus implements a sophisticated multi-agent architecture where three special
 
 ```mermaid
 graph TD
-    Orch[ORCHESTRATION LAYER<br/>React + runAgenticWorkflow]
+    Input[User Input] --> Orch[Orchestrator<br/>React App]
+    Orch --> API[Gemini API]
 
-    A1[AGENT 1<br/>Reviewer]
-    A2[AGENT 2<br/>Writer]
-    A3[AGENT 3<br/>Executor]
+    API --> A1[Agent 1: Requirements Reviewer]
+    A1 --> A2[Agent 2: Test Case Writer]
+    A2 --> A3[Agent 3: Test Executor]
 
-    Orch --> A1
-    Orch --> A2
-    Orch --> A3
+    A1 & A2 & A3 --> Memory[Agent Memory & Persistence<br/>Short-term context + LocalStorage]
 
-    A1 & A2 & A3 --> Memory[AGENT MEMORY & PERSISTENCE<br/>Short-term context + LocalStorage Sync]
+    Memory --> MCP[Model Context Protocol<br/>MCP Service + Skill Registry]
 
-    Memory --> MCP[MODEL CONTEXT PROTOCOL<br/>MCP Service + Skill Registry]
+    MCP --> Jira[Jira Search]
+    MCP --> Git[GitHub Creator]
+    MCP --> Run[Test Runner]
+    MCP --> Code[Code Analysis]
+    MCP --> Perf[Performance Audit]
+    MCP --> KB[Gemini Knowledge Base]
 
-    MCP --> Jira[Jira / GitHub]
-    MCP --> Code[Code / Perf API]
-
-    style Orch fill:#f9f,stroke:#333,stroke-width:2px
-    style A1 fill:#bbf,stroke:#333,stroke-width:1px
-    style A2 fill:#bbf,stroke:#333,stroke-width:1px
-    style A3 fill:#bbf,stroke:#333,stroke-width:1px
-    style Memory fill:#dfd,stroke:#333,stroke-width:1px
-    style MCP fill:#fdd,stroke:#333,stroke-width:1px
+    style Orch fill:#667eea,stroke:#333,stroke-width:2px
+    style API fill:#48bb78,stroke:#333,stroke-width:2px
+    style MCP fill:#ed8936,stroke:#333,stroke-width:2px
 ```
 
 ### Key Components
@@ -285,6 +318,8 @@ graph TD
 | **Agent 2** | Test Case Writer - generates comprehensive test cases |
 | **Agent 3** | Test Executor - simulates test execution with metrics |
 | **Service Layer** | Gemini API integration for AI-powered processing |
+| **MCP Layer** | Model Context Protocol for tool discovery and execution |
+| **Memory Layer** | Short-term context buffer and LocalStorage persistence |
 
 ### Workflow
 
@@ -294,14 +329,14 @@ graph TD
 4. **Agent 3** → Executes tests and reports results
 5. **Output** → Comprehensive test report with metrics
 
-### Agentic Workflow (v2.5)
+### Agentic Workflow (v3.0.0-beta)
 
-The system now supports an autonomous loop for each agent:
-1. **Prompt**: The orchestrator sends a task and available MCP skills.
-2. **Thought**: The agent decides if a tool is needed (e.g., `jira_search`).
-3. **Action**: If needed, the agent returns a `tool_call`.
-4. **Execution**: The `MCPService` executes the skill and returns the `observation`.
-5. **Refinement**: The agent receives the observation and produces the final validated result.
+The system supports an autonomous loop for each agent:
+1. **Prompt**: The orchestrator sends a task and available MCP skills
+2. **Thought**: The agent decides if a tool is needed (e.g., `jira_search`)
+3. **Action**: If needed, the agent returns a `tool_call`
+4. **Execution**: The `MCPService` executes the skill and returns the `observation`
+5. **Refinement**: The agent receives the observation and produces the final validated result
 
 📖 **For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
 
@@ -463,11 +498,12 @@ In the **Test Designer** tab:
 
 ```
 qa-nexus-autonomous/
-├── skills/                        # Gemini Agent Skills (Anthropic Standard)
+├── skills/                        # Gemini Skills Architecture
 │   ├── requirements-reviewer/     # Phase 1: Review skill
 │   ├── test-case-writer/          # Phase 2: Writing skill
 │   ├── test-executor/             # Phase 3: Execution skill
-│   └── tiny-gpt/                  # GPT engine skill & scripts
+│   ├── gemini-knowledge-base/     # Gemini-specific guidance
+│   └── tiny-gpt/                  # Educational GPT engine
 │
 ├── src/
 │   ├── App.tsx                    # Main orchestrator
@@ -510,6 +546,8 @@ qa-nexus-autonomous/
 ├── package.json                   # Dependencies
 ├── vite.config.ts                 # Vite configuration
 ├── tsconfig.json                  # TypeScript config
+├── AGENT.md                       # AI agent reference guide
+├── Skills.MD                      # Skills registry
 └── README.md                      # This file
 ```
 
@@ -519,6 +557,7 @@ qa-nexus-autonomous/
 - **`src/services/geminiService.ts`**: All Gemini API interactions
 - **`src/types.ts`**: TypeScript type definitions
 - **`src/constants.ts`**: App configuration and agent models
+- **`skills/`**: Modular skills for AI agent capabilities
 
 ### Import Aliases
 
@@ -920,24 +959,53 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🗺️ Roadmap
 
-### v2.5 (Q2 2026)
+### v3.0.0 (February 2026) ✅ Current Beta
+
+**Status**: Feature complete, undergoing final testing  
+**Target Stable Release**: February 18, 2026
+
+**Completed Features**:
+- [x] Agentic Memory System with short-term context buffer
+- [x] Advanced Orchestration Metrics and Health Dashboard
+- [x] Input Sanitization Layer for prompt injection protection
+- [x] UI Accessibility enhancements (WCAG 2.1 AA compliance)
+- [x] Unified Export Engine (JSON/CSV)
+- [x] Gemini Skills Architecture with 5+ specialized skills
+- [x] Model Context Protocol (MCP) integration
+- [x] Sequential Multi-Tool Execution (up to 5 tools per task)
+
+### v3.1.0 (Q2 2026) 🎯 Next Release
+
+**Focus**: Collaboration & Persistence
+
 - [ ] Real-time multi-user collaboration
-- [ ] Database integration for workflow history
-- [ ] Custom AI model selection
-- [ ] Result export (PDF, JSON, CSV)
+- [ ] Database integration for workflow history (PostgreSQL/Supabase)
+- [ ] Custom AI model selection (switch between Pro/Flash on-the-fly)
+- [ ] Result export enhancements (PDF reports with charts)
+- [ ] Team workspace management
+- [ ] Workflow templates library
 
-### v3.0 (Q3 2026)
-- [ ] Native CI/CD pipeline integration
-- [ ] Support for local LLMs (Ollama)
-- [ ] Advanced filtering and search
+### v3.5.0 (Q3 2026) 🔮 Future Vision
+
+**Focus**: Intelligence & Integration
+
+- [ ] Native CI/CD pipeline integration (GitHub Actions, GitLab CI)
+- [ ] Support for local LLMs (Ollama, LocalAI)
+- [ ] Advanced filtering and search capabilities
 - [ ] API rate limiting and quota management
-- [ ] Webhook support for integrations
+- [ ] Webhook support for external integrations
+- [ ] Custom skill creation UI
 
-### v3.5 (Q4 2026)
-- [ ] Agent learning from historical data
-- [ ] Predictive test case generation
-- [ ] Automatic flakiness detection
-- [ ] Smart test prioritization
+### v4.0.0 (Q4 2026) 🚀 Innovation
+
+**Focus**: Learning & Optimization
+
+- [ ] Agent learning from historical test data
+- [ ] Predictive test case generation using ML
+- [ ] Automatic flakiness detection and remediation
+- [ ] Smart test prioritization based on code changes
+- [ ] Integration with code coverage tools
+- [ ] Natural language query interface
 
 ---
 
@@ -955,6 +1023,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - [Architecture Guide](docs/ARCHITECTURE.md)
 - [User Walkthrough](docs/Walkthrough.md)
 - [Agent Implementation](AGENT.md)
+- [Skills Registry](Skills.MD)
 - [Changelog](CHANGELOG.md)
 
 ---
@@ -984,14 +1053,21 @@ Built with cutting-edge technologies:
 - **Google Gemini AI** - Intelligent automation
 - **Vanilla CSS** - Premium custom design
 
+### Special Thanks
+
+- **Andrej Karpathy** ([@karpathy](https://github.com/karpathy)) - For the educational Tiny GPT implementation based on nanoGPT
+- **Google AI** - For the powerful Gemini 3 models
+- **Open Source Community** - For the amazing tools and libraries
+
 ---
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-3.0.0--beta-yellow.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Contributors](https://img.shields.io/badge/contributors-1-blue.svg)
 
 ---
 
