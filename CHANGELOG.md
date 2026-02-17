@@ -5,6 +5,54 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.2] - 2026-02-17
+
+### Fixed
+
+#### ESLint Configuration (`eslint.config.js`)
+- **Globals syntax**: `{ browser: true, node: true, es2022: true }` is the old `.eslintrc` format and has no effect in ESLint 9 flat config. Replaced with proper spreads from the `globals` npm package (`...globals.browser`, `...globals.node`, `...globals.es2022`), ensuring `window`, `document`, `process`, and ES2022 built-ins are correctly defined.
+- **Deprecated rule `no-throw-literal`**: Replaced with `@typescript-eslint/only-throw-error`, which understands TypeScript union types and type assertions.
+- **Deprecated rule `no-return-await`**: Replaced with `@typescript-eslint/return-await`, which correctly permits `return await` inside `try/catch` blocks where dropping the `await` would change error-handling semantics.
+- **Deprecated rule `@typescript-eslint/no-var-requires`**: Replaced with `@typescript-eslint/no-require-imports`, the current rule name in typescript-eslint v8.
+
+#### Dependencies (`package.json`)
+- **Added `globals` devDependency** (`^15.15.0`): Required by the corrected ESLint flat config globals fix above; without it the config throws a module-not-found error on startup.
+- **Removed redundant `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser`**: Both packages are re-exported by the already-listed `typescript-eslint` unified package. Keeping them separately risks version-skew bugs.
+- **Added `test:coverage` script** (`vitest --coverage`): The README documented this command and ESLint's `ignores` array already listed `coverage/`, making its absence from `scripts` an inconsistency.
+
+#### TypeScript Configuration
+- **`tsconfig.node.json`**: Added `vitest.config.ts` to the `include` array. ESLint's `ignores` block excludes both config files from linting, so `tsc --noEmit` (run in `typecheck` and `ci` scripts) was the only type-checker for them. `vitest.config.ts` was silently excluded, letting type errors there escape CI entirely.
+- **`tsconfig.json` — target/lib mismatch**: `target` and `lib` were set to `ES2020` while `vite.config.ts` sets `build.target: 'es2022'`. TypeScript refused to type-check syntax that Vite would actually emit. Aligned both to `ES2022`.
+- **`tsconfig.json` — missing `vitest/globals`**: `vitest.config.ts` sets `globals: true`, but `vitest/globals` was absent from `tsconfig.json`'s `types` array. TypeScript had no knowledge of `describe`, `test`, `expect`, `vi`, etc. in test files, flagging every spec file with errors during `tsc --noEmit`.
+
+#### Repository (`gitignore`)
+- **Added `coverage/`** to `.gitignore`. Vitest's coverage reporter writes here; ESLint already excluded it, but the directory would have been committed to git without this entry.
+
+#### Service Layer — `geminiService.ts`
+- **Removed `as unknown as GoogleGenAI` double cast**: `new GoogleGenAI({ apiKey })` already returns `GoogleGenAI` per the SDK's own type declarations. The cast suppressed TypeScript's ability to catch future type incompatibilities at the construction site.
+- **`console.warn` → `logger.warn`**: All other call sites use the centralised `logger` utility, which gates `info`/`debug` output to development mode. This call was the only one bypassing that gating.
+- **`schema as any` removed**: Imported `Schema` from `@google/genai` (the correct type for `responseSchema`) and cast with `schema as Schema` instead. Also removed the `eslint-disable-next-line @typescript-eslint/no-explicit-any` suppress comment that was hiding the issue.
+- **`parsed[field] || null` → `parsed[field] ?? null`**: `||` treats any falsy value (empty array `[]`, `0`, `""`, `false`) as a reason to fall back. `??` correctly falls back only on `null` or `undefined`.
+- **`mcpRes.result || mcpRes.error` → explicit `!== undefined` check**: If a skill returns `0`, `false`, `null`, or `""` as a valid result, `||` would silently discard it and serialize the error object instead—corrupting the observation string fed back into the agent's reasoning loop.
+- **`finalData || ([] as unknown as T)` → `finalData ?? ([] as unknown as T)`**: `finalData` is typed `T | null`; the fallback should only trigger on `null`, not on any falsy value.
+
+#### Service Layer — `mcpService.ts`
+- **`this.toolUsage[name] || 0` → `?? 0`**: After the first call, `toolUsage[name]` is `1`. The `|| 0` would incorrectly fall through if the count were ever `0`, treating a valid zero-count as "undefined". `??` only falls back on `undefined` (the actual initial state of a missing key).
+- **`args[key]` → `args[key] ?? ''`**: `args` is typed `Record<string, string>`, but a caller omitting a parameter leaves `args[key]` as `undefined` at runtime. This `undefined` was silently spread into `skill.execute()`, which has signature `(...args: string[])`. The guard makes the fallback explicit and type-safe.
+
+#### Documentation
+- **`AGENT.md` — Mermaid diagram**: The Memory layer (`Agent Memory & Persistence`) was entirely absent from AGENT.md's architecture diagram, despite appearing in README.md's equivalent diagram and `memoryService.ts` being a listed project service.
+- **`AGENT.md` — Skill Registry**: Three skills added in v2.6.0 (`code_analysis`, `performance_audit`, `tiny_gpt_reference`) were missing from the registry list. All seven skills are now documented.
+- **`AGENT.md` — stale version pins**: "v2.7.0 introduces…" and "v2.6.0 includes…" were removed from feature body text; features are now described as current capabilities.
+- **`AGENT.md` — `callAgent` pattern**: Placeholder comments replaced with a concrete, working `@google/genai` v1.x example (`ai.models.generateContent`, `response.text` as a property, regex to strip markdown fences).
+- **`AGENT.md` — file paths**: `@/types.ts`, `src/types.ts`, and `src/constants.ts` (flat files) corrected to `src/types/index.ts` and `src/constants/index.ts` (directory form matching project structure).
+- **`AGENT.md` — Persistence section**: `memoryService.ts` was unmentioned despite being a project service. Section now describes both the short-term in-process memory buffer and the LocalStorage persistence layer.
+- **`README.md` — API Integration example**: Code sample used the old `@google/generative-ai` SDK (`genAI.getGenerativeModel()`, `model.generateContent()`, `response.text()`). Corrected to `@google/genai` v1.x (`ai.models.generateContent()`, `response.text` as a property).
+- **`README.md` — Key Files**: `src/types.ts` and `src/constants.ts` corrected to `src/types/index.ts` and `src/constants/index.ts`, consistent with the project structure tree directly above them.
+- **`README.md` — test directory**: `src/__tests__/` corrected to `src/tests/` throughout, matching `vitest.config.ts` and the project structure tree.
+- **`Skills.MD` — `SkillResult` interface**: `data?: any` and `details?: any` changed to `unknown`, complying with the project's own `@typescript-eslint/no-explicit-any: "error"` rule.
+- **`Skills.MD` — skill registration example**: `return { status: "success", data: result }` referenced an undeclared `result` variable, causing a compile error for anyone copying the snippet. Replaced with a self-contained example.
+
 ## [3.0.1] - 2026-02-20
 
 ### Fixed
@@ -279,5 +327,5 @@ These fixes ensure:
 
 ---
 
-**Last Updated**: February 20, 2026
-**Version**: 3.0.1
+**Last Updated**: February 17, 2026
+**Version**: 3.0.2
