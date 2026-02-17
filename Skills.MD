@@ -334,11 +334,11 @@ Skills should use consistent error patterns:
 ```typescript
 interface SkillResult {
   status: 'success' | 'error';
-  data?: any;
+  data?: unknown;
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
 }
 ```

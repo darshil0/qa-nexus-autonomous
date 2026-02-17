@@ -666,7 +666,7 @@ npm test
 npm run test:watch
 
 # Run specific test file
-npm test -- src/__tests__/geminiService.spec.ts
+npm test -- src/tests/geminiService.spec.ts
 
 # Run with coverage
 npm test -- --coverage
@@ -675,7 +675,7 @@ npm test -- --coverage
 ### Test Structure
 
 ```
-src/__tests__/
+src/tests/
 ├── NavBtn.spec.tsx              # UI component tests
 ├── StatCard.spec.tsx            # UI component tests
 ├── geminiService.spec.ts        # Service layer tests

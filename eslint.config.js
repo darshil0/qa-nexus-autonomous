@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import ts from "typescript-eslint";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
+import globals from "globals";
 
 export default ts.config(
     js.configs.recommended,
@@ -21,9 +22,9 @@ export default ts.config(
                 },
             },
             globals: {
-                browser: true,
-                node: true,
-                es2022: true,
+                ...globals.browser,
+                ...globals.node,
+                ...globals.es2022,
             }
         },
         settings: {
@@ -58,8 +59,8 @@ export default ts.config(
             "curly": ["error", "all"], // Require curly braces for all control statements
             
             // Best Practices
-            "no-throw-literal": "error", // Only throw Error objects
-            "no-return-await": "error", // Don't unnecessarily await in return statements
+            "@typescript-eslint/only-throw-error": "error", // Only throw Error objects (TS-aware replacement for no-throw-literal)
+            "@typescript-eslint/return-await": "error", // Don't unnecessarily await in return statements (smarter TS-aware replacement for no-return-await)
             "require-await": "off", // Handled by TypeScript rule
         },
     },
