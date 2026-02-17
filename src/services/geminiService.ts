@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
+import { GoogleGenAI, Type, GenerateContentResponse, Schema } from "@google/genai";
 import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "@/constants";
 import { ValidatedSpec, TestCase, ExecutionResult, AISettings, OrchestrationMetrics } from "@/types";
 import { getSkillDescriptions } from "@/services/agenticSkills";
@@ -10,9 +10,9 @@ import { sanitizeRequirements } from "@/utils/sanitizeInput";
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string;
 let ai: GoogleGenAI | undefined;
 if (apiKey) {
-  ai = new GoogleGenAI({ apiKey }) as unknown as GoogleGenAI;
+  ai = new GoogleGenAI({ apiKey });
 } else {
-  console.warn('VITE_GEMINI_API_KEY is not set. Gemini client will not be initialized.');
+  logger.warn('VITE_GEMINI_API_KEY is not set. Gemini client will not be initialized.');
 }
 
 // For testing and advanced usage, allow swapping the underlying AI client
@@ -76,7 +76,7 @@ function parseAiResponse<T>(
     const toolCall = parsed.tool_call;
 
     return {
-      data: parsed[field] || null,
+      data: parsed[field] ?? null,
       thinking,
       toolCall
     };
@@ -136,8 +136,7 @@ async function runAgenticWorkflow<T>(
           thinkingConfig: { thinkingBudget: 4000 },
           responseMimeType: "application/json",
           temperature,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          responseSchema: schema as any
+          responseSchema: schema as Schema
         }
       });
 
@@ -156,7 +155,7 @@ async function runAgenticWorkflow<T>(
           id: `mcp-${Date.now()}`
         });
 
-        const observation = JSON.stringify(mcpRes.result || mcpRes.error);
+        const observation = JSON.stringify(mcpRes.result !== undefined ? mcpRes.result : mcpRes.error);
         finalThinking += `\n[Observation]: Tool ${toolCall.name} returned ${observation}`;
 
         agentMemory.add('observation', `Tool ${toolCall.name} result: ${observation}`);
@@ -176,7 +175,7 @@ async function runAgenticWorkflow<T>(
   const latencyMs = Date.now() - startTime;
 
   return {
-    data: finalData || ([] as unknown as T),
+    data: finalData ?? ([] as unknown as T),
     thinking: finalThinking,
     metrics: {
       totalToolCalls,

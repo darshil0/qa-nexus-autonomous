@@ -68,7 +68,7 @@ export class MCPService {
           const skill = skillRegistry[name];
 
           // Track usage
-          this.toolUsage[name] = (this.toolUsage[name] || 0) + 1;
+          this.toolUsage[name] = (this.toolUsage[name] ?? 0) + 1;
 
           if (!skill) {
             return {
@@ -78,7 +78,7 @@ export class MCPService {
             };
           }
 
-          const skillArgs = Object.keys(skill.parameters).map(key => args[key]);
+          const skillArgs = Object.keys(skill.parameters).map(key => args[key] ?? '');
           const result = await skill.execute(...skillArgs);
           return {
             jsonrpc: "2.0",
