@@ -2,10 +2,10 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-3.0.1-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.0.2-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-![Release](https://img.shields.io/badge/release-feb%2020-blue.svg)
+![Release](https://img.shields.io/badge/release-feb%2017-blue.svg)
 
 ---
 
@@ -70,22 +70,24 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 ## 🎯 Release Status
 
-**Current Version**: 3.0.1
+**Current Version**: 3.0.2
 **Status**: Stable
-**Last Updated**: February 20, 2026
+**Last Updated**: February 17, 2026
 **Target Stable Release**: Released
 
-### Release Notes (v3.0.1)
+### Release Notes (v3.0.2)
 
-- ✅ Core functionality is production-ready
-- ✅ System is stable for high-load testing
-- ✅ Documentation is finalized and synchronized
+- ✅ ESLint configuration corrected for ESLint 9 flat config compatibility
+- ✅ TypeScript configuration aligned: target, lib, and type references updated
+- ✅ Service layer logic hardened: `||` → `??` throughout to prevent falsy-value fallthrough bugs
+- ✅ Redundant type casts and `any` suppressions eliminated from `geminiService.ts`
+- ✅ All documentation synchronized with actual project structure and SDK API
 - 💡 We welcome feedback and contributions
 
 ### Upgrade Path
 
-Users can upgrade to v3.0.1 by following these steps:
-1. Update `package.json` version to `3.0.1`
+Users can upgrade to v3.0.2 by following these steps:
+1. Update `package.json` version to `3.0.2`
 2. Run `npm install` to update dependencies
 3. Review changes in [CHANGELOG.md](CHANGELOG.md)
 4. No data migration required
@@ -719,6 +721,7 @@ test('reviewRequirements handles empty input', async () => {
 |---------|---------|
 | `npm test` | Run tests once |
 | `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage report |
 | `npm run typecheck` | Check TypeScript types |
 | `npm run lint` | Check code quality |
 | `npm run ci` | Run all checks (CI mode) |
@@ -1077,7 +1080,7 @@ Built with cutting-edge technologies:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-3.0.1-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.0.2-brightgreen.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
