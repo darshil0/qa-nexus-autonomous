@@ -54,3 +54,15 @@ If you are upgrading from v2.x:
 1. Ensure your imports use the `@/` alias (e.g., `import { ... } from '@/types'`).
 2. Update your `.env` to include `VITE_GEMINI_API_KEY` if you were using a different variable name.
 3. Run `npm install` to update to the latest dependencies including Vite 7 and Google GenAI v1.40.0.
+
+## Migrating to 3.0.2
+
+Version 3.0.2 provides critical fixes for unused parameters and improves metrics tracking reliability.
+
+### Key Changes
+- **Service Layer Cleanup**: Unused parameters `_testCaseId`, `_logs` in `geminiService.ts` and `_body` in `agenticSkills.ts` are now properly utilized for better traceability and logging.
+- **Metrics Accuracy**: `activeLoops` tracking in `useWorkflow` now correctly resets on failure, and `averageLoopDepth` is rounded for consistent UI display.
+- **Documentation Sync**: All architectural and user guides are now perfectly synchronized to v3.0.2.
+
+### Action Required
+No breaking changes. Standard `npm install` and verification via `npm test` is recommended to ensure stability.

@@ -72,7 +72,7 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 **Current Version**: 3.0.2
 **Status**: Stable
-**Last Updated**: February 17, 2026
+**Last Updated**: February 20, 2026
 **Target Stable Release**: Released
 
 ### Release Notes (v3.0.2)
