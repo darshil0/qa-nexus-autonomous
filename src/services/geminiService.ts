@@ -347,9 +347,9 @@ export const fetchJiraRequirement = async (issueKey: string): Promise<string> =>
 /**
  * Simulated GitHub Service
  */
-export const createGithubIssue = async (_testCaseId: string, _logs: string): Promise<string> => {
-  logger.info(`Creating GitHub issue for test: ${_testCaseId}`);
+export const createGithubIssue = async (testCaseId: string, logs: string): Promise<string> => {
+  logger.info(`Creating GitHub issue for test: ${testCaseId}. Logs: ${logs.substring(0, 50)}...`);
   await new Promise(resolve => setTimeout(resolve, 1000));
   const issueNumber = Math.floor(Math.random() * 1000) + 100;
-  return `https://github.com/org/project/issues/${issueNumber}`;
+  return `https://github.com/org/project/issues/${issueNumber}?testCase=${testCaseId}&logs=true`;
 };

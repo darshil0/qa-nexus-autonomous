@@ -127,7 +127,7 @@ export const useWorkflow = () => {
             totalTokensEstimated: p.metrics.totalTokensEstimated + m3.totalTokensEstimated,
             latencyMs: p.metrics.latencyMs + m3.latencyMs,
             toolFrequency: mergedFreq,
-            averageLoopDepth: (m1.averageLoopDepth + m2.averageLoopDepth + m3.averageLoopDepth) / 3,
+            averageLoopDepth: Math.round((m1.averageLoopDepth + m2.averageLoopDepth + m3.averageLoopDepth) / 3),
             activeLoops: 0
           }
         };
@@ -142,7 +142,8 @@ export const useWorkflow = () => {
         ...p,
         status: WorkflowStatus.FAILED,
         thinkingProcess: '[ERROR] Workflow aborted. Check console for details.',
-        error: message
+        error: message,
+        metrics: { ...p.metrics, activeLoops: 0 }
       }));
     }
   }, [state.rawRequirements, state.settings]);

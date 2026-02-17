@@ -39,8 +39,8 @@ export const githubIssueCreate: Skill = {
     title: "The issue title.",
     body: "The issue description/logs."
   },
-  execute: async (title: string, _body: string) => {
-    logger.info(`[Skill: github_issue_create] Creating issue: ${title}`);
+  execute: async (title: string, body: string) => {
+    logger.info(`[Skill: github_issue_create] Creating issue: ${title}. Body length: ${body.length}`);
     await new Promise(resolve => setTimeout(resolve, 800));
     const issueId = Math.floor(Math.random() * 1000) + 100;
     return `Issue created successfully: https://github.com/org/repo/issues/${issueId}`;
