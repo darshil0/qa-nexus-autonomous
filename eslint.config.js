@@ -76,7 +76,7 @@ export default ts.config(
         // Configuration files
         files: ["*.config.{js,ts}", "*.setup.{js,ts}"],
         rules: {
-            "@typescript-eslint/no-var-requires": "off",
+            "@typescript-eslint/no-require-imports": "off", // Replacement for deprecated no-var-requires
             "no-console": "off",
         }
     },

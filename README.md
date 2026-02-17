@@ -601,19 +601,19 @@ const API_CONFIG = {
 **Usage Pattern**:
 ```typescript
 // 1. Initialize client
-const genAI = new GoogleGenAI({ 
+import { GoogleGenAI } from '@google/genai';
+const ai = new GoogleGenAI({ 
   apiKey: import.meta.env.VITE_GEMINI_API_KEY 
 });
 
-// 2. Create model
-const model = genAI.getGenerativeModel({ 
-  model: 'gemini-3-pro-preview' 
+// 2. Generate content
+const response = await ai.models.generateContent({
+  model: 'gemini-3-pro-preview',
+  contents: prompt,
 });
 
-// 3. Generate content
-const result = await model.generateContent(prompt);
-const response = await result.response;
-const text = response.text();
+// 3. Read response (.text is a property, not a method, in @google/genai v1.x)
+const text = response.text;
 
 // 4. Parse and validate
 const parsed = JSON.parse(text);
