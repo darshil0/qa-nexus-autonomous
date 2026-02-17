@@ -238,7 +238,8 @@ export const mySkill: Skill = {
   },
   execute: async (param1: string, param2: number) => {
     // Implementation
-    return { status: "success", data: result };
+    const output = { param1, param2 }; // replace with real logic
+    return { status: "success", data: output };
   }
 };
 

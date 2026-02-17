@@ -389,7 +389,7 @@ The system supports an autonomous loop for each agent:
 
 ### Agent Configuration
 
-Located in `src/constants.ts`:
+Located in `src/constants/index.ts`:
 
 ```typescript
 export const AGENT_MODELS = {
@@ -401,7 +401,7 @@ export const AGENT_MODELS = {
 
 ### Customization Options
 
-- **Change AI models**: Edit `AGENT_MODELS` in `src/constants.ts`
+- **Change AI models**: Edit `AGENT_MODELS` in `src/constants/index.ts`
 - **Adjust UI theme**: Modify CSS variables in `src/index.css`
 - **Configure timeouts**: Update `geminiService.ts`
 
@@ -565,8 +565,8 @@ qa-nexus-autonomous/
 
 - **`src/App.tsx`**: Main application orchestrator, manages workflow state
 - **`src/services/geminiService.ts`**: All Gemini API interactions
-- **`src/types.ts`**: TypeScript type definitions
-- **`src/constants.ts`**: App configuration and agent models
+- **`src/types/index.ts`**: TypeScript type definitions
+- **`src/constants/index.ts`**: App configuration and agent models
 - **`skills/`**: Modular skills for AI agent capabilities
 
 ### Import Aliases
@@ -669,7 +669,7 @@ npm run test:watch
 npm test -- src/tests/geminiService.spec.ts
 
 # Run with coverage
-npm test -- --coverage
+npm run test:coverage
 ```
 
 ### Test Structure

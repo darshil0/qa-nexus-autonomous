@@ -37,7 +37,9 @@ graph TD
     A1 --> A2[Agent 2: Test Case Writer]
     A2 --> A3[Agent 3: Test Executor]
 
-    A1 & A2 & A3 --> MCP[Model Context Protocol]
+    A1 & A2 & A3 --> Memory[Agent Memory & Persistence<br/>Short-term context + LocalStorage]
+
+    Memory --> MCP[Model Context Protocol<br/>MCP Service + Skill Registry]
 
     MCP --> Jira[Jira Search]
     MCP --> Git[GitHub Creator]
@@ -61,7 +63,7 @@ The system is managed by a centralized React orchestrator (`App.tsx`) using the 
 ### 1. Requirements Reviewer Agent
 - **Goal**: Ensure requirements are robust, clear, and testable.
 - **Key Checks**: Missing edge cases, security gaps, performance constraints, and logical contradictions.
-- **Output Schema**: `RequirementsReview` (defined in `@/types.ts`).
+- **Output Schema**: `RequirementsReview` (defined in `@/types`).
 
 ### 2. Test Case Writer Agent
 - **Goal**: Convert reviewed requirements into structured test data.
@@ -87,6 +89,9 @@ Located in `src/services/agenticSkills.ts`:
 - `github_issue_create`: Automated bug reporting.
 - `test_runner`: Real-time execution simulation.
 - `gemini_knowledge_base`: Gemini 3 technical specs & optimization.
+- `code_analysis`: Deep security and logic inspection of source code.
+- `performance_audit`: Automated application benchmarking.
+- `tiny_gpt_reference`: Technical documentation for the internal GPT engine.
 
 ### 🧠 Recursive Reasoning Loop
 Agents use a standardized multi-pass loop implemented in `src/services/geminiService.ts` via `runAgenticWorkflow`:
@@ -97,7 +102,7 @@ Agents use a standardized multi-pass loop implemented in `src/services/geminiSer
 5. **Final Synthesis**: The agent produces the final structured JSON artifact.
 
 ### 📈 Orchestration Observability
-v2.7.0 introduces the `OrchestrationMetrics` interface to track system health:
+The `OrchestrationMetrics` interface tracks system health in real time:
 - `totalToolCalls`: Cumulative count of MCP actions.
 - `averageLoopDepth`: Complexity indicator per task.
 - `totalTokensEstimated`: Context window utilization.
@@ -115,14 +120,14 @@ To add a new autonomous skill:
     };
     ```
 2.  **Register the Skill**: Add the skill to the `skillRegistry` object in the same file.
-3.  **Update Prompts**: Ensure the agent system instructions in `src/constants.ts` or `geminiService.ts` mention the availability of the new skill.
+3.  **Update Prompts**: Ensure the agent system instructions in `src/constants/index.ts` or `geminiService.ts` mention the availability of the new skill.
 
 ---
 
 ### 💾 Persistence & State Management
-QA Nexus v2.6.0 includes a local persistence layer in `src/services/persistenceService.ts`.
-- **Automatic Saving**: The `App.tsx` orchestrator saves the entire `WorkflowState` to `localStorage` on every change.
-- **Hydration**: On application load, the state is restored. Running statuses are automatically reset to `IDLE` to prevent UI lockup.
+QA Nexus includes a two-layer persistence system:
+- **Short-term Memory**: `src/services/memoryService.ts` maintains a context buffer across pipeline stages so agents can reference earlier outputs without re-processing.
+- **Local Persistence**: `src/services/persistenceService.ts` saves the entire `WorkflowState` to `localStorage` on every change. On application load, the state is restored, and any running statuses are automatically reset to `IDLE` to prevent UI lockup.
 
 ### 📊 Data Export Utility
 Users can export artifacts using the `src/utils/exportUtils.ts` module.
@@ -140,12 +145,19 @@ Developers and users can fine-tune agents via the `Settings` tab:
 ### 1. Agent Function Implementation
 All AI interactions must follow the centralized pattern in `geminiService.ts`:
 ```typescript
-async function callAgent(prompt: string) {
-  // 1. Initialize model
-  // 2. Transmit prompt
-  // 3. Clean markdown code blocks (```json ... ```)
+import { GoogleGenAI } from '@google/genai';
+
+async function callAgent(prompt: string): Promise<AgentResult> {
+  // 1. Initialize client with environment API key
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+  // 2. Generate content (.text is a property, not a method, in @google/genai v1.x)
+  const response = await ai.models.generateContent({ model: AGENT_MODEL, contents: prompt });
+  // 3. Clean markdown code fences (```json ... ```) the model may wrap output in
+  const raw = response.text.replace(/```json\n?|\n?```/g, '').trim();
   // 4. Parse with strict schema validation
+  const parsed: AgentResult = JSON.parse(raw);
   // 5. Fallback to safe defaults on failure
+  return parsed;
 }
 ```
 
@@ -180,7 +192,7 @@ async function callAgent(prompt: string) {
 ## ⚖️ Response Schemas & Types
 
 ### TypeScript Interface Consistency
-All agents must adhere to the interfaces defined in `src/types.ts`. Any change to the AI prompt must be reflected in the TypeScript definition.
+All agents must adhere to the interfaces defined in `src/types/index.ts`. Any change to the AI prompt must be reflected in the TypeScript definition.
 
 ```typescript
 // Example: Unified Test Case Interface
