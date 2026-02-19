@@ -68,19 +68,6 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 ---
 
-## [3.2.0] - 2026-04-01
-
-### Added
-- "Requirement Refinement" metric to track specification efficiency.
-- "Clarity Gain" metric to measure ambiguity reduction performance.
-- Targeted unit tests achieving 100% line coverage for the entire `src/` directory.
-- `initAi` and `__resetRateLimiter` internal testing hooks for robust service verification.
-
-### Changed
-- Refactored `persistenceService.ts` for improved testability and Supabase failure handling.
-- Hardened `mcpService.ts` with optional chaining for malformed request protection.
-- Consolidated test suite into domain-specific files for better maintainability.
-
 ## 🎯 Release Status
 
 **Current Version**: 3.2.0
