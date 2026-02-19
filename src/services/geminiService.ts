@@ -44,12 +44,29 @@ class TokenBucket {
 
 const rateLimiter = new TokenBucket();
 
+/** @internal */
+export const __resetRateLimiter = () => {
+  // @ts-ignore - for testing
+  rateLimiter.tokens = 10;
+};
+
 let ai: GoogleGenAI | undefined;
-if (apiKey) {
-  ai = new GoogleGenAI({ apiKey });
-} else {
-  logger.warn('VITE_GEMINI_API_KEY is not set. Gemini client will not be initialized.');
-}
+
+/**
+ * Initialize the Gemini AI client.
+ * Exposed for testing and dynamic configuration.
+ */
+export const initAi = (key?: string) => {
+  if (key) {
+    ai = new GoogleGenAI({ apiKey: key });
+  } else {
+    ai = undefined;
+    logger.warn('VITE_GEMINI_API_KEY is not set. Gemini client will not be initialized.');
+  }
+};
+
+// Auto-initialize with environment key
+initAi(apiKey);
 
 // For testing and advanced usage, allow swapping the underlying AI client
 export const setAiClient = (client: GoogleGenAI | undefined) => {

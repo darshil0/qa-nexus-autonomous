@@ -33,7 +33,9 @@ const App: React.FC = () => {
     filteredTestCases,
     testCasesByReq,
     chartData,
-    coverageData
+    coverageData,
+    refinementMetric,
+    clarityMetric
   } = useWorkflow();
 
   const mainContentRef = useRef<HTMLDivElement>(null);
@@ -129,6 +131,8 @@ const App: React.FC = () => {
               traceability={`${Math.round((new Set(state.testCases.flatMap(tc => tc.linkedRequirementIds)).size / (state.validatedSpecs.length || 1)) * 100)}%`}
               stability={`${Math.round((state.results.filter(r => r.status === 'PASS').length / (state.results.length || 1)) * 100)}%`}
               failures={state.results.filter(r => r.status === 'FAIL').length.toString()}
+              refinement={refinementMetric}
+              clarity={clarityMetric}
             />
           )}
 

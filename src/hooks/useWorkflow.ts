@@ -253,6 +253,18 @@ export const useWorkflow = () => {
     { name: 'Covered', count: new Set(state.testCases.flatMap(tc => tc.linkedRequirementIds)).size },
   ], [state.validatedSpecs, state.testCases]);
 
+  const refinementMetric = useMemo(() => {
+    const rawLines = state.rawRequirements.split('\n').filter(l => l.trim().length > 0).length;
+    if (rawLines === 0) {return '0%';}
+    return `${Math.round((state.validatedSpecs.length / rawLines) * 100)}%`;
+  }, [state.rawRequirements, state.validatedSpecs]);
+
+  const clarityMetric = useMemo(() => {
+    if (state.validatedSpecs.length === 0) {return '0%';}
+    const clearSpecs = state.validatedSpecs.filter(s => s.ambiguities.length === 0).length;
+    return `${Math.round((clearSpecs / state.validatedSpecs.length) * 100)}%`;
+  }, [state.validatedSpecs]);
+
   // Save state on change
   useEffect(() => {
     persistenceService.saveState(state);
@@ -280,6 +292,8 @@ export const useWorkflow = () => {
     filteredTestCases,
     testCasesByReq,
     chartData,
-    coverageData
+    coverageData,
+    refinementMetric,
+    clarityMetric
   };
 };

@@ -20,6 +20,8 @@ interface ReportsTabProps {
     traceability: string;
     stability: string;
     failures: string;
+    refinement: string;
+    clarity: string;
 }
 
 export const ReportsTab: React.FC<ReportsTabProps> = ({
@@ -27,7 +29,9 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({
     coverageData,
     traceability,
     stability,
-    failures
+    failures,
+    refinement,
+    clarity
 }) => {
     const hasData = chartData.some(d => d.value > 0) || coverageData.some(d => d.count > 0);
 
@@ -47,9 +51,11 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({
 
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1.5rem' }}>
                 <StatCard label="Traceability" value={traceability} color="indigo" />
                 <StatCard label="Stability" value={stability} color="emerald" />
+                <StatCard label="Refinement" value={refinement} color="purple" />
+                <StatCard label="Clarity Gain" value={clarity} color="amber" />
                 <StatCard label="Failures" value={failures} color="rose" />
             </div>
 

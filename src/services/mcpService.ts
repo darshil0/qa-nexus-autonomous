@@ -50,7 +50,7 @@ export class MCPService {
    * Handle an MCP request
    */
   public async handleRequest(request: MCPRequest): Promise<MCPResponse> {
-    logger.info(`[MCP] Handling request: ${request.method}`, request.params);
+    logger.info(`[MCP] Handling request: ${request?.method}`, request?.params);
 
     try {
       switch (request.method) {
@@ -99,7 +99,7 @@ export class MCPService {
       return {
         jsonrpc: "2.0",
         error: { code: -32603, message: "Internal error" },
-        id: request.id
+        id: request?.id
       };
     }
   }
