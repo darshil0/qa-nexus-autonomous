@@ -114,6 +114,7 @@ async function runAgenticWorkflow<T>(
   let finalData: T | null = null;
   let totalToolCalls = 0;
   let totalTokensEstimated = 0;
+  const localToolUsage: Record<string, number> = {};
 
   const maxIterations = settings?.maxIterations ?? 3;
   const temperature = settings?.temperature ?? 0.7;
@@ -147,6 +148,7 @@ async function runAgenticWorkflow<T>(
 
       if (toolCall) {
         totalToolCalls++;
+        localToolUsage[toolCall.name] = (localToolUsage[toolCall.name] ?? 0) + 1;
         logger.info(`Agent requested tool: ${toolCall.name}`);
         const mcpRes = await mcpService.handleRequest({
           jsonrpc: "2.0",
@@ -182,7 +184,7 @@ async function runAgenticWorkflow<T>(
       averageLoopDepth: iterations,
       totalTokensEstimated: Math.round(totalTokensEstimated),
       latencyMs,
-      toolFrequency: mcpService.getToolUsage(),
+      toolFrequency: localToolUsage,
       activeLoops: 0
     }
   };

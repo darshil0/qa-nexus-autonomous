@@ -78,8 +78,7 @@ export class MCPService {
             };
           }
 
-          const skillArgs = Object.keys(skill.parameters).map(key => args[key] ?? '');
-          const result = await skill.execute(...skillArgs);
+          const result = await skill.execute(args || {});
           return {
             jsonrpc: "2.0",
             result,
