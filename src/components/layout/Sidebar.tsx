@@ -25,9 +25,9 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   setActiveTab,
-  hasSpecs,
-  hasTestCases,
-  hasResults,
+  hasSpecs: _hasSpecs,
+  hasTestCases: _hasTestCases,
+  hasResults: _hasResults,
   clearSession
 }) => {
   return (
@@ -36,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <BrainCircuit className="pulse-primary" style={{ color: 'var(--primary)', width: '40px', height: '40px' }} />
         <div>
           <h1 className="brand-text" style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(to right, #6366f1, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>QA NEXUS</h1>
-          <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.1em' }}>AUTONOMOUS V3.0.2</p>
+          <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.1em' }}>AUTONOMOUS V3.1.0</p>
         </div>
       </div>
 
@@ -51,28 +51,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon={<ClipboardCheck size={20} />}
           label="Requirements"
           active={activeTab === 'agent1'}
-          disabled={!hasSpecs}
           onClick={() => setActiveTab('agent1')}
         />
         <NavBtn
           icon={<FileEdit size={20} />}
           label="Test Designer"
           active={activeTab === 'agent2'}
-          disabled={!hasTestCases}
           onClick={() => setActiveTab('agent2')}
         />
         <NavBtn
           icon={<PlayCircle size={20} />}
           label="Execution"
           active={activeTab === 'agent3'}
-          disabled={!hasResults}
           onClick={() => setActiveTab('agent3')}
         />
         <NavBtn
           icon={<BarChart3 size={20} />}
           label="Analytics"
           active={activeTab === 'reports'}
-          disabled={!hasResults}
           onClick={() => setActiveTab('reports')}
         />
         <NavBtn

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Workflow, X, ArrowRight } from 'lucide-react';
+import { Workflow, X, ArrowRight, ClipboardX } from 'lucide-react';
 import type { TestCase } from '@/types';
 
 interface Agent2TabProps {
@@ -7,16 +7,43 @@ interface Agent2TabProps {
     highlightedReqId: string | null;
     setHighlightedReqId: (val: string | null) => void;
     navigateToSpec: (reqId: string) => void;
+    tcSearchTerm: string;
+    setTcSearchTerm: (val: string) => void;
 }
 
 export const Agent2Tab: React.FC<Agent2TabProps> = ({
     filteredTestCases,
     highlightedReqId,
     setHighlightedReqId,
-    navigateToSpec
+    navigateToSpec,
+    tcSearchTerm,
+    setTcSearchTerm
 }) => {
     return (
         <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div className="card" style={{ padding: '1rem 1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <input
+                    type="text"
+                    className="input-field"
+                    placeholder="Search test cases by ID or category..."
+                    value={tcSearchTerm}
+                    onChange={(e) => setTcSearchTerm(e.target.value)}
+                    style={{ flex: 1 }}
+                />
+            </div>
+
+            {(!filteredTestCases || filteredTestCases.length === 0) && (
+                <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+                    <ClipboardX size={48} style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', opacity: 0.5 }} />
+                    <h3 style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                        No Test Cases Found
+                    </h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>
+                        Run the orchestrator pipeline to generate test cases or adjust your search filter.
+                    </p>
+                </div>
+            )}
+
             {highlightedReqId && (
                 <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyItems: 'space-between', background: 'var(--primary)', color: 'white', padding: '1rem 1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-glow)' }}>
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

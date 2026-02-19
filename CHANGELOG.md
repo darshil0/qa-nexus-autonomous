@@ -1,4 +1,18 @@
 # Changelog
+## [3.1.0] - 2026-04-01
+
+### Added
+- Token bucket rate limiter (10 req/min) to Gemini service.
+- Supabase persistence layer with async rehydration.
+- Search functionality to Test Designer tab.
+- Empty state handling for all major tabs.
+- Pulse-success animation for active agentic loops.
+- Unit tests for MCP service and Agentic Skills.
+
+### Changed
+- Updated Gemini model constants to 2.5 preview versions.
+- Replaced console logs with centralized logger in utility services.
+- Improved useWorkflow hook with async state restoration.
 
 All notable changes to this project are documented in this file.
 
@@ -327,5 +341,5 @@ These fixes ensure:
 
 ---
 
-**Last Updated**: February 20, 2026
-**Version**: 3.0.2
+**Last Updated**: April 1, 2026
+**Version**: 3.1.0

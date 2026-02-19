@@ -17,31 +17,39 @@ import { persistenceService } from '@/services/persistenceService';
 import { agentMemory } from '@/services/memoryService';
 
 export const useWorkflow = () => {
-  const [state, setState] = useState<WorkflowState>(() => {
-    const saved = persistenceService.loadState();
-    return saved || {
-      status: WorkflowStatus.IDLE,
-      rawRequirements: '',
-      validatedSpecs: [],
-      testCases: [],
-      results: [],
-      thinkingProcess: 'System ready.',
-      jiraIntegration: { connected: true, projectKey: 'QA-AUTO' },
-      settings: {
-        maxIterations: 3,
-        temperature: 0.7,
-        useFlashModel: false
-      },
-      metrics: {
-        totalToolCalls: 0,
-        averageLoopDepth: 0,
-        totalTokensEstimated: 0,
-        latencyMs: 0,
-        toolFrequency: {},
-        activeLoops: 0
+  const [state, setState] = useState<WorkflowState>({
+    status: WorkflowStatus.IDLE,
+    rawRequirements: '',
+    validatedSpecs: [],
+    testCases: [],
+    results: [],
+    thinkingProcess: 'System ready.',
+    jiraIntegration: { connected: true, projectKey: 'QA-AUTO' },
+    settings: {
+      maxIterations: 3,
+      temperature: 0.7,
+      useFlashModel: false
+    },
+    metrics: {
+      totalToolCalls: 0,
+      averageLoopDepth: 0,
+      totalTokensEstimated: 0,
+      latencyMs: 0,
+      toolFrequency: {},
+      activeLoops: 0
+    }
+  });
+
+  // Rehydrate state on mount
+  useEffect(() => {
+    const rehydrate = async () => {
+      const saved = await persistenceService.loadState();
+      if (saved) {
+        setState(saved);
       }
     };
-  });
+    void rehydrate();
+  }, []);
 
   const [activeTab, setActiveTab] = useState<'orchestrator' | 'agent1' | 'agent2' | 'agent3' | 'reports' | 'settings' | 'health'>('orchestrator');
   const [highlightedReqId, setHighlightedReqId] = useState<string | null>(null);

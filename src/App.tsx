@@ -18,6 +18,8 @@ const App: React.FC = () => {
     setActiveTab,
     highlightedReqId,
     setHighlightedReqId,
+    tcSearchTerm,
+    setTcSearchTerm,
     jiraIssueInput,
     setJiraIssueInput,
     isJiraLoading,
@@ -107,6 +109,8 @@ const App: React.FC = () => {
               highlightedReqId={highlightedReqId}
               setHighlightedReqId={setHighlightedReqId}
               navigateToSpec={navigateToSpec}
+              tcSearchTerm={tcSearchTerm}
+              setTcSearchTerm={setTcSearchTerm}
             />
           )}
 

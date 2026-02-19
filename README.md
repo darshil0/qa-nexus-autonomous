@@ -1,8 +1,8 @@
 # QA Nexus Autonomous
 
-> A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 3 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
+> A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 2.5 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-3.0.2-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.1.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 ![Release](https://img.shields.io/badge/release-feb%2017-blue.svg)
@@ -70,12 +70,12 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 ## 🎯 Release Status
 
-**Current Version**: 3.0.2
+**Current Version**: 3.1.0
 **Status**: Stable
-**Last Updated**: February 20, 2026
+**Last Updated**: April 1, 2026
 **Target Stable Release**: Released
 
-### Release Notes (v3.0.2)
+### Release Notes (v3.1.0)
 
 - ✅ ESLint configuration corrected for ESLint 9 flat config compatibility
 - ✅ TypeScript configuration aligned: target, lib, and type references updated
@@ -86,8 +86,8 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 ### Upgrade Path
 
-Users can upgrade to v3.0.2 by following these steps:
-1. Update `package.json` version to `3.0.2`
+Users can upgrade to v3.1.0 by following these steps:
+1. Update `package.json` version to `3.1.0`
 2. Run `npm install` to update dependencies
 3. Review changes in [CHANGELOG.md](CHANGELOG.md)
 4. No data migration required
@@ -124,7 +124,7 @@ Users can upgrade to v3.0.2 by following these steps:
 - **Result Visualization**: Charts and graphs for test results
 
 ### 🤖 Agentic Skills & MCP Framework
-- **Gemini Skills Architecture**: Modular skills system designed specifically for Gemini 3, inspired by industry best practices for AI agent capabilities
+- **Gemini Skills Architecture**: Modular skills system designed specifically for Gemini 2.5, inspired by industry best practices for AI agent capabilities
 - **Gemini Knowledge Base**: Skill providing technical details and prompt optimization for Gemini models
 - **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0
 - **Sequential Multi-Tool Execution**: Agents can call multiple tools in sequence (up to 5 per task) to gather complex context before providing a final answer
@@ -373,9 +373,9 @@ The system supports an autonomous loop for each agent:
 
 ### AI Model Configuration
 
-- **Agent 1**: `gemini-3-pro-preview` (Requirements analysis + MCP)
-- **Agent 2**: `gemini-3-pro-preview` (Test generation + MCP)
-- **Agent 3**: `gemini-3-flash-preview` (Test execution + MCP)
+- **Agent 1**: `gemini-2.5-pro-preview-05-06` (Requirements analysis + MCP)
+- **Agent 2**: `gemini-2.5-pro-preview-05-06` (Test generation + MCP)
+- **Agent 3**: `gemini-2.5-flash-preview-04-17` (Test execution + MCP)
 
 ---
 
@@ -395,9 +395,9 @@ Located in `src/constants/index.ts`:
 
 ```typescript
 export const AGENT_MODELS = {
-  AGENT1: 'gemini-3-pro-preview',
-  AGENT2: 'gemini-3-pro-preview',
-  AGENT3: 'gemini-3-flash-preview',
+  AGENT1: 'gemini-2.5-pro-preview-05-06',
+  AGENT2: 'gemini-2.5-pro-preview-05-06',
+  AGENT3: 'gemini-2.5-flash-preview-04-17',
 };
 ```
 
@@ -594,7 +594,7 @@ This configuration is maintained across `vite.config.ts`, `tsconfig.json`, and `
 **Configuration**:
 ```typescript
 const API_CONFIG = {
-  model: 'gemini-3-pro-preview',
+  model: 'gemini-2.5-pro-preview-05-06',
   temperature: 0.7,
   maxOutputTokens: 2048,
 };
@@ -610,7 +610,7 @@ const ai = new GoogleGenAI({
 
 // 2. Generate content
 const response = await ai.models.generateContent({
-  model: 'gemini-3-pro-preview',
+  model: 'gemini-2.5-pro-preview-05-06',
   contents: prompt,
 });
 
@@ -1073,14 +1073,14 @@ Built with cutting-edge technologies:
 ### Special Thanks
 
 - **Andrej Karpathy** ([@karpathy](https://github.com/karpathy)) - For the educational Tiny GPT implementation based on nanoGPT
-- **Google AI** - For the powerful Gemini 3 models
+- **Google AI** - For the powerful Gemini 2.5 models
 - **Open Source Community** - For the amazing tools and libraries
 
 ---
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-3.0.2-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.1.0-brightgreen.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
