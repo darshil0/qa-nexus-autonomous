@@ -8,7 +8,7 @@ export interface Skill {
   name: string;
   description: string;
   parameters: Record<string, string>;
-  execute: (...args: string[]) => Promise<unknown>;
+  execute: (args: Record<string, string>) => Promise<unknown>;
 }
 
 /**
@@ -21,7 +21,7 @@ export const jiraSearch: Skill = {
   parameters: {
     query: "The search query or issue key."
   },
-  execute: async (query: string) => {
+  execute: async ({ query }) => {
     logger.info(`[Skill: jira_search] Searching for: ${query}`);
     await new Promise(resolve => setTimeout(resolve, 500));
     return `Results for "${query}": Found 1 matching requirement (AUTH-101: Biometric Auth).`;
@@ -39,8 +39,8 @@ export const githubIssueCreate: Skill = {
     title: "The issue title.",
     body: "The issue description/logs."
   },
-  execute: async (title: string, body: string) => {
-    logger.info(`[Skill: github_issue_create] Creating issue: ${title}. Body length: ${body.length}`);
+  execute: async ({ title, body }) => {
+    logger.info(`[Skill: github_issue_create] Creating issue: ${title}. Body length: ${body?.length ?? 0}`);
     await new Promise(resolve => setTimeout(resolve, 800));
     const issueId = Math.floor(Math.random() * 1000) + 100;
     return `Issue created successfully: https://github.com/org/repo/issues/${issueId}`;
@@ -57,7 +57,7 @@ export const testRunner: Skill = {
   parameters: {
     testCaseId: "The ID of the test case to run."
   },
-  execute: async (testCaseId: string) => {
+  execute: async ({ testCaseId }) => {
     logger.info(`[Skill: test_runner] Running test: ${testCaseId}`);
     await new Promise(resolve => setTimeout(resolve, 1000));
     const status = Math.random() > 0.2 ? "PASSED" : "FAILED";
@@ -80,7 +80,7 @@ export const codeAnalysisSkill: Skill = {
   parameters: {
     code: "The source code or snippet to analyze."
   },
-  execute: async (code: string) => {
+  execute: async ({ code }) => {
     logger.info(`[Skill: code_analysis] Analyzing code...`);
     await new Promise(resolve => setTimeout(resolve, 1200));
     const issues = [
@@ -89,7 +89,7 @@ export const codeAnalysisSkill: Skill = {
       "Complexity is too high (O(N^2)). Suggest optimization."
     ];
     return {
-      snippet: code.substring(0, 50) + "...",
+      snippet: code?.substring(0, 50) + "...",
       issuesDetected: issues,
       healthScore: 72
     };
@@ -106,7 +106,7 @@ export const tinyGptSkill: Skill = {
   parameters: {
     topic: "The topic to query (e.g., 'autograd', 'attention', 'rmsnorm')."
   },
-  execute: async (topic: string) => {
+  execute: async ({ topic }) => {
     logger.info(`[Skill: tiny_gpt_reference] Querying topic: ${topic}`);
     await new Promise(resolve => setTimeout(resolve, 600));
     const data: Record<string, string> = {
@@ -115,7 +115,7 @@ export const tinyGptSkill: Skill = {
       rmsnorm: "Implements Root Mean Square Layer Normalization for improved stability and faster training.",
       optimizer: "Uses the Adam optimizer with linear learning rate decay."
     };
-    return data[topic.toLowerCase()] || "Information not available for this topic. Available topics: autograd, attention, rmsnorm, optimizer.";
+    return data[topic?.toLowerCase() ?? ''] || "Information not available for this topic. Available topics: autograd, attention, rmsnorm, optimizer.";
   }
 };
 
@@ -129,7 +129,7 @@ export const performanceAuditSkill: Skill = {
   parameters: {
     url: "The URL of the application to audit."
   },
-  execute: async (url: string) => {
+  execute: async ({ url }) => {
     logger.info(`[Skill: performance_audit] Auditing URL: ${url}`);
     await new Promise(resolve => setTimeout(resolve, 1500));
     return {
@@ -155,7 +155,7 @@ export const geminiKnowledgeBaseSkill: Skill = {
   parameters: {
     topic: "The topic to query (e.g., 'models', 'tokens', 'json', 'reasoning')."
   },
-  execute: async (topic: string) => {
+  execute: async ({ topic }) => {
     logger.info(`[Skill: gemini_knowledge_base] Querying topic: ${topic}`);
     await new Promise(resolve => setTimeout(resolve, 700));
     const data: Record<string, string> = {
@@ -164,7 +164,7 @@ export const geminiKnowledgeBaseSkill: Skill = {
       json: "For best JSON results, use system instructions and provide a clear TypeScript-like schema.",
       reasoning: "Gemini 3 features advanced multi-pass reasoning capabilities and improved multi-modal understanding."
     };
-    return data[topic.toLowerCase()] || "Information not available for this topic. Available topics: models, tokens, json, reasoning.";
+    return data[topic?.toLowerCase() ?? ''] || "Information not available for this topic. Available topics: models, tokens, json, reasoning.";
   }
 };
 

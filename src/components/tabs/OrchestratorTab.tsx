@@ -98,11 +98,11 @@ export const OrchestratorTab: React.FC<OrchestratorTabProps> = ({
 
                     <button
                         onClick={runWorkflow}
-                        disabled={status !== WorkflowStatus.IDLE || !rawRequirements.trim()}
+                        disabled={(status !== WorkflowStatus.IDLE && status !== WorkflowStatus.COMPLETED && status !== WorkflowStatus.FAILED) || !rawRequirements.trim()}
                         className="btn-primary"
                         style={{ padding: '0.875rem 2rem', fontSize: '1rem' }}
                     >
-                        {status !== WorkflowStatus.IDLE ? (
+                        {(status !== WorkflowStatus.IDLE && status !== WorkflowStatus.COMPLETED && status !== WorkflowStatus.FAILED) ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                 <Loader2 size={18} className="animate-spin" />
                                 <span>ORCHESTRATING...</span>

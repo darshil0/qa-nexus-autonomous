@@ -46,7 +46,7 @@ export const HealthDashboardTab: React.FC<HealthDashboardTabProps> = ({ metrics 
                 />
                 <StatCard
                     label="Avg Loop Depth"
-                    value={metrics.averageLoopDepth.toFixed(1)}
+                    value={metrics.averageLoopDepth.toString()}
                     icon={<Layers size={16} />}
                     color="purple"
                 />

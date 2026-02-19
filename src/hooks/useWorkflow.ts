@@ -80,7 +80,8 @@ export const useWorkflow = () => {
             totalToolCalls: p.metrics.totalToolCalls + m1.totalToolCalls,
             totalTokensEstimated: p.metrics.totalTokensEstimated + m1.totalTokensEstimated,
             latencyMs: p.metrics.latencyMs + m1.latencyMs,
-            toolFrequency: mergedFreq
+            toolFrequency: mergedFreq,
+            averageLoopDepth: m1.averageLoopDepth
           }
         };
       });
@@ -103,7 +104,8 @@ export const useWorkflow = () => {
             totalToolCalls: p.metrics.totalToolCalls + m2.totalToolCalls,
             totalTokensEstimated: p.metrics.totalTokensEstimated + m2.totalTokensEstimated,
             latencyMs: p.metrics.latencyMs + m2.latencyMs,
-            toolFrequency: mergedFreq
+            toolFrequency: mergedFreq,
+            averageLoopDepth: Math.round((p.metrics.averageLoopDepth + m2.averageLoopDepth) / 2)
           }
         };
       });
