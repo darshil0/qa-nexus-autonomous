@@ -2,7 +2,7 @@
 
 > A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 2.5 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-3.1.0-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.2.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 ![Release](https://img.shields.io/badge/release-feb%2017-blue.svg)
@@ -68,26 +68,38 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 ---
 
+## [3.2.0] - 2026-04-01
+
+### Added
+- "Requirement Refinement" metric to track specification efficiency.
+- "Clarity Gain" metric to measure ambiguity reduction performance.
+- Targeted unit tests achieving 100% line coverage for the entire `src/` directory.
+- `initAi` and `__resetRateLimiter` internal testing hooks for robust service verification.
+
+### Changed
+- Refactored `persistenceService.ts` for improved testability and Supabase failure handling.
+- Hardened `mcpService.ts` with optional chaining for malformed request protection.
+- Consolidated test suite into domain-specific files for better maintainability.
+
 ## 🎯 Release Status
 
-**Current Version**: 3.1.0
+**Current Version**: 3.2.0
 **Status**: Stable
 **Last Updated**: April 1, 2026
 **Target Stable Release**: Released
 
-### Release Notes (v3.1.0)
+### Release Notes (v3.2.0)
 
-- ✅ ESLint configuration corrected for ESLint 9 flat config compatibility
-- ✅ TypeScript configuration aligned: target, lib, and type references updated
-- ✅ Service layer logic hardened: `||` → `??` throughout to prevent falsy-value fallthrough bugs
-- ✅ Redundant type casts and `any` suppressions eliminated from `geminiService.ts`
-- ✅ All documentation synchronized with actual project structure and SDK API
+- ✅ Integrated "Requirement Refinement" and "Clarity Gain" KPIs into Analytics.
+- ✅ Achieved 100% line coverage across the entire core codebase.
+- ✅ Hardened service layer with improved error handling and testability.
+- ✅ Standardized test organization into domain-specific suites.
 - 💡 We welcome feedback and contributions
 
 ### Upgrade Path
 
-Users can upgrade to v3.1.0 by following these steps:
-1. Update `package.json` version to `3.1.0`
+Users can upgrade to v3.2.0 by following these steps:
+1. Update `package.json` version to `3.2.0`
 2. Run `npm install` to update dependencies
 3. Review changes in [CHANGELOG.md](CHANGELOG.md)
 4. No data migration required
@@ -1080,9 +1092,9 @@ Built with cutting-edge technologies:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-3.1.0-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.2.0-brightgreen.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
-![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
+![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Contributors](https://img.shields.io/badge/contributors-1-blue.svg)
 
