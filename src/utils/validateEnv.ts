@@ -2,6 +2,7 @@
  * Environment Variable Validator
  * Validates required environment variables at application startup
  */
+import { logger } from "@/utils/logger";
 
 interface EnvValidationError {
   variable: string;
@@ -52,8 +53,8 @@ export function validateEnv(): void {
 
   // Log warnings for optional variables
   if (warnings.length > 0 && import.meta.env.DEV) {
-    console.warn(
-      `⚠️ Optional environment variables not configured: ${warnings.join(', ')}\n` +
+    logger.warn(
+      `Optional environment variables not configured: ${warnings.join(', ')}. ` +
       'Some features may not work properly.'
     );
   }
@@ -64,8 +65,8 @@ export function validateEnv(): void {
       .map(e => `  • ${e.variable}: ${e.reason}`)
       .join('\n');
 
-    console.error(
-      '❌ Environment Validation Failed:\n' +
+    logger.error(
+      'Environment Validation Failed:\n' +
       errorMessage +
       '\n\nPlease update your .env file with valid credentials.'
     );
@@ -84,7 +85,7 @@ export function validateEnv(): void {
 
   // Success
   if (import.meta.env.DEV) {
-    console.warn('✅ Environment variables validated successfully');
+    logger.info('Environment variables validated successfully');
   }
 }
 

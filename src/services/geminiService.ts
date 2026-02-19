@@ -8,6 +8,42 @@ import { logger } from "@/utils/logger";
 import { sanitizeRequirements } from "@/utils/sanitizeInput";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string;
+
+/**
+ * Token Bucket Rate Limiter
+ * Limits requests to 10 per 60 seconds.
+ */
+class TokenBucket {
+  private tokens: number;
+  private lastRefill: number;
+  private readonly maxTokens = 10;
+  private readonly refillInterval = 60000; // ms (60 seconds)
+
+  constructor() {
+    this.tokens = this.maxTokens;
+    this.lastRefill = Date.now();
+  }
+
+  public consume(): void {
+    this.refill();
+    if (this.tokens < 1) {
+      throw new Error("Rate limit exceeded. Please wait before running the pipeline again.");
+    }
+    this.tokens -= 1;
+  }
+
+  private refill(): void {
+    const now = Date.now();
+    const timePassed = now - this.lastRefill;
+    if (timePassed > this.refillInterval) {
+      this.tokens = this.maxTokens;
+      this.lastRefill = now;
+    }
+  }
+}
+
+const rateLimiter = new TokenBucket();
+
 let ai: GoogleGenAI | undefined;
 if (apiKey) {
   ai = new GoogleGenAI({ apiKey });
@@ -101,6 +137,8 @@ async function runAgenticWorkflow<T>(
   schema: Record<string, unknown>,
   settings?: AISettings
 ): Promise<{ data: T | null; thinking: string; metrics: OrchestrationMetrics }> {
+  rateLimiter.consume();
+
   if (!ai) {
     throw new Error('GenAI client not initialized. Please set VITE_GEMINI_API_KEY in your .env file.');
   }

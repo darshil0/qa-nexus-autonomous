@@ -12,6 +12,7 @@ import {
     Cell
 } from 'recharts';
 import { StatCard } from '@/components/common/StatCard';
+import { BarChart3 } from 'lucide-react';
 
 interface ReportsTabProps {
     chartData: { name: string; value: number; color: string }[];
@@ -28,6 +29,22 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({
     stability,
     failures
 }) => {
+    const hasData = chartData.some(d => d.value > 0) || coverageData.some(d => d.count > 0);
+
+    if (!hasData) {
+        return (
+            <div className="card" style={{ textAlign: 'center', padding: '3rem', maxWidth: '900px', margin: '0 auto' }}>
+                <BarChart3 size={48} style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', opacity: 0.5 }} />
+                <h3 style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                    No Analytics Available
+                </h3>
+                <p style={{ color: 'var(--text-secondary)' }}>
+                    Complete a full pipeline run to generate health and coverage reports.
+                </p>
+            </div>
+        );
+    }
+
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>

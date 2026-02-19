@@ -1,7 +1,7 @@
 # 🚶 QA Nexus Workflow Walkthrough
 
-**Version**: 3.0.2
-**Last Updated**: February 20, 2026
+**Version**: 3.1.0
+**Last Updated**: April 1, 2026
 
 This guide provides a step-by-step walkthrough of the **QA Nexus Autonomous** user experience.
 

@@ -1,7 +1,7 @@
 # 🤖 AGENT.md - QA Nexus Autonomous Reference Guide
 
-**Version**: 3.0.2
-**Last Updated**: February 20, 2026
+**Version**: 3.1.0
+**Last Updated**: April 1, 2026
 **Status**: Production Ready
 **Target Release**: Released
 
@@ -15,7 +15,7 @@
 ---
 
 ## 🎯 Project Overview
-QA Nexus Autonomous is a state-of-the-art multi-agent system designed to automate the complete software testing lifecycle. It utilizes next-generation Google Gemini 3 models to coordinate specialized agents that transform raw requirements into executable, verified test suites.
+QA Nexus Autonomous is a state-of-the-art multi-agent system designed to automate the complete software testing lifecycle. It utilizes next-generation Google Gemini 2.5 models to coordinate specialized agents that transform raw requirements into executable, verified test suites.
 
 ### Core Workflow
 1.  **Requirements Analysis**: Ambiguity detection and gap analysis.
@@ -88,7 +88,7 @@ Located in `src/services/agenticSkills.ts`:
 - `jira_search`: Contextual requirement lookup.
 - `github_issue_create`: Automated bug reporting.
 - `test_runner`: Real-time execution simulation.
-- `gemini_knowledge_base`: Gemini 3 technical specs & optimization.
+- `gemini_knowledge_base`: Gemini 2.5 technical specs & optimization.
 - `code_analysis`: Deep security and logic inspection of source code.
 - `performance_audit`: Automated application benchmarking.
 - `tiny_gpt_reference`: Technical documentation for the internal GPT engine.
@@ -178,8 +178,8 @@ async function callAgent(prompt: string): Promise<AgentResult> {
 
 ### Google Gemini AI
 - **Models**: 
-  - `gemini-3-pro-preview` (Standard for Agent 1 & 2).
-  - `gemini-3-flash-preview` (Standard for Agent 3/Execution).
+  - `gemini-2.5-pro-preview-05-06` (Standard for Agent 1 & 2).
+  - `gemini-2.5-flash-preview-04-17` (Standard for Agent 3/Execution).
 - **Parameters**: Structured output requested via system prompts.
 - **Environment Variable**: `VITE_GEMINI_API_KEY`.
 
