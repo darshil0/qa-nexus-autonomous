@@ -5,7 +5,7 @@
 ![Version](https://img.shields.io/badge/version-3.2.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-![Release](https://img.shields.io/badge/release-feb%2017-blue.svg)
+![Release](https://img.shields.io/badge/release-apr%201-blue.svg)
 
 ---
 
@@ -976,7 +976,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 ### v3.0.0 (February 2026) ✅ Released
 
 **Status**: Production Ready
-**Release Date**: February 17, 2026
+**Release Date**: February 18, 2026
 
 **Key Features**:
 - Agentic Memory System with short-term context buffer
@@ -988,7 +988,20 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - Model Context Protocol (MCP) integration
 - Sequential Multi-Tool Execution (up to 5 tools per task)
 
-### v3.1.0 (Q2 2026) 🎯 Next Release
+### v3.1.0 (April 2026) ✅ Released
+
+**Status**: Production Ready
+**Release Date**: April 1, 2026
+
+**Key Features**:
+- Token bucket rate limiter (10 req/min) for Gemini service
+- Supabase persistence layer with async rehydration
+- Search functionality in Test Designer tab
+- Empty state handling for all major tabs
+- Pulse-success animation for active agentic loops
+- Unit tests for MCP service and Agentic Skills
+
+### v3.5.0 (Q3 2026) 🎯 Next Release
 
 **Focus**: Collaboration & Persistence
 
@@ -999,7 +1012,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - Team workspace management
 - Workflow templates library
 
-### v3.5.0 (Q3 2026) 🔮 Future Vision
+### v4.0.0 (Q4 2026) 🔮 Future Vision
 
 **Focus**: Intelligence & Integration
 
@@ -1010,7 +1023,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - Webhook support for external integrations
 - Custom skill creation UI
 
-### v4.0.0 (Q4 2026) 🚀 Innovation
+### v5.0.0 (2027) 🚀 Innovation
 
 **Focus**: Learning & Optimization
 
