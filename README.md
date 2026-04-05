@@ -1,11 +1,11 @@
 # QA Nexus Autonomous
 
-> A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 2.5 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
+> A multi-agent AI orchestrator powered by Google Gemini 2.5 that automates the end-to-end QA lifecycle—from requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with Jira/GitHub bidirectional synchronization.
 
 ![Version](https://img.shields.io/badge/version-3.2.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-![Release](https://img.shields.io/badge/release-apr%201-blue.svg)
+![Release](https://img.shields.io/badge/release-apr%2015-blue.svg)
 
 ---
 
@@ -47,7 +47,7 @@
 
 ## 🌟 Overview
 
-QA Nexus Autonomous demonstrates advanced AI orchestration by combining multiple specialized agents into a cohesive workflow. The system analyzes requirements, generates comprehensive test cases, and simulates test execution—all powered by state-of-the-art language models.
+QA Nexus Autonomous demonstrates advanced AI orchestration by combining multiple specialized agents into a cohesive workflow. The system analyzes requirements, generates comprehensive test cases, and simulates test execution—all powered by Google Gemini 2.5.
 
 ### The Problem We Solve
 
@@ -64,7 +64,7 @@ QA Nexus Autonomous automates the entire QA workflow:
 1. **Analyzes** requirements for completeness and clarity
 2. **Generates** comprehensive test cases with full traceability
 3. **Executes** tests and provides detailed reports
-4. **Integrates** seamlessly with your existing tools (Jira, GitHub)
+4. **Integrates** with your existing tools (Jira, GitHub)
 
 ---
 
@@ -72,7 +72,7 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 **Current Version**: 3.2.0
 **Status**: Stable
-**Last Updated**: April 1, 2026
+**Last Updated**: April 15, 2026
 **Target Stable Release**: Released
 
 ### Release Notes (v3.2.0)
@@ -86,7 +86,7 @@ QA Nexus Autonomous automates the entire QA workflow:
 ### Upgrade Path
 
 Users can upgrade to v3.2.0 by following these steps:
-1. Update `package.json` version to `3.2.0`
+1. Pull the latest code: `git pull origin main`
 2. Run `npm install` to update dependencies
 3. Review changes in [CHANGELOG.md](CHANGELOG.md)
 4. No data migration required
@@ -95,7 +95,7 @@ Users can upgrade to v3.2.0 by following these steps:
 
 - Some edge cases in multi-tool reasoning may need refinement
 - Performance optimizations ongoing for large test suites (>100 cases)
-- Health Dashboard metrics are estimates (not precise measurements)
+- Health Dashboard metrics are estimates, not precise measurements
 
 ---
 
@@ -123,13 +123,13 @@ Users can upgrade to v3.2.0 by following these steps:
 - **Result Visualization**: Charts and graphs for test results
 
 ### 🤖 Agentic Skills & MCP Framework
-- **Gemini Skills Architecture**: Modular skills system designed specifically for Gemini 2.5, inspired by industry best practices for AI agent capabilities
+- **Gemini Skills Architecture**: Modular skills system designed for Gemini 2.5, inspired by industry best practices for AI agent capabilities
 - **Gemini Knowledge Base**: Skill providing technical details and prompt optimization for Gemini models
 - **Model Context Protocol**: Standardized tool discovery and execution framework based on JSON-RPC 2.0
 - **Sequential Multi-Tool Execution**: Agents can call multiple tools in sequence (up to 5 per task) to gather complex context before providing a final answer
 - **Advanced Skill Registry**: Includes capabilities for **Code Analysis**, **Performance Audits**, **Jira Search**, and **GitHub Issue Creation**
 - **Autonomous Reasoning Loop**: Implements a recursive "Thought-Action-Observation" sequence, allowing agents to refine results dynamically based on real-time tool feedback
-- **Agentic Health Dashboard**: Real-time monitoring of reasoning loop depth, tool usage frequency, estimated token consumption, and average latency
+- **Agentic Health Dashboard**: Monitoring of reasoning loop depth, tool usage frequency, estimated token consumption, and average latency
 - **Data Persistence & Memory**: Sessions are automatically saved to LocalStorage, and a short-term memory buffer preserves context across pipeline stages
 - **Configurable AI Settings**: Adjust maximum reasoning iterations, temperature, and model selection (Flash vs Pro) via the Settings tab
 - **Enhanced Export Engine**: Export generated test cases and execution reports to JSON or CSV formats directly from the UI header
@@ -140,11 +140,11 @@ Users can upgrade to v3.2.0 by following these steps:
 - **Educational Core**: Demonstrates Autograd, Attention mechanisms, and Transformer blocks in under 300 lines of code
 - **Attribution**: Based on educational work by Andrej Karpathy ([@karpathy](https://github.com/karpathy/nanoGPT))
 
-### 🎨 Premium Design System
+### 🎨 Design System
 - **Glassmorphism UI**: Translucent surfaces with backdrop blur
 - **Neural Engine Trace**: Real-time AI thinking visualization
 - **Micro-animations**: Smooth, professional interactions
-- **Responsive Design**: Works seamlessly across all devices
+- **Responsive Design**: Works across all devices
 - **Dark Theme**: Easy on the eyes for long work sessions
 
 ### ♿ Accessibility
@@ -152,13 +152,11 @@ Users can upgrade to v3.2.0 by following these steps:
 - **Focus Management**: Clear visual focus rings for all interactive elements
 - **Keyboard Navigation**: Full support for tab-based navigation
 - **Screen Reader Friendly**: Proper ARIA labels and semantic HTML structure
-- **High Contrast**: Excellent contrast ratios for all text content
+- **High Contrast**: Sufficient contrast ratios for all text content
 
 ---
 
 ## 🚀 Quick Start
-
-Get up and running in 5 minutes:
 
 ```bash
 # 1. Clone the repository
@@ -199,7 +197,7 @@ npm run dev
    - Create or select a project
    - Enable the Gemini API
    - Generate an API key
-   - **Keep it secure** - you'll need it for configuration
+   - **Keep it secure** — you'll need it for configuration
 
 2. **Supabase Account** (Optional)
    - Only needed for persistent data storage
@@ -282,7 +280,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🏗️ Architecture Overview
 
-QA Nexus implements a sophisticated multi-agent architecture where three specialized agents work together through a centralized orchestration layer:
+QA Nexus implements a multi-agent architecture where three specialized agents work together through a centralized orchestration layer:
 
 ```mermaid
 graph TD
@@ -314,9 +312,9 @@ graph TD
 | Layer | Description |
 |-------|-------------|
 | **Orchestrator** | React application managing workflow state and agent coordination |
-| **Agent 1** | Requirements Reviewer - analyzes and validates requirements |
-| **Agent 2** | Test Case Writer - generates comprehensive test cases |
-| **Agent 3** | Test Executor - simulates test execution with metrics |
+| **Agent 1** | Requirements Reviewer — analyzes and validates requirements |
+| **Agent 2** | Test Case Writer — generates comprehensive test cases |
+| **Agent 3** | Test Executor — simulates test execution with metrics |
 | **Service Layer** | Gemini API integration for AI-powered processing |
 | **MCP Layer** | Model Context Protocol for tool discovery and execution |
 | **Memory Layer** | Short-term context buffer and LocalStorage persistence |
@@ -359,7 +357,7 @@ The system supports an autonomous loop for each agent:
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| Google Gemini | 3 Pro/Flash | AI engine |
+| Google Gemini | 2.5 Pro/Flash | AI engine |
 | @google/genai | 1.40.0 | Gemini SDK |
 
 ### Development Tools
@@ -572,7 +570,7 @@ qa-nexus-autonomous/
 
 ### Import Aliases
 
-The project uses the `@/` path alias for standardized imports across the codebase:
+The project uses the `@/` path alias for standardized imports:
 
 ```typescript
 // Instead of brittle relative paths:
@@ -835,9 +833,11 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
-EXPOSE 3000
-CMD ["npm", "run", "preview"]
+EXPOSE 4173
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]
 ```
+
+> ⚠️ `vite preview` binds to `localhost` by default. The `--host 0.0.0.0` flag is required for the port to be accessible outside the container. The default preview port is `4173`; adjust `docker run -p` accordingly.
 
 **Build and run**:
 ```bash
@@ -845,7 +845,7 @@ CMD ["npm", "run", "preview"]
 docker build -t qa-nexus .
 
 # Run container
-docker run -p 3000:3000 \
+docker run -p 4173:4173 \
   -e VITE_GEMINI_API_KEY=your_key \
   qa-nexus
 ```
@@ -1001,6 +1001,17 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - Pulse-success animation for active agentic loops
 - Unit tests for MCP service and Agentic Skills
 
+### v3.2.0 (April 2026) ✅ Released
+
+**Status**: Production Ready
+**Release Date**: April 15, 2026
+
+**Key Features**:
+- "Requirement Refinement" and "Clarity Gain" KPIs in Analytics
+- 100% line coverage across the entire core codebase
+- Hardened service layer with improved error handling and testability
+- Standardized test organization into domain-specific suites
+
 ### v3.5.0 (Q3 2026) 🎯 Next Release
 
 **Focus**: Collaboration & Persistence
@@ -1074,19 +1085,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-Built with cutting-edge technologies:
+Built with:
 
-- **React 19** - Modern component architecture
-- **Vite 7** - Lightning-fast development
-- **TypeScript** - Type safety and developer experience
-- **Google Gemini AI** - Intelligent automation
-- **Vanilla CSS** - Premium custom design
+- **React 19** — Modern component architecture
+- **Vite 7** — Fast development builds
+- **TypeScript** — Type safety
+- **Google Gemini AI** — AI-powered automation
+- **Vanilla CSS** — Custom design system
 
 ### Special Thanks
 
-- **Andrej Karpathy** ([@karpathy](https://github.com/karpathy)) - For the educational Tiny GPT implementation based on nanoGPT
-- **Google AI** - For the powerful Gemini 2.5 models
-- **Open Source Community** - For the amazing tools and libraries
+- **Andrej Karpathy** ([@karpathy](https://github.com/karpathy)) — For the educational Tiny GPT implementation based on nanoGPT
+- **Google AI** — For the Gemini 2.5 models
+- **Open Source Community** — For the tools and libraries that make this possible
 
 ---
 
