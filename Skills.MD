@@ -1,9 +1,9 @@
-# QA Nexus Gemini Skills Registry (v3.1.0)
+# QA Nexus Gemini Skills Registry (v3.2.1)
 
-**Version**: 3.1.0
-**Last Updated**: April 1, 2026
+**Version**: 3.2.1
+**Last Updated**: April 20, 2026
 
-This project implements a modular skills architecture specifically designed for Google Gemini 3 models. The system enables AI agents to access specialized capabilities through a standardized interface.
+This project implements a modular skills architecture specifically designed for Google Gemini 2.5 models. The system enables AI agents to access specialized capabilities through a standardized interface.
 
 ## Architecture Philosophy
 
@@ -17,7 +17,7 @@ The skills system is inspired by industry best practices for AI agent capabiliti
 
 1. **Modularity**: Skills can be added, removed, or modified independently
 2. **Discoverability**: Agents can query available skills via Model Context Protocol (MCP)
-3. **Gemini Optimization**: Each skill is designed for Gemini 3's specific capabilities
+3. **Gemini Optimization**: Each skill is designed for Gemini 2.5's specific capabilities
 4. **Educational Value**: Skills serve as learning resources for AI engineering patterns
 
 ---
@@ -73,7 +73,7 @@ The skills system is inspired by industry best practices for AI agent capabiliti
 ---
 
 ### [Gemini Knowledge Base](./skills/gemini-knowledge-base/SKILL.md)
-**Purpose**: Provides technical details and prompt optimization for Gemini 3 models.
+**Purpose**: Provides technical details and prompt optimization for Gemini 2.5 models.
 
 **Key Capabilities**:
 - Model selection guidance (Pro vs Flash)
@@ -131,7 +131,7 @@ All skills use YAML frontmatter for metadata:
 ---
 name: skill-name
 description: Brief description of what this skill does
-Version: 3.1.0
+Version: 3.2.1
 author: QA Nexus Team
 requires: 
   - python: ">=3.8"
@@ -160,7 +160,7 @@ Skills are exposed to Gemini agents through the Model Context Protocol:
 
 ### Gemini-Specific Optimizations
 
-Skills are designed with Gemini 3's capabilities in mind:
+Skills are designed with Gemini 2.5's capabilities in mind:
 
 - **Structured Output**: Skills expect and return JSON-formatted data
 - **Context Efficiency**: Minimize token usage through concise prompts
@@ -185,7 +185,7 @@ Create `skills/my-skill/SKILL.md`:
 ---
 name: my-skill
 description: What this skill does
-Version: 3.1.0
+Version: 3.2.1
 ---
 
 # My Skill
@@ -372,4 +372,4 @@ For questions about skills:
 
 **Maintained by**: Darshil  
 **License**: MIT  
-**Last Updated**: April 1, 2026
+**Last Updated**: April 20, 2026
