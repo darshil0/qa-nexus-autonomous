@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, vi, describe, it, beforeEach } from 'vitest';
+import type { TestCase, ExecutionResult } from '../types';
 import { Agent1Tab } from '../components/tabs/Agent1Tab';
 import { Agent2Tab } from '../components/tabs/Agent2Tab';
 import { Agent3Tab } from '../components/tabs/Agent3Tab';
@@ -23,7 +24,7 @@ describe('UI Coverage', () => {
     expect(screen.getByText('No Requirements Analyzed')).toBeDefined();
 
     const specs = [{ requirementId: 'R1', title: 'T1', description: 'D1', acceptanceCriteria: ['AC1'], riskClassification: 'L', priority: 'P1', ambiguities: [] }];
-    rerender(<Agent1Tab validatedSpecs={specs} testCasesByReq={{'R1': [{id:'TC1'} as any]}} results={[{testCaseId:'TC1', status:'PASS'}]} highlightedReqId="R1" navigateToTests={navSpy} />);
+    rerender(<Agent1Tab validatedSpecs={specs} testCasesByReq={{'R1': [{id:'TC1'} as unknown as TestCase]}} results={[{testCaseId:'TC1', status:'PASS', logs: 'ok', timestamp: '2026'}]} highlightedReqId="R1" navigateToTests={navSpy} />);
     expect(screen.getByText('T1')).toBeDefined();
 
     // Click navigate to tests
@@ -39,7 +40,7 @@ describe('UI Coverage', () => {
   it('Agent2Tab empty and full states', () => {
     const setHighlightSpy = vi.fn();
     const setTcSpy = vi.fn();
-    const { rerender } = render(<Agent2Tab filteredTestCases={[]} highlightedReqId={null} setHighlightedReqId={setHighlightSpy} navigateToSpec={vi.fn()} tcSearchTerm="" setTcSearchTerm={setTcSpy} />);
+    const { rerender: _rerender } = render(<Agent2Tab filteredTestCases={[]} highlightedReqId={null} setHighlightedReqId={setHighlightSpy} navigateToSpec={vi.fn()} tcSearchTerm="" setTcSearchTerm={setTcSpy} />);
     expect(screen.getByText('No Test Cases Found')).toBeDefined();
 
     // Trigger search change
@@ -47,7 +48,7 @@ describe('UI Coverage', () => {
     expect(setTcSpy).toHaveBeenCalledWith('test');
 
     const tcs = [{ id: 'TC1', category: 'C1', steps: ['S1'], expectedOutcomes: 'O1', linkedRequirementIds: ['R1'], isAutomationCandidate: true, preconditions: 'P1' }];
-    rerender(<Agent2Tab filteredTestCases={tcs} highlightedReqId="R1" setHighlightedReqId={setHighlightSpy} navigateToSpec={vi.fn()} tcSearchTerm="" setTcSearchTerm={setTcSpy} />);
+    _rerender(<Agent2Tab filteredTestCases={tcs as TestCase[]} highlightedReqId="R1" setHighlightedReqId={setHighlightSpy} navigateToSpec={vi.fn()} tcSearchTerm="" setTcSearchTerm={setTcSpy} />);
     expect(screen.getByText('TC1')).toBeDefined();
 
     // Click X to clear highlight
@@ -63,7 +64,7 @@ describe('UI Coverage', () => {
     const { rerender } = render(<Agent3Tab results={[]} handleGithubIssue={ghSpy} githubCreatingId={null} />);
     expect(screen.getByText('No Execution Results')).toBeDefined();
 
-    const res = [{ testCaseId: 'TC1', status: 'FAIL', logs: 'L', timestamp: 'T' } as any];
+    const res = [{ testCaseId: 'TC1', status: 'FAIL', logs: 'L', timestamp: 'T' } as unknown as ExecutionResult];
     rerender(<Agent3Tab results={res} handleGithubIssue={ghSpy} githubCreatingId={null} />);
     expect(screen.getByText('TC1')).toBeDefined();
 
@@ -97,14 +98,14 @@ describe('UI Coverage', () => {
   });
 
   it('ReportsTab empty and full states', () => {
-    const { rerender } = render(<ReportsTab chartData={[]} coverageData={[]} traceability="0" stability="0" failures="0" refinement="0" clarity="0" />);
+    const { rerender: _rerender } = render(<ReportsTab chartData={[]} coverageData={[]} traceability="0" stability="0" failures="0" refinement="0" clarity="0" />);
     expect(screen.getByText('No Analytics Available')).toBeDefined();
 
     // Coverage data only
-    render(<ReportsTab chartData={[]} coverageData={[{name:'C', count:1}]} traceability="1" stability="1" failures="0" refinement="1" clarity="1" />);
+    _rerender(<ReportsTab chartData={[]} coverageData={[{name:'C', count:1}]} traceability="1" stability="1" failures="0" refinement="1" clarity="1" />);
 
     // Both
-    render(<ReportsTab chartData={[{name:'P', value:1, color:'g'}]} coverageData={[{name:'C', count:1}]} traceability="1" stability="1" failures="0" refinement="1" clarity="1" />);
+    _rerender(<ReportsTab chartData={[{name:'P', value:1, color:'g'}]} coverageData={[{name:'C', count:1}]} traceability="1" stability="1" failures="0" refinement="1" clarity="1" />);
   });
 
   it('HealthDashboardTab', () => {
@@ -128,11 +129,13 @@ describe('UI Coverage', () => {
     fireEvent.click(screen.getByText('Clear Session'));
 
     const setSettingsSpy = vi.fn();
-    const { rerender } = render(<SettingsTab settings={{ useFlashModel: false, maxIterations: 3, temperature: 0.7 }} setSettings={setSettingsSpy} />);
+    const { rerender: _rerender } = render(<SettingsTab settings={{ useFlashModel: false, maxIterations: 3, temperature: 0.7 }} setSettings={setSettingsSpy} />);
 
     // Toggle flash mode
     const flashBtn = screen.getByText('High-Performance Mode').closest('div[style*="justify-content: space-between"]')?.querySelector('button');
-    if (flashBtn) fireEvent.click(flashBtn);
+    if (flashBtn) {
+      fireEvent.click(flashBtn);
+    }
     expect(setSettingsSpy).toHaveBeenCalled();
 
     fireEvent.change(screen.getAllByRole('slider')[0], { target: { value: '5' } });

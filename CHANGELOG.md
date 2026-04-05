@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.1] - 2026-04-20
+### Fixed
+- Resolved multiple TypeScript errors in unit and UI test suites related to `AISettings` and `ExecutionResult` types.
+- Fixed ESLint issues including unsafe `any` usages, deprecated `@ts-ignore` comments, and missing control flow curly braces.
+- Corrected unused variable declarations in test files.
+### Changed
+- Standardized AI model references to `gemini-2.5-pro-preview-05-06` and `gemini-2.5-flash-preview-04-17` across all documentation and codebase.
+- Upgraded core dependencies including `@google/genai`, `eslint`, `typescript-eslint`, and `vitest` to latest safe versions.
+- Synchronized project versioning (3.2.1) across all documentation and configuration files.
+
 ## [3.2.0] - 2026-04-01
 ### Added
 - "Requirement Refinement" metric to track specification efficiency.
@@ -175,7 +185,7 @@ All notable changes to this project are documented in this file. The format is b
 - **Agent Documentation Foundation**: Restored and updated the root `AGENT.md` file to provide a comprehensive identity and development roadmap for AI assistants.
 - **Agent Identity Update**: Rebranded the AI agent from "Antigravity" to "QA Nexus Autonomous Agent".
 - **AI Client API Key Fix**: Updated `geminiService.ts` to utilize `import.meta.env.VITE_GEMINI_API_KEY`, ensuring compatibility with Vite environment variables and project-standard naming.
-- **Model Name Synchronization**: Unified model references throughout the project to utilize `gemini-3-pro-preview` and `gemini-3-flash-preview` for technical precision.
+- **Model Name Synchronization**: Unified model references throughout the project to utilize `gemini-2.5-pro-preview-05-06` and `gemini-2.5-flash-preview-04-17` for technical precision.
 - **Browser Support Update**: Updated verified browser target versions to reflect early 2026 standards (Chrome v144+, Firefox v147+, Safari v26+).
 - **Project-Wide Synchronization**: Unified version numbers and update dates across all core documentation (`README.md`, `ARCHITECTURE.md`, `PROJECT_STRUCTURE.md`) and `package.json`.
 - **Documentation Linking**: Integrated `AGENT.md` references into the main project structure and architectural guides.
@@ -294,5 +304,5 @@ All notable changes to this project are documented in this file. The format is b
 
 ---
 
-**Last Updated**: April 1, 2026  
-**Version**: 3.2.0
+**Last Updated**: April 20, 2026
+**Version**: 3.2.1
