@@ -38,6 +38,8 @@ graph TD
     A2 --> A3[Agent 3: Test Executor]
 
     A1 & A2 & A3 --> Memory[Agent Memory & Persistence<br/>Short-term context + LocalStorage]
+    Memory --> MS[memoryService.ts]
+    Memory --> PS[persistenceService.ts]
 
     Memory --> MCP[Model Context Protocol<br/>MCP Service + Skill Registry]
 

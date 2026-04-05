@@ -78,6 +78,8 @@ QA Nexus Autonomous automates the entire QA workflow:
 ### Release Notes (v3.2.0)
 
 - ✅ Integrated "Requirement Refinement" and "Clarity Gain" KPIs into Analytics.
+  - **Requirement Refinement**: Ratio of validated specifications to raw input lines, measuring how efficiently the AI extracts discrete requirements.
+  - **Clarity Gain**: Percentage of requirements without ambiguities, measuring the AI's ability to normalize and clarify specifications.
 - ✅ Achieved 100% line coverage across the entire core codebase.
 - ✅ Hardened service layer with improved error handling and testability.
 - ✅ Standardized test organization into domain-specific suites.
@@ -129,7 +131,11 @@ Users can upgrade to v3.2.0 by following these steps:
 - **Sequential Multi-Tool Execution**: Agents can call multiple tools in sequence (up to 5 per task) to gather complex context before providing a final answer
 - **Advanced Skill Registry**: Includes capabilities for **Code Analysis**, **Performance Audits**, **Jira Search**, and **GitHub Issue Creation**
 - **Autonomous Reasoning Loop**: Implements a recursive "Thought-Action-Observation" sequence, allowing agents to refine results dynamically based on real-time tool feedback
-- **Agentic Health Dashboard**: Monitoring of reasoning loop depth, tool usage frequency, estimated token consumption, and average latency
+- **Agentic Health Dashboard**: Real-time monitoring of agentic performance:
+  - **Loop Depth**: Tracks how many recursive iterations are needed to solve a task.
+  - **Resource Saturation**: Estimated token consumption relative to context window limits.
+  - **Reasoning Efficiency**: Evaluates the complexity of tool calls vs. final output quality.
+  - **Tool Frequency**: Live breakdown of which MCP skills (Jira, GitHub, etc.) are being utilized.
 - **Data Persistence & Memory**: Sessions are automatically saved to LocalStorage, and a short-term memory buffer preserves context across pipeline stages
 - **Configurable AI Settings**: Adjust maximum reasoning iterations, temperature, and model selection (Flash vs Pro) via the Settings tab
 - **Enhanced Export Engine**: Export generated test cases and execution reports to JSON or CSV formats directly from the UI header
@@ -292,6 +298,8 @@ graph TD
     A2 --> A3[Agent 3: Test Executor]
 
     A1 & A2 & A3 --> Memory[Agent Memory & Persistence<br/>Short-term context + LocalStorage]
+    Memory --> MS[memoryService.ts]
+    Memory --> PS[persistenceService.ts]
 
     Memory --> MCP[Model Context Protocol<br/>MCP Service + Skill Registry]
 
@@ -517,7 +525,7 @@ qa-nexus-autonomous/
 │   ├── components/                # UI components
 │   │   ├── common/                # Reusable atoms (StatCard, NavBtn)
 │   │   ├── layout/                # Layout components (Header, Sidebar)
-│   │   └── tabs/                  # Tab views
+│   │   └── tabs/                  # Specialized tab views
 │   │       ├── OrchestratorTab.tsx
 │   │       ├── Agent1Tab.tsx
 │   │       ├── Agent2Tab.tsx

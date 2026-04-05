@@ -130,10 +130,12 @@ graph TD
     A2 --> A3
 
     A1 & A2 & A3 --> Memory[AGENT MEMORY & CONTEXT BUFFER<br/>Short-term session history]
+    Memory --> MS[memoryService.ts]
 
     Memory --> MCP[MODEL CONTEXT PROTOCOL (MCP)<br/>Skill Registry: Jira, GitHub, Analysis]
 
     MCP --> Persistence[LOCAL PERSISTENCE LAYER<br/>LocalStorage Sync & Hydration]
+    Persistence --> PS[persistenceService.ts]
 
     subgraph KNOWLEDGE [KNOWLEDGE & MEMORY LAYER]
         Vector[Vector DB]
@@ -282,21 +284,32 @@ Located in `src/engine/tiny_gpt.py`, the Tiny GPT engine serves as an architectu
 
 ---
 
-## Observability & Health Dashboard
+## Observability, KPIs & Health Dashboard
 
-QA Nexus v2.7.0 introduces deep observability into the agentic reasoning process through the **Loop Health** dashboard.
+QA Nexus introduces deep observability into the agentic reasoning process through the **Loop Health** dashboard and analytical KPIs.
 
-### Real-time Metrics
+### Key Performance Indicators (KPIs)
 
-- **Tool Call Frequency**: Visualizes which MCP skills (Jira, GitHub, etc.) are used most often.
-- **Reasoning Loop Depth**: Monitors how many iterations agents need to solve complex tasks.
-- **Estimated Token Consumption**: Provides a crude estimate of context window utilization to prevent saturation.
-- **Latency Tracking**: Measures the end-to-end time for recursive loops, including tool execution.
+The system tracks several key metrics to evaluate the quality and efficiency of the QA automation process:
+
+- **Requirement Refinement**: Ratio of validated specifications to raw input lines. This measures the system's ability to extract and normalize discrete, actionable requirements from potentially verbose or unstructured input.
+- **Clarity Gain**: Percentage of requirements generated without ambiguities. This evaluates how well the Requirements Reviewer agent identifies and clarifies unclear specifications during the initial analysis phase.
+- **Traceability Score**: Measures the percentage of requirements that are mapped to at least one valid test case, ensuring complete coverage.
+- **System Stability**: Ratio of passed tests to total tests executed, providing a real-time health indicator of the product under test.
+
+### Real-time Health Metrics
+
+The Health Dashboard provides diagnostic data for the autonomous reasoning engine:
+
+- **Tool Call Frequency**: Visualizes which Model Context Protocol (MCP) skills (Jira, GitHub, etc.) are used most often by the agents.
+- **Reasoning Loop Depth**: Monitors the number of recursive iterations agents perform to fulfill a task (capped by user settings).
+- **Estimated Token Consumption**: Provides a real-time estimate of context window utilization to prevent prompt saturation.
+- **Latency Tracking**: Measures end-to-end processing time for agent workflows, including tool execution and AI inference.
 
 ### Qualitative Indicators
 
-- **Resource Saturation**: Percentage-based gauge of prompt limit utilization.
-- **Reasoning Efficiency**: Evaluates loop depth vs. successful output to detect potential "infinite thought loops."
+- **Resource Saturation**: A percentage-based gauge reflecting how much of the typical Gemini context window is being utilized by the current session.
+- **Reasoning Efficiency**: A computed score that evaluates whether agents are finding solutions within an optimal number of iterations, helping detect potential "thought loops" or excessive reasoning.
 
 ---
 
@@ -2083,8 +2096,8 @@ test(workflow): add integration test for full workflow
 
 ---
 
-**Version**: 3.1.0
-**Last Updated**: April 1, 2026
+**Version**: 3.2.1
+**Last Updated**: April 20, 2026
 **Maintained by**: QA Nexus Team
 
 For questions or issues, please open a GitHub issue or contact the maintainers.

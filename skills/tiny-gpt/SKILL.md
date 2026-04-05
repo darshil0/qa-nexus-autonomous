@@ -237,8 +237,8 @@ For questions about this skill:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: February 14, 2026  
+**Version**: 3.2.1
+**Last Updated**: April 20, 2026
 **License**: MIT  
 **Original Author**: Andrej Karpathy  
 **Adapted By**: Darshil
