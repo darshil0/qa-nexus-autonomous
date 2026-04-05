@@ -1,7 +1,7 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 3.1.0
-**Last Updated**: April 1, 2026
+**Version**: 3.2.1
+**Last Updated**: April 20, 2026
 **Status**: Production Ready
 
 ## Table of Contents
@@ -331,9 +331,9 @@ graph TD
     GS <--> MCP
 
     subgraph AGENTS [Specialized Agents]
-        A1[AGENT 1<br/>Reqs Reviewer<br/>Gemini 3 Pro]
-        A2[AGENT 2<br/>Test Writer<br/>Gemini 3 Pro]
-        A3[AGENT 3<br/>Executor<br/>Gemini 3 Flash]
+        A1[AGENT 1<br/>Reqs Reviewer<br/>Gemini 2.5 Pro]
+        A2[AGENT 2<br/>Test Writer<br/>Gemini 2.5 Pro]
+        A3[AGENT 3<br/>Executor<br/>Gemini 2.5 Flash]
     end
 
     MCP <--> A1 & A2 & A3
@@ -1094,7 +1094,7 @@ const response = await mcpService.handleRequest({
 ```typescript
 // Configuration
 const API_CONFIG = {
-  model: 'gemini-3-pro-preview',
+  model: 'gemini-2.5-pro-preview-05-06',
   temperature: 0.7,        // Creativity level (0-1)
   maxOutputTokens: 2048,   // Response length limit
   topP: 0.95,              // Nucleus sampling
@@ -1139,7 +1139,7 @@ class GeminiAPIError extends Error {
 
 async function callGeminiAPI(prompt: string): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-pro-preview' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro-preview-05-06' });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     return response.text();

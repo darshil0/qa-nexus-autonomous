@@ -41,7 +41,7 @@ export const persistenceService = {
   loadFromLocalStorage(): WorkflowState | null {
     try {
       const s = localStorage.getItem(STORAGE_KEY);
-      return s ? this.sanitizeLoadedState(JSON.parse(s)) : null;
+      return s ? this.sanitizeLoadedState(JSON.parse(s) as WorkflowState) : null;
     } catch { return null; }
   },
   async loadFromSupabase(): Promise<WorkflowState | null> {
@@ -51,8 +51,9 @@ export const persistenceService = {
       const res = await fetch(`${url}/rest/v1/qa_nexus_sessions?select=state&order=updated_at.desc&limit=1`, {
         headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' }
       });
-      const data = await res.json();
-      return data[0]?.state ? this.sanitizeLoadedState(data[0].state) : null;
+      const data = await res.json() as { state: WorkflowState }[];
+      const firstResult = data[0];
+      return firstResult?.state ? this.sanitizeLoadedState(firstResult.state) : null;
     } catch { return null; }
   },
   sanitizeLoadedState(state: WorkflowState): WorkflowState {

@@ -46,7 +46,7 @@ const rateLimiter = new TokenBucket();
 
 /** @internal */
 export const __resetRateLimiter = () => {
-  // @ts-ignore - for testing
+  // @ts-expect-error - for testing
   rateLimiter.tokens = 10;
 };
 

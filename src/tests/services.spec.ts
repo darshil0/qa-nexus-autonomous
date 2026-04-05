@@ -1,11 +1,14 @@
 import { expect, vi, describe, it, beforeEach } from 'vitest';
+import type { GoogleGenAI } from '@google/genai';
 import { reviewRequirements, setAiClient, fetchJiraRequirement, createGithubIssue, generateTestCases, executeTests, __resetRateLimiter, initAi } from '../services/geminiService';
 import { persistenceService } from '../services/persistenceService';
 import { mcpService } from '../services/mcpService';
+import type { MCPRequest } from '../services/mcpService';
 import { agentMemory } from '../services/memoryService';
 import { logger } from '../utils/logger';
 import { sanitizeRequirements } from '../utils/sanitizeInput';
 import { WorkflowStatus } from '../types';
+import type { WorkflowState } from '../types';
 
 describe('Services Coverage', () => {
   beforeEach(() => {
@@ -25,7 +28,7 @@ describe('Services Coverage', () => {
       // Consume 10 tokens
       for (let i = 0; i < 10; i++) {
         // Mock a simple success to consume token
-        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: '{"specs":[]}' }) } } as any);
+        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: '{"specs":[]}' }) } } as unknown as GoogleGenAI);
         await reviewRequirements('in');
       }
       // 11th should fail
@@ -40,11 +43,11 @@ describe('Services Coverage', () => {
 
     it('extractText handles various formats', async () => {
         // Test with function text()
-        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: () => '{"specs":[]}' }) } } as any);
+        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: () => '{"specs":[]}' }) } } as unknown as GoogleGenAI);
         await reviewRequirements('in');
 
         // Test with string text
-        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: '{"specs":[]}' }) } } as any);
+        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: '{"specs":[]}' }) } } as unknown as GoogleGenAI);
         await reviewRequirements('in');
 
         // Test with nested candidates
@@ -54,7 +57,7 @@ describe('Services Coverage', () => {
                     candidates: [{ content: { parts: [{ text: '{"specs":[]}' }] } }]
                 })
             }
-        } as any);
+        } as unknown as GoogleGenAI);
         await reviewRequirements('in');
 
         // Test failure case in extractText (catch block)
@@ -64,21 +67,22 @@ describe('Services Coverage', () => {
                     get text() { throw new Error('fail'); }
                 })
             }
-        } as any);
+        } as unknown as GoogleGenAI);
         await reviewRequirements('in');
 
         // Test fallback return '' (line 80)
         setAiClient({
             models: {
-                generateContent: vi.fn().mockResolvedValue({} as any)
+                generateContent: vi.fn().mockResolvedValue({} as unknown as GoogleGenAI)
             }
-        } as any);
+        } as unknown as GoogleGenAI);
         await reviewRequirements('in');
     });
 
     it('handles missing API key warning', async () => {
         initAi(undefined);
         initAi('test-key');
+        await Promise.resolve();
     });
 
     it('handles tool calls and iterations', async () => {
@@ -86,13 +90,13 @@ describe('Services Coverage', () => {
             .mockResolvedValueOnce({ text: '{"thought": "using tool", "tool_call": {"name": "jira_search", "arguments": {"query": "test"}}}' })
             .mockResolvedValueOnce({ text: '{"specs": []}' });
 
-        setAiClient({ models: { generateContent: mockGenerate } } as any);
-        await reviewRequirements('in', { maxIterations: 2 });
+        setAiClient({ models: { generateContent: mockGenerate } } as unknown as GoogleGenAI);
+        await reviewRequirements('in', { maxIterations: 2, temperature: 0.7, useFlashModel: false });
         expect(mockGenerate).toHaveBeenCalledTimes(2);
     });
 
     it('handles workflow errors and missing client', async () => {
-        setAiClient({ models: { generateContent: vi.fn().mockRejectedValue(new Error('API Error')) } } as any);
+        setAiClient({ models: { generateContent: vi.fn().mockRejectedValue(new Error('API Error')) } } as unknown as GoogleGenAI);
         const res = await reviewRequirements('in');
         expect(res.thinking).toContain('Error');
 
@@ -108,10 +112,10 @@ describe('Services Coverage', () => {
     });
 
     it('generateTestCases and executeTests', async () => {
-        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: '{"testCases":[]}' }) } } as any);
+        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: '{"testCases":[]}' }) } } as unknown as GoogleGenAI);
         await generateTestCases([]);
 
-        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: '{"results":[]}' }) } } as any);
+        setAiClient({ models: { generateContent: vi.fn().mockResolvedValue({ text: '{"results":[]}' }) } } as unknown as GoogleGenAI);
         await executeTests([]);
     });
   });
@@ -122,8 +126,8 @@ describe('Services Coverage', () => {
         vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'k');
 
         const fetchSpy = vi.spyOn(global, 'fetch')
-            .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve([{ state: { status: 'AGENT1_REVIEWING' } }]) } as any) // load
-            .mockResolvedValueOnce({ ok: true } as any) // save
+            .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve([{ state: { status: 'AGENT1_REVIEWING' } }]) } as unknown as Response) // load
+            .mockResolvedValueOnce({ ok: true } as unknown as Response) // save
             .mockRejectedValueOnce(new Error('Network error')); // save fail
 
         let state = await persistenceService.loadState();
@@ -131,13 +135,13 @@ describe('Services Coverage', () => {
 
         // Load fail Supabase (empty data), fallback to LocalStorage
         vi.stubEnv('VITE_SUPABASE_URL', 'http://s');
-        vi.spyOn(global, 'fetch').mockResolvedValueOnce({ ok: true, json: () => Promise.resolve([]) } as any); // Empty data hits line 49 null branch
+        vi.spyOn(global, 'fetch').mockResolvedValueOnce({ ok: true, json: () => Promise.resolve([]) } as unknown as Response); // Empty data hits line 49 null branch
         localStorage.setItem('qa_nexus_state', JSON.stringify({ status: WorkflowStatus.IDLE }));
         state = await persistenceService.loadState();
         expect(state).toBeDefined();
 
-        await persistenceService.saveToSupabase({ status: WorkflowStatus.IDLE } as any);
-        await persistenceService.saveToSupabase({ status: WorkflowStatus.IDLE } as any); // Should fail but log error
+        await persistenceService.saveToSupabase({ status: WorkflowStatus.IDLE } as unknown as WorkflowState);
+        await persistenceService.saveToSupabase({ status: WorkflowStatus.IDLE } as unknown as WorkflowState); // Should fail but log error
 
         expect(fetchSpy).toHaveBeenCalledTimes(4);
     });
@@ -149,7 +153,7 @@ describe('Services Coverage', () => {
 
     it('saveState handles errors', () => {
         vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('fail'); });
-        persistenceService.saveState({} as any);
+        persistenceService.saveState({} as unknown as WorkflowState);
     });
 
     it('clearState', () => {
@@ -185,7 +189,7 @@ describe('Services Coverage', () => {
         });
 
         // Error handling
-        await mcpService.handleRequest(null as any);
+        await mcpService.handleRequest({} as unknown as MCPRequest);
 
         expect(mcpService.getToolUsage()).toBeDefined();
     });
@@ -211,7 +215,7 @@ describe('Services Coverage', () => {
         expect(sanitized.length).toBe(50000);
     });
 
-    it('logger debug and info', () => {
+    it('logger debug and info', async () => {
         // Mock DEV mode
         vi.stubEnv('DEV', true);
         logger.debug('test');
@@ -220,6 +224,7 @@ describe('Services Coverage', () => {
         vi.stubEnv('DEV', false);
         logger.debug('test');
         logger.info('test');
+        await Promise.resolve();
     });
   });
 });
