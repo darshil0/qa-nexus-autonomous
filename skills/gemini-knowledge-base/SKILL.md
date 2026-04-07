@@ -1,8 +1,8 @@
 ---
 name: gemini-knowledge-base
 description: Provides technical details about Gemini 2.5 models, including context window limits, tokenization, and multi-modal capabilities.
-Version: 3.2.1
-Last Updated: April 20, 2026
+Version: 3.2.3
+Last Updated: April 21, 2026
 ---
 
 # Gemini Knowledge Base
