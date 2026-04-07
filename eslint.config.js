@@ -15,7 +15,7 @@ export default ts.config(
         },
         languageOptions: {
             parserOptions: {
-                project: true, // Enable project-aware type checking
+                project: ["./tsconfig.json", "./tsconfig.node.json"], // Enable project-aware type checking
                 tsconfigRootDir: import.meta.dirname,
                 ecmaFeatures: {
                     jsx: true,

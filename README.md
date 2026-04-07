@@ -2,10 +2,10 @@
 
 > A multi-agent AI orchestrator powered by Google Gemini 2.5 that automates the end-to-end QA lifecycle—from requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-3.2.2-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.2.3-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-![Release](https://img.shields.io/badge/release-apr%207-blue.svg)
+![Release](https://img.shields.io/badge/release-apr%2021-blue.svg)
 
 ---
 
@@ -70,24 +70,21 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 ## 🎯 Release Status
 
-**Current Version**: 3.2.2
+**Current Version**: 3.2.3
 **Status**: Stable
-**Last Updated**: April 7, 2026
+**Last Updated**: April 21, 2026
 **Target Stable Release**: Released
 
-### Release Notes (v3.2.2)
+### Release Notes (v3.2.3)
 
-- ✅ Fixed `vite.config.ts` and `vitest.config.ts` being silently excluded from ESLint linting.
-- ✅ Hardened `tsconfig.node.json` with `strict`, `noUnusedLocals`, and `noUnusedParameters` to match project-wide TypeScript standards.
-- ✅ Corrected four stale dependency version numbers in the Technology Stack documentation table.
-- ✅ Fixed stale `geminiService.parse.spec.ts` test file reference in the Testing section.
-- ✅ Corrected v3.2.0 release date in Roadmap to match CHANGELOG (April 1, 2026).
-- ✅ Fixed `.gitignore` formatting inconsistency.
+- ✅ Fixed ESLint parsing errors for `vite.config.ts` and `vitest.config.ts` by explicitly listing TypeScript configurations.
+- ✅ Synchronized project version (3.2.3) and release dates across all documentation and source files.
+- ✅ Corrected historical release dates in `CHANGELOG.md` for chronological consistency.
 - 💡 We welcome feedback and contributions
 
 ### Upgrade Path
 
-Users can upgrade to v3.2.2 by following these steps:
+Users can upgrade to v3.2.3 by following these steps:
 1. Pull the latest code: `git pull origin main`
 2. Run `npm install` to update dependencies
 3. Review changes in [CHANGELOG.md](CHANGELOG.md)
@@ -1022,7 +1019,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 ### v3.2.1 (April 2026) ✅ Released
 
 **Status**: Production Ready
-**Release Date**: April 20, 2026
+**Release Date**: April 4, 2026
 
 **Key Features**:
 - Fixed TypeScript and ESLint issues in unit and UI test suites
@@ -1042,6 +1039,16 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - Fixed stale test file reference in Testing documentation
 - Corrected v3.2.0 release date in Roadmap
 - Fixed `.gitignore` formatting inconsistency
+
+### v3.2.3 (April 2026) ✅ Released
+
+**Status**: Production Ready
+**Release Date**: April 21, 2026
+
+**Key Features**:
+- Fixed ESLint parsing errors for `vite.config.ts` and `vitest.config.ts`.
+- Synchronized project version (3.2.3) across all documentation, skills, and source files.
+- Improved version consistency between `package.json` and `package-lock.json`.
 
 ### v3.5.0 (Q3 2026) 🎯 Next Release
 
@@ -1134,7 +1141,7 @@ Built with:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-3.2.2-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.2.3-brightgreen.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)

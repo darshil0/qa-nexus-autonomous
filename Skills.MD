@@ -1,7 +1,7 @@
-# QA Nexus Gemini Skills Registry (v3.2.1)
+# QA Nexus Gemini Skills Registry (v3.2.3)
 
-**Version**: 3.2.1
-**Last Updated**: April 20, 2026
+**Version**: 3.2.3
+**Last Updated**: April 21, 2026
 
 This project implements a modular skills architecture specifically designed for Google Gemini 2.5 models. The system enables AI agents to access specialized capabilities through a standardized interface.
 
@@ -131,7 +131,7 @@ All skills use YAML frontmatter for metadata:
 ---
 name: skill-name
 description: Brief description of what this skill does
-Version: 3.2.1
+Version: 3.2.2
 author: QA Nexus Team
 requires: 
   - python: ">=3.8"
@@ -185,7 +185,7 @@ Create `skills/my-skill/SKILL.md`:
 ---
 name: my-skill
 description: What this skill does
-Version: 3.2.1
+Version: 3.2.2
 ---
 
 # My Skill
@@ -372,4 +372,4 @@ For questions about skills:
 
 **Maintained by**: Darshil  
 **License**: MIT  
-**Last Updated**: April 20, 2026
+**Last Updated**: April 7, 2026

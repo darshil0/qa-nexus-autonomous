@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.3] - 2026-04-21
+### Added
+- Synchronized project version `3.2.3` across `package.json`, `package-lock.json`, and all core documentation files.
+- Added release notes for `v3.2.3` in `README.md` and `CHANGELOG.md`.
+
+### Fixed
+- ESLint parsing errors for `vite.config.ts` and `vitest.config.ts` by explicitly listing TypeScript configurations in `eslint.config.js`.
+- Chronological inconsistency in version history by correcting `v3.2.1` release date.
+
 ## [3.2.2] - 2026-04-07
 ### Fixed
 
@@ -24,7 +33,7 @@ All notable changes to this project are documented in this file. The format is b
 - **Wrong release date for v3.2.0 in Roadmap**: The Roadmap listed v3.2.0's release date as `April 15, 2026`. `CHANGELOG.md` records `[3.2.0] - 2026-04-01`. Corrected to April 1, 2026.
 - **Stale test file in Testing section**: `geminiService.parse.spec.ts` was listed as a fourth test file in the Testing section's directory tree. This file does not appear in the Project Structure tree, is not referenced in `vitest.config.ts`, and does not exist in the `src/tests/` directory. Removed the stale entry so both test file listings are consistent.
 
-## [3.2.1] - 2026-04-20
+## [3.2.1] - 2026-04-04
 ### Fixed
 - Resolved multiple TypeScript errors in unit and UI test suites related to `AISettings` and `ExecutionResult` types.
 - Fixed ESLint issues including unsafe `any` usages, deprecated `@ts-ignore` comments, and missing control flow curly braces.
@@ -326,5 +335,5 @@ All notable changes to this project are documented in this file. The format is b
 
 ---
 
-**Last Updated**: April 7, 2026
-**Version**: 3.2.2
+**Last Updated**: April 21, 2026
+**Version**: 3.2.3
