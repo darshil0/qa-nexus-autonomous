@@ -2,6 +2,28 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.2] - 2026-04-07
+### Fixed
+
+#### ESLint Configuration (`eslint.config.js`)
+- **`vite.config.ts` and `vitest.config.ts` incorrectly ignored**: Both files were listed in the `ignores[]` array, causing ESLint to silently skip them entirely. A dedicated `*.config.{js,ts}` override block (with relaxed `no-require-imports` and `no-console` rules) already exists to handle these files with appropriate leniency — but it was dead code as long as both files were ignored. Removed both entries from `ignores` so the override now fires correctly and build-config files receive proper linting coverage.
+
+#### TypeScript Configuration (`tsconfig.node.json`)
+- **Missing strict-mode flags**: `tsconfig.node.json` is the only TypeScript project that type-checks `vite.config.ts` and `vitest.config.ts`. It lacked `strict`, `noUnusedLocals`, and `noUnusedParameters` — all three of which are enforced by the main `tsconfig.json`. This asymmetry meant type errors and unused-variable violations in build config files escaped `tsc --noEmit` in CI entirely. Added all three flags to match the project-wide strictness baseline.
+
+#### Repository Configuration (`.gitignore`)
+- **Missing blank line between `dist-ssr` and `coverage`**: The two entries were run together without a separating blank line, inconsistent with the formatting of every other section in the file. Added the missing blank line.
+
+#### Documentation (`README.md`)
+- **Stale version numbers in Technology Stack table**: Four dependency versions in the table were behind the actual versions declared in `package.json`. Corrected:
+  - `recharts`: `3.7.0` → `3.8.1`
+  - `@google/genai`: `1.40.0` → `1.48.0`
+  - `eslint`: `9.39.2` → `9.39.4`
+  - `vitest`: `4.0.18` → `4.1.2`
+- **"Release Notes (v3.2.0)" heading under Current Version 3.2.1**: The Release Status section showed the current version as `3.2.1` but the release notes subheading still referenced `v3.2.0`. Updated heading to `v3.2.1`.
+- **Wrong release date for v3.2.0 in Roadmap**: The Roadmap listed v3.2.0's release date as `April 15, 2026`. `CHANGELOG.md` records `[3.2.0] - 2026-04-01`. Corrected to April 1, 2026.
+- **Stale test file in Testing section**: `geminiService.parse.spec.ts` was listed as a fourth test file in the Testing section's directory tree. This file does not appear in the Project Structure tree, is not referenced in `vitest.config.ts`, and does not exist in the `src/tests/` directory. Removed the stale entry so both test file listings are consistent.
+
 ## [3.2.1] - 2026-04-20
 ### Fixed
 - Resolved multiple TypeScript errors in unit and UI test suites related to `AISettings` and `ExecutionResult` types.
@@ -304,5 +326,5 @@ All notable changes to this project are documented in this file. The format is b
 
 ---
 
-**Last Updated**: April 20, 2026
-**Version**: 3.2.1
+**Last Updated**: April 7, 2026
+**Version**: 3.2.2
