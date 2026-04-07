@@ -85,8 +85,6 @@ export default ts.config(
             "dist",
             "node_modules",
             ".eslintrc.cjs",
-            "vite.config.ts",
-            "vitest.config.ts",
             "eslint.config.js",
             "coverage"
         ],
