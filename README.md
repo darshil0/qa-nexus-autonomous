@@ -2,10 +2,10 @@
 
 > A multi-agent AI orchestrator powered by Google Gemini 2.5 that automates the end-to-end QA lifecycle—from requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with Jira/GitHub bidirectional synchronization.
 
-![Version](https://img.shields.io/badge/version-3.2.1-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.2.2-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-![Release](https://img.shields.io/badge/release-apr%2020-blue.svg)
+![Release](https://img.shields.io/badge/release-apr%207-blue.svg)
 
 ---
 
@@ -70,24 +70,24 @@ QA Nexus Autonomous automates the entire QA workflow:
 
 ## 🎯 Release Status
 
-**Current Version**: 3.2.1
+**Current Version**: 3.2.2
 **Status**: Stable
-**Last Updated**: April 20, 2026
+**Last Updated**: April 7, 2026
 **Target Stable Release**: Released
 
-### Release Notes (v3.2.0)
+### Release Notes (v3.2.2)
 
-- ✅ Integrated "Requirement Refinement" and "Clarity Gain" KPIs into Analytics.
-  - **Requirement Refinement**: Ratio of validated specifications to raw input lines, measuring how efficiently the AI extracts discrete requirements.
-  - **Clarity Gain**: Percentage of requirements without ambiguities, measuring the AI's ability to normalize and clarify specifications.
-- ✅ Achieved 100% line coverage across the entire core codebase.
-- ✅ Hardened service layer with improved error handling and testability.
-- ✅ Standardized test organization into domain-specific suites.
+- ✅ Fixed `vite.config.ts` and `vitest.config.ts` being silently excluded from ESLint linting.
+- ✅ Hardened `tsconfig.node.json` with `strict`, `noUnusedLocals`, and `noUnusedParameters` to match project-wide TypeScript standards.
+- ✅ Corrected four stale dependency version numbers in the Technology Stack documentation table.
+- ✅ Fixed stale `geminiService.parse.spec.ts` test file reference in the Testing section.
+- ✅ Corrected v3.2.0 release date in Roadmap to match CHANGELOG (April 1, 2026).
+- ✅ Fixed `.gitignore` formatting inconsistency.
 - 💡 We welcome feedback and contributions
 
 ### Upgrade Path
 
-Users can upgrade to v3.2.0 by following these steps:
+Users can upgrade to v3.2.2 by following these steps:
 1. Pull the latest code: `git pull origin main`
 2. Run `npm install` to update dependencies
 3. Review changes in [CHANGELOG.md](CHANGELOG.md)
@@ -359,21 +359,21 @@ The system supports an autonomous loop for each agent:
 | Vite | 7.3.1 | Build tool & dev server |
 | Vanilla CSS | Custom | Design system |
 | Lucide React | 0.563.0 | Icon library |
-| Recharts | 3.7.0 | Data visualization |
+| Recharts | 3.8.1 | Data visualization |
 
 ### Backend & AI
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | Google Gemini | 2.5 Pro/Flash | AI engine |
-| @google/genai | 1.40.0 | Gemini SDK |
+| @google/genai | 1.48.0 | Gemini SDK |
 
 ### Development Tools
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| ESLint | 9.39.2 | Code linting |
-| Vitest | 4.0.18 | Test framework |
+| ESLint | 9.39.4 | Code linting |
+| Vitest | 4.1.2 | Test framework |
 | Testing Library | 16.3.2 | Component testing |
 
 ### AI Model Configuration
@@ -683,10 +683,9 @@ npm run test:coverage
 
 ```
 src/tests/
-├── NavBtn.spec.tsx              # UI component tests
-├── StatCard.spec.tsx            # UI component tests
-├── geminiService.spec.ts        # Service layer tests
-└── geminiService.parse.spec.ts  # Parsing logic tests
+├── NavBtn.spec.tsx          # UI component tests
+├── StatCard.spec.tsx        # UI component tests
+└── geminiService.spec.ts    # Service layer tests
 ```
 
 ### Writing Tests
@@ -1012,13 +1011,37 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 ### v3.2.0 (April 2026) ✅ Released
 
 **Status**: Production Ready
-**Release Date**: April 15, 2026
+**Release Date**: April 1, 2026
 
 **Key Features**:
 - "Requirement Refinement" and "Clarity Gain" KPIs in Analytics
 - 100% line coverage across the entire core codebase
 - Hardened service layer with improved error handling and testability
 - Standardized test organization into domain-specific suites
+
+### v3.2.1 (April 2026) ✅ Released
+
+**Status**: Production Ready
+**Release Date**: April 20, 2026
+
+**Key Features**:
+- Fixed TypeScript and ESLint issues in unit and UI test suites
+- Standardized AI model references to latest `gemini-2.5` preview versions
+- Upgraded core dependencies to latest safe versions
+- Synchronized project versioning across all documentation
+
+### v3.2.2 (April 2026) ✅ Released
+
+**Status**: Production Ready
+**Release Date**: April 7, 2026
+
+**Key Features**:
+- Fixed `vite.config.ts` / `vitest.config.ts` silently excluded from ESLint
+- Hardened `tsconfig.node.json` with full strict-mode parity
+- Corrected four stale version numbers in Technology Stack table
+- Fixed stale test file reference in Testing documentation
+- Corrected v3.2.0 release date in Roadmap
+- Fixed `.gitignore` formatting inconsistency
 
 ### v3.5.0 (Q3 2026) 🎯 Next Release
 
@@ -1111,7 +1134,7 @@ Built with:
 
 ## 📈 Project Stats
 
-![Version](https://img.shields.io/badge/version-3.2.1-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.2.2-brightgreen.svg)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
