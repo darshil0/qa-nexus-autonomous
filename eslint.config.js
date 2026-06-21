@@ -29,13 +29,13 @@ export default ts.config(
         },
         settings: {
             react: {
-                version: "detect",
+                version: "19.0.0", // Hardcode React version to avoid detection bug in ESLint 10
             },
         },
         rules: {
             // React Rules
-            ...react.configs.recommended.rules,
-            ...reactHooks.configs.recommended.rules,
+            ...react.configs.flat.recommended.rules,
+            ...reactHooks.configs.flat.recommended.rules,
             "react/prop-types": "off", // Using TypeScript for prop validation
             "react/react-in-jsx-scope": "off", // Not needed in React 19
             
