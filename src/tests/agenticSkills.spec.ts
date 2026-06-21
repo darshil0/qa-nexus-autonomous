@@ -11,7 +11,6 @@ describe('Agentic Skills', () => {
       if (skill.name === 'github_issue_create') {args.title = 'test'; args.body = 'test';}
       if (skill.name === 'test_runner') {args.testCaseId = 'TC-1';}
       if (skill.name === 'code_analysis') {args.code = 'const x = 1;';}
-      if (skill.name === 'tiny_gpt_reference') {args.topic = 'attention';}
       if (skill.name === 'performance_audit') {args.url = 'https://example.com';}
       if (skill.name === 'gemini_knowledge_base') {args.topic = 'models';}
 
@@ -21,7 +20,7 @@ describe('Agentic Skills', () => {
     }
   }, 10000);
 
-  it('getSkillDescriptions() returns a string containing all 7 skill names', () => {
+  it('getSkillDescriptions() returns a string containing all 6 skill names', () => {
     const descriptions = getSkillDescriptions();
     const skillNames = Object.keys(skillRegistry);
 
@@ -29,6 +28,6 @@ describe('Agentic Skills', () => {
     for (const name of skillNames) {
       expect(descriptions).toContain(name);
     }
-    expect(skillNames.length).toBe(7);
+    expect(skillNames.length).toBe(6);
   });
 });

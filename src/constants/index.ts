@@ -19,7 +19,6 @@ Available Tools:
 - github_issue_create: Create GitHub issues for bugs (Title and Body required).
 - test_runner: Run specific test simulations (TestCaseId required).
 - code_analysis: Analyze code for security and logic issues (Code required).
-- tiny_gpt_reference: Technical details of the GPT algorithm (Topic required).
 - performance_audit: Run performance benchmarks (URL required).
 
 Guidelines:
