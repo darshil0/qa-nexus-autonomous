@@ -11,22 +11,21 @@
 3. [System Architecture](#system-architecture)
 4. [Model Context Protocol (MCP) & Agentic Skills](#model-context-protocol-mcp--agentic-skills)
 5. [Recursive Agentic Loop](#recursive-agentic-loop)
-6. [Tiny GPT Engine](#tiny-gpt-engine)
-7. [Observability & Health Dashboard](#observability--health-dashboard)
-8. [Persistence & Memory](#persistence--memory)
-9. [Component Architecture](#component-architecture)
-10. [Agent Specifications](#agent-specifications)
-11. [Core Development Patterns](#core-development-patterns)
-12. [Integration Points](#integration-points)
-13. [Response Schemas](#response-schemas)
-14. [TypeScript Type Definitions](#typescript-type-definitions)
-15. [Testing & Validation](#testing--validation)
-16. [Security & Production](#security--production)
-17. [Deployment Guide](#deployment-guide)
-18. [Troubleshooting](#troubleshooting)
-19. [Best Practices](#best-practices)
-20. [Contributing](#contributing)
-21. [Development Roadmap](#development-roadmap)
+6. [Observability & Health Dashboard](#observability--health-dashboard)
+7. [Persistence & Memory](#persistence--memory)
+8. [Component Architecture](#component-architecture)
+9. [Agent Specifications](#agent-specifications)
+10. [Core Development Patterns](#core-development-patterns)
+11. [Integration Points](#integration-points)
+12. [Response Schemas](#response-schemas)
+13. [TypeScript Type Definitions](#typescript-type-definitions)
+14. [Testing & Validation](#testing--validation)
+15. [Security & Production](#security--production)
+16. [Deployment Guide](#deployment-guide)
+17. [Troubleshooting](#troubleshooting)
+18. [Best Practices](#best-practices)
+19. [Contributing](#contributing)
+20. [Development Roadmap](#development-roadmap)
 
 ---
 
@@ -247,7 +246,6 @@ The `skillRegistry` in `src/services/agenticSkills.ts` serves as the centralized
 | `github_issue_create` | Automated bug reporting. | `title`, `body` |
 | `test_runner` | Real-time execution simulation. | `testCaseId` |
 | `code_analysis` | Deep inspection for security/logic. | `code` |
-| `tiny_gpt_reference` | Technical specs of the GPT engine. | `topic` |
 | `performance_audit` | Automated benchmarking/profiling. | `url` |
 | `gemini_knowledge_base` | Gemini technical specs & optimization. | `topic` |
 
@@ -270,19 +268,6 @@ The core orchestration has evolved from a linear pipeline to an iterative reason
 - Conversation history is preserved across passes to maintain context.
 - Recursive logic allows for complex information gathering (e.g., searching Jira for a requirement, then analyzing the related code snippet).
 
----
-
-## Tiny GPT Engine
-
-Located in `src/engine/tiny_gpt.py`, the Tiny GPT engine serves as an architectural reference for the fundamental mechanics of Large Language Models.
-
-### Core Implementation Details
-
-- **Dependency-Free**: Pure Python implementation using only `math`, `random`, and `os`.
-- **Atomic Algorithm**: Demonstrates scalar-based Autograd, Attention heads, and Transformer blocks in under 300 lines.
-- **Reference Role**: AI agents can query the logic of this engine using the `tiny_gpt_reference` MCP skill to ensure technical precision during code reviews and test generation.
-
----
 
 ## Observability, KPIs & Health Dashboard
 
@@ -524,7 +509,6 @@ Focus on:
 3. **Coverage Analysis**: Ensure all requirements are tested.
 4. **Test Data Specification**: Define input data and expected outputs.
 5. **Edge Case Identification**: Include boundary and negative tests.
-6. **Algorithm Reference**: Uses `tiny_gpt_reference` to ensure correctness for complex logic tests.
 
 #### Input Format
 

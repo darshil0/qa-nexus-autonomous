@@ -97,29 +97,6 @@ export const codeAnalysisSkill: Skill = {
 };
 
 /**
- * Skill: Tiny GPT Reference
- * Allows agents to query the underlying GPT algorithm details.
- */
-export const tinyGptSkill: Skill = {
-  name: "tiny_gpt_reference",
-  description: "Retrieve technical details about the dependency-free Python GPT implementation.",
-  parameters: {
-    topic: "The topic to query (e.g., 'autograd', 'attention', 'rmsnorm')."
-  },
-  execute: async ({ topic }) => {
-    logger.info(`[Skill: tiny_gpt_reference] Querying topic: ${topic}`);
-    await new Promise(resolve => setTimeout(resolve, 600));
-    const data: Record<string, string> = {
-      autograd: "Tiny GPT uses a scalar-based Value class with manual backward pass implementation for automatic differentiation.",
-      attention: "Uses multi-head causal self-attention with a KV cache for efficient inference.",
-      rmsnorm: "Implements Root Mean Square Layer Normalization for improved stability and faster training.",
-      optimizer: "Uses the Adam optimizer with linear learning rate decay."
-    };
-    return data[topic?.toLowerCase() ?? ''] || "Information not available for this topic. Available topics: autograd, attention, rmsnorm, optimizer.";
-  }
-};
-
-/**
  * Skill: Performance Audit
  * Simulates performance profiling of an application.
  */
@@ -176,7 +153,6 @@ export const skillRegistry: Record<string, Skill> = {
   github_issue_create: githubIssueCreate,
   test_runner: testRunner,
   code_analysis: codeAnalysisSkill,
-  tiny_gpt_reference: tinyGptSkill,
   performance_audit: performanceAuditSkill,
   gemini_knowledge_base: geminiKnowledgeBaseSkill
 };
