@@ -4,12 +4,13 @@ import App from '@/App';
 import '@/assets/styles/index.css';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { validateEnv } from '@/utils/validateEnv';
+import { logger } from '@/utils/logger';
 
 // Validate environment before rendering
 try {
   validateEnv();
 } catch (err) {
-  console.error('Environment validation failed:', err);
+  logger.error('Environment validation failed:', err);
 }
 
 const rootElement = document.getElementById('root');
