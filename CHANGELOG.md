@@ -3,10 +3,11 @@
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [3.2.5] - 2026-06-21
+### Changed
+- Synchronized project version `3.2.5` across all source files, documentation, and metadata (Sidebar, Constants, Skills registry, and docs/).
+- Updated GitHub Actions workflows (`ci.yml`, `eslint.yml`) to use Node.js `20.19.0`, matching the project's minimum engine requirements.
 ### Fixed
-- Fixed CI/CD pipeline failures by updating Node.js versions in GitHub Actions to align with the `package.json` engines requirement (`>=20.19.0`).
-- Fixed broken unit tests in `agenticSkills.spec.ts` caused by outdated skill counts.
-- Removed deprecated `tiny-gpt` documentation, unused skills registry references, and related files to streamline the codebase.
+- Resolved CI stability issues and verified that the entire test suite passes under the required Node.js environment.
 
 ## [3.2.4] - 2026-06-21
 ### Added

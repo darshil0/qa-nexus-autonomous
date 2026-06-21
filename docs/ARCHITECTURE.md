@@ -1,6 +1,6 @@
 # QA Nexus Autonomous - Multi-Agent Architecture
 
-**Version**: 3.2.4
+**Version**: 3.2.5
 **Last Updated**: June 21, 2026
 **Status**: Production Ready
 
@@ -2096,7 +2096,7 @@ test(workflow): add integration test for full workflow
 
 ---
 
-**Version**: 3.2.4
+**Version**: 3.2.5
 **Last Updated**: June 21, 2026
 **Maintained by**: QA Nexus Team
 
