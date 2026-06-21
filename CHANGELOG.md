@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.5] - 2026-06-21
+### Fixed
+- Fixed CI/CD pipeline failures by updating Node.js versions in GitHub Actions to align with the `package.json` engines requirement (`>=20.19.0`).
+- Fixed broken unit tests in `agenticSkills.spec.ts` caused by outdated skill counts.
+- Removed deprecated `tiny-gpt` documentation, unused skills registry references, and related files to streamline the codebase.
+
 ## [3.2.4] - 2026-06-21
 ### Added
 - Upgraded entire tech stack to newest safe compatible versions (Vite 8, React 19, TypeScript 6, ESLint 9, etc.).
@@ -344,4 +350,4 @@ All notable changes to this project are documented in this file. The format is b
 ---
 
 **Last Updated**: June 21, 2026
-**Version**: 3.2.4
+**Version**: 3.2.5

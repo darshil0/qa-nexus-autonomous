@@ -93,7 +93,6 @@ Located in `src/services/agenticSkills.ts`:
 - `gemini_knowledge_base`: Gemini 2.5 technical specs & optimization.
 - `code_analysis`: Deep security and logic inspection of source code.
 - `performance_audit`: Automated application benchmarking.
-- `tiny_gpt_reference`: Technical documentation for the internal GPT engine.
 
 ### 🧠 Recursive Reasoning Loop
 Agents use a standardized multi-pass loop implemented in `src/services/geminiService.ts` via `runAgenticWorkflow`:
