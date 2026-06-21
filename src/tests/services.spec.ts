@@ -73,7 +73,7 @@ describe('Services Coverage', () => {
         // Test fallback return '' (line 80)
         setAiClient({
             models: {
-                generateContent: vi.fn().mockResolvedValue({} as unknown as GoogleGenAI)
+                generateContent: vi.fn().mockResolvedValue({})
             }
         } as unknown as GoogleGenAI);
         await reviewRequirements('in');

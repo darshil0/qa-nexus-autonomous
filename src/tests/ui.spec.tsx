@@ -48,7 +48,7 @@ describe('UI Coverage', () => {
     expect(setTcSpy).toHaveBeenCalledWith('test');
 
     const tcs = [{ id: 'TC1', category: 'C1', steps: ['S1'], expectedOutcomes: 'O1', linkedRequirementIds: ['R1'], isAutomationCandidate: true, preconditions: 'P1' }];
-    _rerender(<Agent2Tab filteredTestCases={tcs as TestCase[]} highlightedReqId="R1" setHighlightedReqId={setHighlightSpy} navigateToSpec={vi.fn()} tcSearchTerm="" setTcSearchTerm={setTcSpy} />);
+    _rerender(<Agent2Tab filteredTestCases={tcs} highlightedReqId="R1" setHighlightedReqId={setHighlightSpy} navigateToSpec={vi.fn()} tcSearchTerm="" setTcSearchTerm={setTcSpy} />);
     expect(screen.getByText('TC1')).toBeDefined();
 
     // Click X to clear highlight

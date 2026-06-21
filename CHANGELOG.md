@@ -2,10 +2,18 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.4] - 2026-06-21
+### Added
+- Upgraded entire tech stack to newest safe compatible versions (Vite 8, React 19, TypeScript 6, ESLint 9, etc.).
+- Improved codebase maintainability by standardizing on a centralized logger and removing legacy `console` calls.
+- Hardened dependency management by resolving peer dependency conflicts and missing library exports (e.g., `react-is`).
+- Updated `README.md`, `CHANGELOG.md`, and `CONTRIBUTING.md` to reflect the latest state of the project.
+- Fixed unit and UI test suite regressions caused by dependency updates.
+
 ## [3.2.3] - 2026-04-21
 ### Added
-- Synchronized project version `3.2.3` across `package.json`, `package-lock.json`, and all core documentation files.
-- Added release notes for `v3.2.3` in `README.md` and `CHANGELOG.md`.
+- Synchronized project version `3.2.4` across `package.json`, `package-lock.json`, and all core documentation files.
+- Added release notes for `v3.2.4` in `README.md` and `CHANGELOG.md`.
 
 ### Fixed
 - ESLint parsing errors for `vite.config.ts` and `vitest.config.ts` by explicitly listing TypeScript configurations in `eslint.config.js`.
@@ -335,5 +343,5 @@ All notable changes to this project are documented in this file. The format is b
 
 ---
 
-**Last Updated**: April 21, 2026
-**Version**: 3.2.3
+**Last Updated**: June 21, 2026
+**Version**: 3.2.4

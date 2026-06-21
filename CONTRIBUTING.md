@@ -1,65 +1,57 @@
 # Contributing to QA Nexus Autonomous
 
-We welcome contributions! Here's how to get started:
+Thank you for your interest in contributing! We aim for a high standard of code quality and maintainability.
+
+## Local Development Setup
+
+### Prerequisites
+- Node.js 18+
+- npm 9+
+- A Google Gemini API Key
+
+### Setup Steps
+1. **Fork and Clone** the repository.
+2. **Install Dependencies**:
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+3. **Environment Configuration**:
+   ```bash
+   cp .env.example .env
+   # Add your VITE_GEMINI_API_KEY to .env
+   ```
+4. **Start Development Server**:
+   ```bash
+   npm run dev
+   ```
 
 ## Contribution Workflow
 
-1. **Fork the repository**
-2. **Create feature branch**
+1. **Create a Feature Branch**:
    ```bash
-   git checkout -b feature/amazing-feature
+   git checkout -b feat/your-feature-name
    ```
-3. **Make changes**
-   - Follow code standards
-   - Write tests
-   - Update docs
-4. **Run checks**
-   ```bash
-   npm run ci
-   npm run lint:fix
-   ```
-5. **Commit with conventional format**
-   ```bash
-   git commit -m "feat: add amazing feature"
-   ```
-6. **Push and create PR**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-
-## Commit Message Format
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-type(scope): subject
-
-body (optional)
-
-footer (optional)
-```
-
-**Types**:
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation
-- `style`: Formatting
-- `refactor`: Code refactoring
-- `test`: Tests
-- `chore`: Build/tools
-
-**Examples**:
-```
-feat(agent1): add security issue detection
-fix(gemini): handle empty API responses
-docs(readme): update installation guide
-test(workflow): add integration test
-```
+2. **Develop and Test**:
+   - Ensure your code follows the established [Code Standards](#code-standards).
+   - Write tests for new functionality in `src/tests/`.
+   - Verify everything passes locally:
+     ```bash
+     npm run ci
+     ```
+3. **Commit Your Changes**:
+   - Use [Conventional Commits](https://www.conventionalcommits.org/).
+   - Example: `feat(agent1): improve ambiguity detection`
+4. **Submit a Pull Request**:
+   - Provide a clear description of your changes.
+   - Link any relevant issues.
 
 ## Code Standards
 
-- ✅ **TypeScript**: Strict mode enabled. All functions and variables must be properly typed.
-- ✅ **ESLint**: Code must pass linting without warnings. Run `npm run lint` to check.
-- ✅ **Testing**: New features should include unit or component tests. Run `npm test` to verify.
-- ✅ **Documentation**: Update relevant `.md` files if you change architecture or user workflows.
-- ✅ **Design**: Maintain the Glassmorphism UI aesthetic using the Vanilla CSS custom properties.
+- ✅ **TypeScript**: Use strict mode. Avoid `any`. Ensure all new code is properly typed.
+- ✅ **Linting**: Code must pass `npm run lint`.
+- ✅ **Logging**: Use the centralized `@/utils/logger` utility instead of `console`.
+- ✅ **UI/UX**: Follow the Glassmorphism design system using existing CSS custom properties.
+- ✅ **Testing**: Maintain 100% line coverage for new logic.
+
+## Reporting Issues
+Please use the GitHub Issue tracker to report bugs or propose new features. Provide as much context as possible, including steps to reproduce for bugs.

@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type, GenerateContentResponse, Schema } from "@google/genai";
+import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "@/constants";
 import { ValidatedSpec, TestCase, ExecutionResult, AISettings, OrchestrationMetrics } from "@/types";
 import { getSkillDescriptions } from "@/services/agenticSkills";
@@ -192,7 +192,7 @@ async function runAgenticWorkflow<T>(
           thinkingConfig: { thinkingBudget: 4000 },
           responseMimeType: "application/json",
           temperature,
-          responseSchema: schema as Schema
+          responseSchema: schema
         }
       });
 
