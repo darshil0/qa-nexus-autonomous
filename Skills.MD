@@ -89,26 +89,6 @@ The skills system is inspired by industry best practices for AI agent capabiliti
 
 ---
 
-### [Tiny GPT](./skills/tiny-gpt/SKILL.md)
-**Purpose**: Dependency-free Python GPT implementation for educational and reference purposes.
-
-**Key Capabilities**:
-- Pure Python transformer architecture
-- Autograd engine demonstration
-- Attention mechanism implementation
-- Training loop visualization
-
-**Use Cases**:
-- Educational reference for AI concepts
-- Architecture understanding
-- Research and experimentation
-- Baseline performance comparison
-
-**Attribution**: Based on educational work by Andrej Karpathy ([@karpathy](https://github.com/karpathy))  
-**License**: MIT (as per original nanoGPT project)
-
----
-
 ## Skill Structure
 
 Each skill follows this standard structure:
@@ -297,7 +277,6 @@ Current versions:
 - Test Case Writer: 1.0.0
 - Test Executor: 1.0.0
 - Gemini Knowledge Base: 1.0.0
-- Tiny GPT: 1.0.0
 
 ---
 

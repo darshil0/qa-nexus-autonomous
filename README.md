@@ -2,7 +2,7 @@
 
 > A multi-agent AI orchestrator powered by Google Gemini 2.5 that automates the end-to-end QA lifecycle—from requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking.
 
-![Version](https://img.shields.io/badge/version-3.2.4-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.2.5-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 ![Release](https://img.shields.io/badge/release-june%2021-blue.svg)
@@ -125,4 +125,4 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 **Last Updated**: June 21, 2026
-**Version**: 3.2.4
+**Version**: 3.2.5

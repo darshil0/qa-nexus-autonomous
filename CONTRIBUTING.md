@@ -5,15 +5,15 @@ Thank you for your interest in contributing! We aim for a high standard of code 
 ## Local Development Setup
 
 ### Prerequisites
-- Node.js 18+
-- npm 9+
+- Node.js 20.19.0+
+- npm 10+
 - A Google Gemini API Key
 
 ### Setup Steps
 1. **Fork and Clone** the repository.
 2. **Install Dependencies**:
    ```bash
-   npm install --legacy-peer-deps
+   npm install
    ```
 3. **Environment Configuration**:
    ```bash
