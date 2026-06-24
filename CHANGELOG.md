@@ -2,13 +2,17 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.2.6] - 2026-06-24
+## [3.2.7] - 2026-06-24
+### Changed
+- Migrated Node.js version from 20.19.0 to 24.0.0 across `package.json`, GitHub Actions, and documentation to address the deprecation of Node 20 on GitHub runners.
+- Synchronized project versioning (3.2.7) across all core files.
+
 ### Added
 - Implemented a new CI/CD pipeline using GitHub Actions to automate linting, type-checking, and unit testing on every push and pull request.
 - Upgraded project dependencies to their latest compatible versions, ensuring security and performance improvements.
 ### Fixed
 - Resolved a critical build error in `vite.config.ts` related to `manualChunks` by refactoring the configuration to use a function-based approach, compatible with the latest Rollup/Vite versions.
-- Synchronized project versioning (3.2.6) and documentation dates across all core files, including `package.json`, `README.md`, `AGENT.md`, and the `Skills` registry.
+- Synchronized project versioning (3.2.7) and documentation dates across all core files, including `package.json`, `README.md`, `AGENT.md`, and the `Skills` registry.
 
 ## [3.2.5] - 2026-06-24
 ### Fixed
@@ -358,4 +362,4 @@ All notable changes to this project are documented in this file. The format is b
 ---
 
 **Last Updated**: June 24, 2026
-**Version**: 3.2.6
+**Version**: 3.2.7

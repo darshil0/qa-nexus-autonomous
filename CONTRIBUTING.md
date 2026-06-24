@@ -5,7 +5,7 @@ Thank you for your interest in contributing! We aim for a high standard of code 
 ## Local Development Setup
 
 ### Prerequisites
-- Node.js 20.19.0+ (LTS)
+- Node.js 24.0.0+ (LTS)
 - npm 10+
 - A Google Gemini API Key
 
@@ -59,4 +59,4 @@ Please use the GitHub Issue tracker to report bugs or propose new features. Prov
 ---
 
 **Last Updated**: June 24, 2026
-**Version**: 3.2.6
+**Version**: 3.2.7
