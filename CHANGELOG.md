@@ -2,13 +2,21 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.2.5] - 2026-06-21
+## [3.2.6] - 2026-06-24
+### Added
+- Implemented a new CI/CD pipeline using GitHub Actions to automate linting, type-checking, and unit testing on every push and pull request.
+- Upgraded project dependencies to their latest compatible versions, ensuring security and performance improvements.
+### Fixed
+- Resolved a critical build error in `vite.config.ts` related to `manualChunks` by refactoring the configuration to use a function-based approach, compatible with the latest Rollup/Vite versions.
+- Synchronized project versioning (3.2.6) and documentation dates across all core files, including `package.json`, `README.md`, `AGENT.md`, and the `Skills` registry.
+
+## [3.2.5] - 2026-06-24
 ### Fixed
 - Fixed CI/CD pipeline failures by updating Node.js versions in GitHub Actions to align with the `package.json` engines requirement (`>=20.19.0`).
 - Fixed broken unit tests in `agenticSkills.spec.ts` caused by outdated skill counts.
 - Removed deprecated `tiny-gpt` documentation, unused skills registry references, and related files to streamline the codebase.
 
-## [3.2.4] - 2026-06-21
+## [3.2.4] - 2026-06-24
 ### Added
 - Upgraded entire tech stack to newest safe compatible versions (Vite 8, React 19, TypeScript 6, ESLint 9, etc.).
 - Improved codebase maintainability by standardizing on a centralized logger and removing legacy `console` calls.
@@ -349,5 +357,5 @@ All notable changes to this project are documented in this file. The format is b
 
 ---
 
-**Last Updated**: June 21, 2026
-**Version**: 3.2.5
+**Last Updated**: June 24, 2026
+**Version**: 3.2.6

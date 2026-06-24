@@ -2,7 +2,7 @@
 name: requirements-reviewer
 description: Analyzes software requirements for clarity, completeness, and testability. Use when the user provides requirements or asks for a "review", "gap analysis", or "ambiguity check".
 Version: 3.2.5
-Last Updated: June 21, 2026
+Last Updated: June 24, 2026
 ---
 
 # Requirements Reviewer
