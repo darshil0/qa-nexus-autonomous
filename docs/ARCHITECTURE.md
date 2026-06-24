@@ -2080,7 +2080,7 @@ test(workflow): add integration test for full workflow
 
 ---
 
-**Version**: 3.2.6
+**Version**: 3.2.7
 **Last Updated**: June 24, 2026
 **Maintained by**: QA Nexus Team
 
