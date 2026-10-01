@@ -62,14 +62,16 @@ export class MCPService {
         }
 
         case "tools/call": {
-          const params = request.params as { name: string; arguments: Record<string, string> };
-          const { name, arguments: args } = params;
+          const params = (request.params ?? {}) as { name?: string; arguments?: Record<string, string> };
+          const { name = "", arguments: args } = params;
           const skill = skillRegistry[name];
 
           // Track usage
-          this.toolUsage[name] = (this.toolUsage[name] ?? 0) + 1;
+          if (name) {
+            this.toolUsage[name] = (this.toolUsage[name] ?? 0) + 1;
+          }
 
-          if (!skill) {
+          if (!name || !skill) {
             return {
               jsonrpc: "2.0",
               error: { code: -32601, message: `Skill not found: ${name}` },
