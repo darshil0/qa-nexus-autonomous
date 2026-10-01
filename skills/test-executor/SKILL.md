@@ -1,7 +1,7 @@
 ---
 name: test-executor
 description: Simulates the execution of test cases and reports results. Use when the user wants to "run tests", "see execution logs", or "get a test report".
-Version: 3.2.5
+Version: 3.3.0
 Last Updated: June 24, 2026
 ---
 

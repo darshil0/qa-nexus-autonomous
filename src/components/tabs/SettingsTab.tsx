@@ -73,7 +73,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ settings, setSettings 
                             <div>
                                 <h4 style={{ fontSize: '0.875rem', fontWeight: 700 }}>High-Performance Mode</h4>
                                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                                    Use Gemini 1.5 Flash for all agents to prioritize speed over depth.
+                                    Use Gemini 2.5 Flash for all agents to prioritize speed over depth.
                                 </p>
                             </div>
                         </div>
