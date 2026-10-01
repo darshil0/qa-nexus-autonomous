@@ -1,62 +1,92 @@
 # Contributing to QA Nexus Autonomous
 
-Thank you for your interest in contributing! We aim for a high standard of code quality and maintainability.
+Thank you for your interest in contributing to QA Nexus Autonomous. We aim to keep the project maintainable, testable, and consistent with the repository's existing patterns.
 
 ## Local Development Setup
 
 ### Prerequisites
+
 - Node.js 24.0.0+ (LTS)
 - npm 10+
-- A Google Gemini API Key
+- A Google Gemini API key from Google AI Studio
+- Optional: Supabase credentials for persistence features
 
 ### Setup Steps
-1. **Fork and Clone** the repository.
-2. **Install Dependencies**:
+
+1. Fork and clone the repository:
+   ```bash
+   git clone https://github.com/<your-username>/qa-nexus-autonomous.git
+   cd qa-nexus-autonomous
+   ```
+
+2. Install dependencies:
    ```bash
    npm install
    ```
-3. **Environment Configuration**:
+   If you want to install strictly from the lockfile, `npm ci` is also supported.
+
+3. Configure your environment:
    ```bash
    cp .env.example .env
-   # Add your VITE_GEMINI_API_KEY to .env
    ```
-4. **Start Development Server**:
+   Add your `VITE_GEMINI_API_KEY` to `.env`. If you plan to use Supabase-backed persistence, also add:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+
+4. Start the development server:
    ```bash
    npm run dev
    ```
 
 ## Contribution Workflow
 
-1. **Create a Feature Branch**:
+1. Create a feature branch:
    ```bash
    git checkout -b feat/your-feature-name
    ```
-2. **Develop and Test**:
-   - Ensure your code follows the established [Code Standards](#code-standards).
-   - Write tests for new functionality in `src/tests/`.
-   - Verify everything passes locally:
+
+2. Develop and validate your change:
+   - Follow the repository's [Code Standards](#code-standards).
+   - Add or update tests for new behavior in `src/tests/`.
+   - Run the project's checks locally:
      ```bash
      npm run ci
      ```
-3. **Commit Your Changes**:
+   - If you need to validate in smaller steps:
+     ```bash
+     npm run typecheck
+     npm run lint
+     npm run test -- --run
+     ```
+
+3. Commit your changes:
    - Use [Conventional Commits](https://www.conventionalcommits.org/).
    - Example: `feat(agent1): improve ambiguity detection`
-4. **Submit a Pull Request**:
-   - Provide a clear description of your changes.
-   - Link any relevant issues.
+
+4. Submit a pull request:
+   - Include a clear summary of what changed and why.
+   - Link any related issues or discussions.
+   - Keep changes focused and scoped to the feature or fix.
 
 ## Code Standards
 
-- ✅ **TypeScript**: Use strict mode. Avoid `any`. Ensure all new code is properly typed.
-- ✅ **Linting**: Code must pass `npm run lint`.
-- ✅ **Logging**: Use the centralized `@/utils/logger` utility instead of `console`.
-- ✅ **UI/UX**: Follow the Glassmorphism design system using existing CSS custom properties.
-- ✅ **Testing**: Maintain 100% line coverage for new logic.
+- ✅ TypeScript: Use strict typing; avoid `any` unless explicitly justified and approved.
+- ✅ Linting: Code must pass `npm run lint`.
+- ✅ Logging: Use the centralized `@/utils/logger` utility instead of raw `console` calls.
+- ✅ UI/UX: Follow the existing Glassmorphism design system and reuse established styling patterns.
+- ✅ Testing: Add tests for new logic and maintain the project's quality bar.
+- ✅ Security: Do not commit real API keys or secrets. Keep `.env` local-only.
 
 ## Reporting Issues
-Please use the GitHub Issue tracker to report bugs or propose new features. Provide as much context as possible, including steps to reproduce for bugs.
+
+Please use the GitHub Issue tracker to report bugs, request enhancements, or discuss potential improvements. Include as much context as possible, including:
+
+- steps to reproduce
+- expected vs. actual behavior
+- relevant environment details
+- screenshots or logs when helpful
 
 ---
 
-**Last Updated**: June 24, 2026
-**Version**: 3.2.7
+**Last Updated**: October 1, 2026
+**Version**: 3.3.0
