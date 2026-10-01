@@ -1,9 +1,9 @@
-# QA Nexus Gemini Skills Registry (v3.2.7)
+# QA Nexus Gemini Skills Registry (v3.3.0)
 
-**Version**: 3.2.7
-**Last Updated**: June 24, 2026
+**Version**: 3.3.0
+**Last Updated**: October 1, 2026
 
-This project implements a modular skills architecture specifically designed for Google Gemini 2.5 models. The system enables AI agents to access specialized capabilities through a standardized interface.
+This project implements a modular skills architecture for Google Gemini-powered QA orchestration. The system enables AI agents to access specialized capabilities through a standardized interface and supports the end-to-end QA lifecycle from requirements analysis to test execution and reporting.
 
 ## Architecture Philosophy
 
@@ -17,7 +17,7 @@ The skills system is inspired by industry best practices for AI agent capabiliti
 
 1. **Modularity**: Skills can be added, removed, or modified independently
 2. **Discoverability**: Agents can query available skills via Model Context Protocol (MCP)
-3. **Gemini Optimization**: Each skill is designed for Gemini 2.5's specific capabilities
+3. **Gemini Optimization**: Each skill is designed around Gemini's reasoning and tool-use capabilities
 4. **Educational Value**: Skills serve as learning resources for AI engineering patterns
 
 ---
@@ -73,7 +73,7 @@ The skills system is inspired by industry best practices for AI agent capabiliti
 ---
 
 ### [Gemini Knowledge Base](./skills/gemini-knowledge-base/SKILL.md)
-**Purpose**: Provides technical details and prompt optimization for Gemini 2.5 models.
+**Purpose**: Provides technical details and prompt optimization guidance for Google Gemini models.
 
 **Key Capabilities**:
 - Model selection guidance (Pro vs Flash)
@@ -140,7 +140,7 @@ Skills are exposed to Gemini agents through the Model Context Protocol:
 
 ### Gemini-Specific Optimizations
 
-Skills are designed with Gemini 2.5's capabilities in mind:
+Skills are designed with Gemini model capabilities in mind:
 
 - **Structured Output**: Skills expect and return JSON-formatted data
 - **Context Efficiency**: Minimize token usage through concise prompts
@@ -351,4 +351,4 @@ For questions about skills:
 
 **Maintained by**: Darshil  
 **License**: MIT  
-**Last Updated**: April 7, 2026
+**Last Updated**: October 1, 2026
