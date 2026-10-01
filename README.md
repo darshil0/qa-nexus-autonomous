@@ -5,7 +5,7 @@
 ![Version](https://img.shields.io/badge/version-3.3.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-![Release](https://img.shields.io/badge/release-oct%01-blue.svg)
+![Release](https://img.shields.io/badge/release-oct%2026-blue.svg)
 
 ---
 
