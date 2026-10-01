@@ -6,6 +6,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D24.0.0-339933.svg)
+![Release](https://img.shields.io/badge/release-oct%2001-blue.svg)
 
 ---
 
