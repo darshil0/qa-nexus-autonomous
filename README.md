@@ -1,11 +1,11 @@
 # QA Nexus Autonomous
 
-> A high-fidelity, multi-agent AI orchestrator powered by Google Gemini that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation, execution simulation, and integrated Jira/GitHub synchronization.
+> A high-fidelity, multi-agent AI orchestrator powered by Google Gemini that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
 
 ![Version](https://img.shields.io/badge/version-3.3.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D24.0.0-339933.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-339933.svg)
 ![Release](https://img.shields.io/badge/release-oct%2001-blue.svg)
 
 ---
@@ -20,6 +20,7 @@
 - [Usage Workflow](#usage-workflow)
 - [Technology Stack](#technology-stack)
 - [Testing](#testing)
+- [CI/CD Pipeline](#cicd-pipeline)
 - [Project Structure](#project-structure)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -29,7 +30,7 @@
 
 ## Overview
 
-QA Nexus Autonomous is a React + TypeScript application for AI-assisted quality assurance orchestration. It brings together a set of specialized agents to analyze requirements, identify ambiguities, draft test cases, simulate execution, and surface actionable quality metrics.
+QA Nexus Autonomous is a React + TypeScript application for AI-assisted quality assurance orchestration. It brings together a set of specialized agents to analyze requirements, identify ambiguities, generate test cases, and execute them with full traceability.
 
 The system is designed to reduce manual QA overhead while preserving traceability from requirement to test and result.
 
@@ -78,13 +79,26 @@ The app is organized around a central workflow state in `src/hooks/useWorkflow.t
 
 Before running the project locally, make sure you have:
 
-- Node.js 24.0.0 or newer
-- npm 10 or newer
-- A Google Gemini API key from Google AI Studio
+- **Node.js 20.0.0 or newer** (Node 20 LTS or later recommended for production stability)
+- **npm 10 or newer**
+- A Google Gemini API key from [Google AI Studio](https://aistudio.google.com)
 
 Optional environment support:
 
 - Supabase credentials for persistence features
+
+### Verifying your setup
+
+```bash
+# Check Node.js version
+node --version
+
+# Check npm version
+npm --version
+
+# Both should be at or above the minimum versions
+# Expected output: v20.x.x and 10.x.x respectively
+```
 
 ---
 
@@ -116,11 +130,11 @@ VITE_SUPABASE_URL=your_supabase_url_here
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
-Notes:
+**Notes:**
 
-- `VITE_GEMINI_API_KEY` is required for the AI workflow to run.
+- `VITE_GEMINI_API_KEY` is **required** for the AI workflow to run.
 - `VITE_SUPABASE_*` values are optional and used by persistence-related features.
-- Do not commit your real `.env` file.
+- Do not commit your real `.env` file (already configured in `.gitignore`).
 
 ---
 
@@ -170,7 +184,7 @@ Run the checks used by this repository:
 # Run the test suite
 npm test
 
-# Run the test suite in CI mode
+# Run the test suite in CI mode (single run)
 npm run test -- --run
 
 # Run coverage reporting
@@ -182,12 +196,76 @@ npm run typecheck
 # Lint the project
 npm run lint
 
+# Auto-fix linting issues
+npm run lint:fix
+
 # Build the production bundle
 npm run build
 
-# Run the full default CI flow
+# Run the full CI validation locally (recommended before submitting PRs)
 npm run ci
 ```
+
+### Local validation before PR submission
+
+To validate your changes match the CI/CD pipeline, run:
+
+```bash
+npm run ci
+```
+
+This runs:
+1. Linting (`npm run lint`)
+2. Type checking (`npm run typecheck`)
+3. Unit tests in single-run mode (`npm test -- --run`)
+4. Production build (`npm run build`)
+
+If all steps pass, your PR is ready for submission.
+
+---
+
+## CI/CD Pipeline
+
+The repository uses GitHub Actions for automated validation on every push and pull request.
+
+### Workflow triggers
+
+- **Push to `main` or `master` branches** — full CI validation
+- **Pull requests targeting `main` or `master`** — full CI validation
+- **Concurrency control** — cancels previous runs for the same branch to save resources
+
+### Pipeline stages
+
+1. **Checkout** — Fetches repository code
+2. **Node.js Setup** — Configures Node.js 20 with npm caching
+3. **Dependencies** — Installs dependencies via `npm ci`
+4. **Lint** — Validates code style and quality via ESLint
+5. **Typecheck** — Validates TypeScript types
+6. **Tests** — Runs unit and component tests via Vitest
+7. **Build** — Compiles production bundle via Vite
+
+### Troubleshooting CI failures
+
+#### Checkout failures
+If you see `fatal: cannot create directory...` errors:
+- Ensure all filenames in the `docs/` directory follow valid naming conventions
+- Avoid newlines or special characters in filenames
+- On Windows, keep paths under 260 characters
+
+#### Node.js version mismatches
+- The pipeline uses **Node.js 20**
+- Ensure your local Node.js version matches: `node --version`
+- Update Node.js if needed from [nodejs.org](https://nodejs.org)
+
+#### Dependency or cache issues
+- Delete `node_modules` and `package-lock.json` locally
+- Run `npm install` fresh
+- The CI pipeline uses `npm ci` for reproducible installs
+
+#### Test or build failures
+- Run `npm run ci` locally to replicate the exact CI flow
+- Check error messages carefully — they pinpoint the first failing step
+- Ensure `.env` variables are properly configured for tests (see `.env.example`)
 
 ---
 
@@ -196,35 +274,57 @@ npm run ci
 ```text
 .
 ├── .github/
+│   └── workflows/
+│       └── ci.yml                 # GitHub Actions CI/CD pipeline
 ├── docs/
-├── public/
+│   ├── ARCHITECTURE.md            # System design and component overview
+│   ├── MIGRATION_GUIDE.md         # Upgrade and migration instructions
+│   └── Walkthrough.md             # Step-by-step user guide
+├── public/                        # Static assets
 ├── skills/
+│   ├── gemini-knowledge-base/     # AI knowledge base skill
+│   ├── requirements-reviewer/     # Requirements analysis skill
+│   ├── test-case-writer/          # Test generation skill
+│   └── test-executor/             # Execution simulation skill
 ├── src/
-│   ├── assets/
+│   ├── assets/                    # Styles and resources
 │   ├── components/
+│   │   ├── common/                # Reusable UI components
+│   │   ├── layout/                # Layout components (Header, Sidebar, etc.)
+│   │   └── tabs/                  # Tab-based UI sections
 │   ├── hooks/
+│   │   └── useWorkflow.ts         # Central workflow state management
 │   ├── services/
-│   ├── tests/
-│   ├── types/
+│   │   ├── agenticSkills.ts       # Agent skill orchestration
+│   │   ├── geminiService.ts       # Gemini API integration
+│   │   ├── mcpService.ts          # MCP tool integration
+│   │   ├── memoryService.ts       # In-memory state management
+│   │   └── persistenceService.ts  # Supabase persistence
+│   ├── tests/                     # Unit and component tests
+│   ├── types/                     # TypeScript type definitions
 │   ├── utils/
-│   ├── App.tsx
-│   ├── main.tsx
-│   └── ...
-├── .env.example
-├── AGENT.md
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── eslint.config.js
-├── index.html
-├── LICENSE
-├── package.json
-├── README.md
-├── Skills.MD
-├── tsconfig.json
-├── tsconfig.node.json
-├── vite.config.ts
-├── vitest.config.ts
-└── package-lock.json
+│   │   ├── exportUtils.ts         # JSON/CSV export utilities
+│   │   ├── logger.ts              # Logging utilities
+│   │   ├── sanitizeInput.ts       # Input sanitization
+│   │   └── validateEnv.ts         # Environment variable validation
+│   ├── App.tsx                    # Main app component
+│   └── main.tsx                   # Application entry point
+├── .env.example                   # Environment variables template
+├── .gitignore                     # Git ignore rules
+├── AGENT.md                       # Agent architecture guide
+├── CHANGELOG.md                   # Version history and release notes
+├── CONTRIBUTING.md                # Contribution guidelines
+├── eslint.config.js               # ESLint configuration
+├── index.html                     # HTML entry point
+├── LICENSE                        # MIT License
+├── package.json                   # Project dependencies and scripts
+├── package-lock.json              # Locked dependency versions
+├── README.md                      # This file
+├── Skills.MD                      # Skill registry and capabilities
+├── tsconfig.json                  # TypeScript configuration
+├── tsconfig.node.json             # TypeScript config for Node.js scripts
+├── vite.config.ts                 # Vite build configuration
+└── vitest.config.ts               # Vitest test configuration
 ```
 
 ---
@@ -233,6 +333,9 @@ npm run ci
 
 - [AGENT.md](AGENT.md) — agent architecture and engineering guidance
 - [Skills.MD](Skills.MD) — skill registry and capabilities overview
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system design and component overview
+- [docs/Walkthrough.md](docs/Walkthrough.md) — step-by-step user experience guide
+- [docs/MIGRATION_GUIDE.md](docs/MIGRATION_GUIDE.md) — upgrade and migration instructions
 - [CONTRIBUTING.md](CONTRIBUTING.md) — local setup and contribution workflow
 - [CHANGELOG.md](CHANGELOG.md) — version history and release notes
 
@@ -245,9 +348,13 @@ We welcome contributions from the community.
 1. Fork the repository.
 2. Create a feature branch: `git checkout -b feat/your-feature`.
 3. Install dependencies: `npm install`.
-4. Make your change and add or update tests as needed.
-5. Run `npm run ci` before submitting a pull request.
-6. Follow the repository's coding standards and keep documentation in sync.
+4. Make your changes and add or update tests as needed.
+5. **Before submitting a PR, validate locally:**
+   ```bash
+   npm run ci
+   ```
+6. Push to your fork and open a pull request against `main`.
+7. Follow the repository's coding standards and keep documentation in sync.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
@@ -259,5 +366,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-Last Updated: October 1, 2026
-Version: 3.3.0
+**Last Updated:** October 1, 2026  
+**Version:** 3.3.0
