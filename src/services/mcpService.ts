@@ -1,4 +1,3 @@
-
 import { skillRegistry, Skill } from "@/services/agenticSkills";
 import { logger } from "@/utils/logger";
 
@@ -78,12 +77,25 @@ export class MCPService {
             };
           }
 
-          const result = await skill.execute(args || {});
-          return {
-            jsonrpc: "2.0",
-            result,
-            id: request.id
-          };
+          try {
+            const result = await skill.execute(args || {});
+            return {
+              jsonrpc: "2.0",
+              result,
+              id: request.id
+            };
+          } catch (executionError) {
+            logger.error(`[MCP] Skill execution error for '${name}':`, executionError);
+            const message = executionError instanceof Error ? executionError.message : String(executionError);
+            return {
+              jsonrpc: "2.0",
+              error: {
+                code: -32603,
+                message: `Tool execution error in '${name}': ${message}`
+              },
+              id: request.id
+            };
+          }
         }
 
         default: {

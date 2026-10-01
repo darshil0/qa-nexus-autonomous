@@ -97,7 +97,9 @@ function showEnvError(errors: EnvValidationError[]): void {
     .map(e => `<li><code>${e.variable}</code>: ${e.reason}</li>`)
     .join('');
 
-  document.body.innerHTML = `
+  const container = document.getElementById('root') || document.body;
+
+  container.innerHTML = `
     <div style="
       display: flex;
       align-items: center;

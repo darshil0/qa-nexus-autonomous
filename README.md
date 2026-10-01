@@ -2,7 +2,7 @@
 
 > A multi-agent AI orchestrator powered by Google Gemini 2.5 that automates the end-to-end QA lifecycle—from requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking.
 
-![Version](https://img.shields.io/badge/version-3.2.7-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.3.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 ![Release](https://img.shields.io/badge/release-june%2024-blue.svg)
@@ -78,20 +78,21 @@ Pull requirements directly by entering a Jira ticket ID (e.g., `AUTH-101`) in th
 ## 👨‍💻 Development Workflow
 
 1.  **Feature Development**: Create a new branch `feat/your-feature`.
-2.  **Code Standards**: We use strict TypeScript and ESLint 9. Run `npm run lint`.
+2.  **Code Standards**: We use strict TypeScript and ESLint 10. Run `npm run lint`.
 3.  **Testing**: All new logic requires 100% coverage. Run `npm run test:coverage`.
-4.  **Verification**: Use Playwright to verify UI changes.
+4.  **Verification**: Use Vitest for unit and UI testing.
 
 ---
 
 ## 🛠️ Technology Stack
 
-- **React 19** — UI framework
+- **React 19.3** — UI framework
 - **TypeScript 6** — Type safety
-- **Vite 8** — Build tool
+- **Vite 8.3** — Build tool
+- **ESLint 10** — Code quality & linting
 - **Google Gemini 2.5** — AI engine
 - **Lucide React** — Icon library
-- **Recharts 3** — Data visualization
+- **Recharts 3.10** — Data visualization
 
 ---
 
@@ -125,4 +126,4 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 **Last Updated**: June 24, 2026
-**Version**: 3.2.7
+**Version**: 3.3.0

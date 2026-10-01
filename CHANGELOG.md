@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2026-10-01
+### Added
+- Added npm `overrides` in `package.json` for `eslint-plugin-react` to resolve peer dependency conflicts with ESLint 10, enabling standard `npm ci` installs without `--legacy-peer-deps`.
+- Added dedicated unit test suites for `exportUtils.spec.ts`, `validateEnv.spec.ts`, `ErrorBoundary.spec.tsx`, and `HeaderAndLogs.spec.tsx`, expanding test coverage across `src/`.
+- Updated GitHub Actions CI workflow to run standard `npm ci`.
+
+### Fixed
+- Fixed startup mount issue in `validateEnv.ts` so environment error messages render cleanly into `#root` instead of destroying `document.body.innerHTML`.
+- Fixed MCP tool definitions in `constants/index.ts` by adding `gemini_knowledge_base` to `SYSTEM_INSTRUCTION_BASE`.
+- Fixed stale UI copy in `SettingsTab.tsx` ("Gemini 1.5 Flash" -> "Gemini 2.5 Flash").
+- Enhanced `mcpService.ts` error handling to catch individual skill execution exceptions and return informative JSON-RPC error responses.
+- Optimized `vite.config.ts` vendor chunk splitting to include `react-is` in `react-vendor`.
+- Resolved all security vulnerabilities reported by `npm audit` (0 vulnerabilities remaining).
+
+### Changed
+- Upgraded core dependencies across the stack: `@google/genai` (2.25.0), `react`/`react-dom`/`react-is` (19.3.0), `recharts` (3.10.1), `vite` (8.3.2), `vitest` (4.1.11), `eslint` (10.11.0), `typescript-eslint` (8.71.0), `globals` (17.13.0).
+- Synchronized version references (3.3.0) across all documentation and codebase files.
+
 ## [3.2.7] - 2026-06-24
 ### Changed
 - Migrated Node.js version from 20.19.0 to 24.0.0 across `package.json`, GitHub Actions, and documentation to address the deprecation of Node 20 on GitHub runners.
@@ -361,5 +379,5 @@ All notable changes to this project are documented in this file. The format is b
 
 ---
 
-**Last Updated**: June 24, 2026
-**Version**: 3.2.7
+**Last Updated**: October 1, 2026
+**Version**: 3.3.0
