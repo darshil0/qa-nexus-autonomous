@@ -10,7 +10,7 @@ This guide covers upgrading QA Nexus Autonomous between versions, handling break
 ## Version 3.3.0 (Current)
 
 ### Key Changes
-- Node.js requirement: 20.0.0 or higher (previously 24+)
+- Node.js requirement: 24.0.0 or higher
 - Stable Node setup action: actions/setup-node@v4 (previously v7)
 - CI/CD pipeline: Removed silent `--if-present` flags for stricter validation
 - Fixed corrupted documentation entries in Git history
@@ -21,7 +21,7 @@ This guide covers upgrading QA Nexus Autonomous between versions, handling break
 
 1. **Update Node.js locally**
    ```bash
-   node --version  # Should be v20.x.x or higher
+   node --version  # Should be v24.x.x or higher
    ```
 
 2. **Update dependencies**
@@ -65,9 +65,7 @@ This guide covers upgrading QA Nexus Autonomous between versions, handling break
 ## Breaking Changes by Version
 
 ### 3.3.0
-- **Node.js >= 20.0.0 required** (from 24+)
-  - Broader compatibility with CI environments
-  - Better LTS support
+- **Node.js >= 24.0.0 required**
   
 - **CI strictness increased**
   - `--if-present` flags removed from npm scripts

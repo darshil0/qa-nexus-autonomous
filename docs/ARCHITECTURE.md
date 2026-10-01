@@ -313,8 +313,8 @@ See `/skills` directory for detailed skill documentation.
 ## Environment & Configuration
 
 ### Node.js & npm
-- **Minimum**: Node 20.0.0, npm 10
-- **Recommended**: Node 20 LTS
+- **Minimum**: Node 24.0.0, npm 10
+- **Recommended**: Node 24 LTS
 
 ### Environment Variables
 ```bash
