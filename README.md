@@ -5,7 +5,7 @@
 ![Version](https://img.shields.io/badge/version-3.3.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-339933.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D24.0.0-339933.svg)
 ![Release](https://img.shields.io/badge/release-oct%2001-blue.svg)
 
 ---
@@ -79,7 +79,7 @@ The app is organized around a central workflow state in `src/hooks/useWorkflow.t
 
 Before running the project locally, make sure you have:
 
-- **Node.js 20.0.0 or newer** (Node 20 LTS or later recommended for production stability)
+- **Node.js 24.0.0 or newer** (Node 24 LTS or later recommended)
 - **npm 10 or newer**
 - A Google Gemini API key from [Google AI Studio](https://aistudio.google.com)
 
@@ -97,7 +97,7 @@ node --version
 npm --version
 
 # Both should be at or above the minimum versions
-# Expected output: v20.x.x and 10.x.x respectively
+# Expected output: v24.x.x and 10.x.x respectively
 ```
 
 ---
@@ -237,7 +237,7 @@ The repository uses GitHub Actions for automated validation on every push and pu
 ### Pipeline stages
 
 1. **Checkout** — Fetches repository code
-2. **Node.js Setup** — Configures Node.js 20 with npm caching
+2. **Node.js Setup** — Configures Node.js 24 with npm caching
 3. **Dependencies** — Installs dependencies via `npm ci`
 4. **Lint** — Validates code style and quality via ESLint
 5. **Typecheck** — Validates TypeScript types
@@ -253,7 +253,7 @@ If you see `fatal: cannot create directory...` errors:
 - On Windows, keep paths under 260 characters
 
 #### Node.js version mismatches
-- The pipeline uses **Node.js 20**
+- The pipeline uses **Node.js 24**
 - Ensure your local Node.js version matches: `node --version`
 - Update Node.js if needed from [nodejs.org](https://nodejs.org)
 
