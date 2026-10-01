@@ -7,12 +7,13 @@ All notable changes to this project are documented in this file. The format is b
 - Added npm `overrides` in `package.json` for `eslint-plugin-react` to resolve peer dependency conflicts with ESLint 10, enabling standard `npm ci` installs without `--legacy-peer-deps`.
 - Added dedicated unit test suites for `exportUtils.spec.ts`, `validateEnv.spec.ts`, `ErrorBoundary.spec.tsx`, and `HeaderAndLogs.spec.tsx`, expanding test coverage across `src/`.
 - Updated GitHub Actions CI workflow to run standard `npm ci`.
+- Added custom Python validation tool `version_sync_checker.py` to continuously verify cross-file version synchronization.
 
 ### Fixed
 - Fixed startup mount issue in `validateEnv.ts` so environment error messages render cleanly into `#root` instead of destroying `document.body.innerHTML`.
 - Fixed MCP tool definitions in `constants/index.ts` by adding `gemini_knowledge_base` to `SYSTEM_INSTRUCTION_BASE`.
-- Fixed stale UI copy in `SettingsTab.tsx` ("Gemini 1.5 Flash" -> "Gemini 2.5 Flash").
-- Enhanced `mcpService.ts` error handling to catch individual skill execution exceptions and return informative JSON-RPC error responses.
+- Fixed stale UI copy in `SettingsTab.tsx` ("Gemini 1.5 Flash" -> "Gemini 2.5 Flash") and synchronized version display in `Sidebar.tsx` to `V3.3.0`.
+- Enhanced `mcpService.ts` error handling to catch individual skill execution exceptions, missing or null request parameters, and return informative JSON-RPC error responses.
 - Optimized `vite.config.ts` vendor chunk splitting to include `react-is` in `react-vendor`.
 - Resolved all security vulnerabilities reported by `npm audit` (0 vulnerabilities remaining).
 

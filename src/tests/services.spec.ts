@@ -3,6 +3,7 @@ import type { GoogleGenAI } from '@google/genai';
 import { reviewRequirements, setAiClient, fetchJiraRequirement, createGithubIssue, generateTestCases, executeTests, __resetRateLimiter, initAi } from '../services/geminiService';
 import { persistenceService } from '../services/persistenceService';
 import { mcpService } from '../services/mcpService';
+import { skillRegistry } from '../services/agenticSkills';
 import type { MCPRequest } from '../services/mcpService';
 import { agentMemory } from '../services/memoryService';
 import { logger } from '../utils/logger';
@@ -186,6 +187,27 @@ describe('Services Coverage', () => {
             method: 'tools/call',
             params: { name: 'non_existent', arguments: {} },
             id: 4
+        });
+
+        // Skill execution exception handling by mocking skill.execute rejection
+        const originalExecute = skillRegistry['jira_search'].execute;
+        skillRegistry['jira_search'].execute = vi.fn().mockRejectedValue(new Error('Forced Execution Fail'));
+        const failingSkillRes = await mcpService.handleRequest({
+            jsonrpc: '2.0',
+            method: 'tools/call',
+            params: { name: 'jira_search', arguments: { query: 'FORCE_FAIL' } },
+            id: 5
+        });
+        expect(failingSkillRes.error).toBeDefined();
+        expect(failingSkillRes.error?.message).toContain('Forced Execution Fail');
+        skillRegistry['jira_search'].execute = originalExecute;
+
+        // Missing params or missing name in tools/call
+        await mcpService.handleRequest({
+            jsonrpc: '2.0',
+            method: 'tools/call',
+            params: {},
+            id: 6
         });
 
         // Error handling
