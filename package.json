@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "ci": "npm run typecheck && npm run test -- --run"
+    "ci": "npm run lint && npm run typecheck && npm test -- --run && npm run build"
   },
   "dependencies": {
     "@google/genai": "^2.25.0",
