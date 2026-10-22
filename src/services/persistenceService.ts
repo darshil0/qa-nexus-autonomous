@@ -1,10 +1,20 @@
-
 import { WorkflowState, WorkflowStatus } from "@/types";
 import { logger } from "@/utils/logger";
 
 const STORAGE_KEY = 'qa_nexus_state';
 
-export const persistenceService = {
+export interface PersistenceService {
+  getSBConfig(): { url: string; key: string };
+  saveState(state: WorkflowState): void;
+  saveToSupabase(state: WorkflowState): Promise<void>;
+  loadState(): Promise<WorkflowState | null>;
+  loadFromLocalStorage(): WorkflowState | null;
+  loadFromSupabase(): Promise<WorkflowState | null>;
+  sanitizeLoadedState(state: WorkflowState): WorkflowState;
+  clearState(): void;
+}
+
+export const persistenceService: PersistenceService = {
   getSBConfig() {
     return {
       url: import.meta.env.VITE_SUPABASE_URL as string,
@@ -51,7 +61,8 @@ export const persistenceService = {
       const res = await fetch(`${url}/rest/v1/qa_nexus_sessions?select=state&order=updated_at.desc&limit=1`, {
         headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' }
       });
-      const data = await res.json() as { state: WorkflowState }[];
+      const rawData: unknown = await res.json();
+      const data = rawData as { state: WorkflowState }[];
       const firstResult = data[0];
       return firstResult?.state ? this.sanitizeLoadedState(firstResult.state) : null;
     } catch { return null; }
