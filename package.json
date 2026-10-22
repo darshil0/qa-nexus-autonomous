@@ -10,13 +10,15 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest run",
     "test:watch": "vitest --watch",
-    "test:coverage": "vitest --coverage",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "ci": "npm run lint && npm run typecheck && npm test -- --run && npm run build"
+    "validate-filenames": "node scripts/validate-filenames.js",
+    "check-secrets": "node scripts/check-secret-exposure.js",
+    "ci": "npm run validate-filenames && npm run lint && npm run typecheck && npm test && npm run build && npm run check-secrets"
   },
   "dependencies": {
     "@google/genai": "^2.25.0",

@@ -1,17 +1,14 @@
-import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { AGENT_MODELS, SYSTEM_INSTRUCTION_BASE } from "@/constants";
 import { ValidatedSpec, TestCase, ExecutionResult, AISettings, OrchestrationMetrics } from "@/types";
 import { getSkillDescriptions } from "@/services/agenticSkills";
 import { mcpService } from "@/services/mcpService";
 import { agentMemory } from "@/services/memoryService";
 import { logger } from "@/utils/logger";
-import { sanitizeRequirements } from "@/utils/sanitizeInput";
-
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string;
+import { sanitizeRequirements, formatUntrustedInput } from "@/utils/sanitizeInput";
 
 /**
  * Token Bucket Rate Limiter
- * Limits requests to 10 per 60 seconds.
+ * Limits requests to 10 per 60 seconds client-side.
  */
 class TokenBucket {
   private tokens: number;
@@ -50,62 +47,122 @@ export const __resetRateLimiter = () => {
   rateLimiter.tokens = 10;
 };
 
-let ai: GoogleGenAI | undefined;
-
-/**
- * Initialize the Gemini AI client.
- * Exposed for testing and dynamic configuration.
- */
-export const initAi = (key?: string) => {
-  if (key) {
-    ai = new GoogleGenAI({ apiKey: key });
-  } else {
-    ai = undefined;
-    logger.warn('VITE_GEMINI_API_KEY is not set. Gemini client will not be initialized.');
-  }
+// Client override for testing environments
+type MockAiClient = {
+  models: {
+    generateContent: (args: {
+      model: string;
+      contents: string;
+      config?: Record<string, unknown>;
+    }) => Promise<{ text?: string | (() => string); candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> }>;
+  };
 };
 
-// Auto-initialize with environment key
-initAi(apiKey);
+let mockAiClient: MockAiClient | undefined;
 
-// For testing and advanced usage, allow swapping the underlying AI client
-export const setAiClient = (client: GoogleGenAI | undefined) => {
-  ai = client;
+/**
+ * Initialize or reset the AI client configuration.
+ */
+export const initAi = (_key?: string) => {
+  // Key is no longer exposed to browser. Server manages GEMINI_API_KEY.
+  mockAiClient = undefined;
+};
+
+export const setAiClient = (client: unknown) => {
+  mockAiClient = client as MockAiClient | undefined;
 };
 
 /**
- * Safely extract text from Gemini response.
- * Supports both function call and property access for maximum SDK version compatibility.
+ * Call server Gemini API endpoint with bounded retries and exponential backoff/jitter.
  */
-function extractText(response: GenerateContentResponse): string {
-  try {
-    // Standard SDK v1.x uses a .text() method or a getter.
-    // We check both to be resilient against environment variations.
-    const res = response as unknown as { text: string | (() => string) };
+async function callGeminiApi(
+  model: string,
+  contents: string,
+  config?: Record<string, unknown>
+): Promise<string> {
+  if (mockAiClient) {
+    const res = await mockAiClient.models.generateContent({ model, contents, config });
     if (typeof res.text === 'function') {
       return res.text();
     }
     if (typeof res.text === 'string') {
       return res.text;
     }
-
-    // Fallback for candidates structure
-    if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
-      return response.candidates[0].content.parts[0].text;
+    if (res.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return res.candidates[0].content.parts[0].text;
     }
-
-    return '';
-  } catch (error) {
-    logger.error('Failed to extract text from Gemini response:', error);
     return '';
   }
+
+  const maxRetries = 3;
+  let attempt = 0;
+
+  while (attempt <= maxRetries) {
+    attempt++;
+    try {
+      const response = await fetch('/api/gemini/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Session-Token': 'qa-nexus-client-session'
+        },
+        body: JSON.stringify({ model, contents, config })
+      });
+
+      if (response.ok) {
+        const json = await response.json() as { text?: string };
+        return json.text || '';
+      }
+
+      // Handle non-2xx status codes
+      const isTransient = [429, 502, 503, 504].includes(response.status);
+      const retryAfterHeader = response.headers.get('Retry-After');
+      let backoffMs = 1000 * Math.pow(2, attempt - 1) + Math.random() * 500;
+
+      if (retryAfterHeader) {
+        const seconds = parseInt(retryAfterHeader, 10);
+        if (!isNaN(seconds)) {
+          backoffMs = seconds * 1000;
+        }
+      }
+
+      const errorText = await response.text();
+      let parsedError = 'API Request Failed';
+      try {
+        const errJson = JSON.parse(errorText) as { error?: string };
+        parsedError = errJson.error || parsedError;
+      } catch {
+        parsedError = `HTTP ${response.status}: ${response.statusText}`;
+      }
+
+      // Do not retry 400 (Bad Request), 401/403 (Auth), 405 (Method Not Allowed)
+      if (!isTransient || attempt > maxRetries) {
+        throw new Error(parsedError);
+      }
+
+      logger.warn(`Gemini API call failed (${response.status}). Retrying attempt ${attempt}/${maxRetries} in ${Math.round(backoffMs)}ms...`);
+      await new Promise(r => setTimeout(r, backoffMs));
+
+    } catch (err) {
+      const isNetworkError = err instanceof TypeError || (err instanceof Error && err.name === 'FetchError');
+      if (isNetworkError && attempt <= maxRetries) {
+        const backoffMs = 1000 * Math.pow(2, attempt - 1) + Math.random() * 500;
+        logger.warn(`Network error during Gemini API call. Retrying attempt ${attempt}/${maxRetries} in ${Math.round(backoffMs)}ms...`);
+        await new Promise(r => setTimeout(r, backoffMs));
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  throw new Error('Failed to communicate with Gemini server API after retries.');
 }
 
 /**
- * Helper to safely extract and parse JSON from Gemini's response.
+ * Safely parse JSON from Gemini's response string.
  */
-function parseAiResponse<T>(
-  response: GenerateContentResponse,
+function parseAiTextResponse<T>(
+  text: string,
   field: string
 ): {
   data: T | null;
@@ -113,8 +170,6 @@ function parseAiResponse<T>(
   toolCall?: { name: string; arguments: Record<string, string> }
 } {
   try {
-    const text = extractText(response);
-
     if (!text) {
       logger.warn('No response text from AI');
       return { data: null, thinking: 'No response from AI' };
@@ -156,10 +211,6 @@ async function runAgenticWorkflow<T>(
 ): Promise<{ data: T | null; thinking: string; metrics: OrchestrationMetrics }> {
   rateLimiter.consume();
 
-  if (!ai) {
-    throw new Error('GenAI client not initialized. Please set VITE_GEMINI_API_KEY in your .env file.');
-  }
-
   const startTime = Date.now();
   const skillDocs = getSkillDescriptions();
   const sessionMemory = agentMemory.getContext();
@@ -181,22 +232,21 @@ async function runAgenticWorkflow<T>(
     logger.info(`Running ${model} workflow (Pass ${iterations}/${maxIterations}) for field: ${field}`);
 
     try {
-      // Crude token estimation: ~4 chars per token
       totalTokensEstimated += (currentInput.length / 4);
 
-      const response = await ai.models.generateContent({
-        model: model,
-        contents: currentInput,
-        config: {
+      const responseText = await callGeminiApi(
+        model,
+        currentInput,
+        {
           systemInstruction: SYSTEM_INSTRUCTION_BASE + "\n\n" + instruction + " If you use a tool, provide your 'thought' and 'tool_call'. If you have all information, provide the final result.",
           thinkingConfig: { thinkingBudget: 4000 },
           responseMimeType: "application/json",
           temperature,
           responseSchema: schema
         }
-      });
+      );
 
-      const { data, thinking, toolCall } = parseAiResponse<T>(response, field);
+      const { data, thinking, toolCall } = parseAiTextResponse<T>(responseText, field);
       finalThinking += (finalThinking ? "\n\n" : "") + `[Thought Step ${iterations}]: ${thinking}`;
 
       agentMemory.add('assistant', thinking);
@@ -249,33 +299,33 @@ async function runAgenticWorkflow<T>(
  * Agent 1: Requirements Reviewer
  */
 export const reviewRequirements = async (rawInput: string, settings?: AISettings): Promise<{ specs: ValidatedSpec[], thinking: string, metrics: OrchestrationMetrics }> => {
-  const sanitizedInput = sanitizeRequirements(rawInput);
+  const formattedInput = formatUntrustedInput("User Requirements Input", rawInput);
 
   const schema: Record<string, unknown> = {
-    type: Type.OBJECT,
+    type: "OBJECT",
     properties: {
-      thought: { type: Type.STRING },
+      thought: { type: "STRING" },
       tool_call: {
-        type: Type.OBJECT,
+        type: "OBJECT",
         properties: {
-          name: { type: Type.STRING },
-          arguments: { type: Type.OBJECT }
+          name: { type: "STRING" },
+          arguments: { type: "OBJECT" }
         }
       },
       specs: {
-        type: Type.ARRAY,
+        type: "ARRAY",
         items: {
-          type: Type.OBJECT,
+          type: "OBJECT",
           properties: {
-            requirementId: { type: Type.STRING },
-            title: { type: Type.STRING },
-            description: { type: Type.STRING },
-            acceptanceCriteria: { type: Type.ARRAY, items: { type: Type.STRING } },
-            riskClassification: { type: Type.STRING },
-            priority: { type: Type.STRING },
-            ambiguities: { type: Type.ARRAY, items: { type: Type.STRING } },
-            externalSource: { type: Type.STRING },
-            externalKey: { type: Type.STRING },
+            requirementId: { type: "STRING" },
+            title: { type: "STRING" },
+            description: { type: "STRING" },
+            acceptanceCriteria: { type: "ARRAY", items: { type: "STRING" } },
+            riskClassification: { type: "STRING" },
+            priority: { type: "STRING" },
+            ambiguities: { type: "ARRAY", items: { type: "STRING" } },
+            externalSource: { type: "STRING" },
+            externalKey: { type: "STRING" },
           },
           required: ["requirementId", "title", "description", "acceptanceCriteria", "riskClassification", "priority", "ambiguities"]
         }
@@ -287,7 +337,7 @@ export const reviewRequirements = async (rawInput: string, settings?: AISettings
   const { data, thinking, metrics } = await runAgenticWorkflow<ValidatedSpec[]>(
     AGENT_MODELS.AGENT1,
     "You are Agent 1 (Requirements Reviewer). Normalize and validate requirements. Detect Jira sources.",
-    `Analyze requirements: ${sanitizedInput}`,
+    `Analyze requirements:\n${formattedInput}`,
     "specs",
     schema,
     settings
@@ -300,29 +350,31 @@ export const reviewRequirements = async (rawInput: string, settings?: AISettings
  * Agent 2: Test Case Writer
  */
 export const generateTestCases = async (specs: ValidatedSpec[], settings?: AISettings): Promise<{ testCases: TestCase[], thinking: string, metrics: OrchestrationMetrics }> => {
+  const formattedSpecs = formatUntrustedInput("Validated Specs", JSON.stringify(specs));
+
   const schema: Record<string, unknown> = {
-    type: Type.OBJECT,
+    type: "OBJECT",
     properties: {
-      thought: { type: Type.STRING },
+      thought: { type: "STRING" },
       tool_call: {
-        type: Type.OBJECT,
+        type: "OBJECT",
         properties: {
-          name: { type: Type.STRING },
-          arguments: { type: Type.OBJECT }
+          name: { type: "STRING" },
+          arguments: { type: "OBJECT" }
         }
       },
       testCases: {
-        type: Type.ARRAY,
+        type: "ARRAY",
         items: {
-          type: Type.OBJECT,
+          type: "OBJECT",
           properties: {
-            id: { type: Type.STRING },
-            linkedRequirementIds: { type: Type.ARRAY, items: { type: Type.STRING } },
-            category: { type: Type.STRING },
-            preconditions: { type: Type.STRING },
-            steps: { type: Type.ARRAY, items: { type: Type.STRING } },
-            expectedOutcomes: { type: Type.STRING },
-            isAutomationCandidate: { type: Type.BOOLEAN },
+            id: { type: "STRING" },
+            linkedRequirementIds: { type: "ARRAY", items: { type: "STRING" } },
+            category: { type: "STRING" },
+            preconditions: { type: "STRING" },
+            steps: { type: "ARRAY", items: { type: "STRING" } },
+            expectedOutcomes: { type: "STRING" },
+            isAutomationCandidate: { type: "BOOLEAN" },
           },
           required: ["id", "linkedRequirementIds", "category", "preconditions", "steps", "expectedOutcomes", "isAutomationCandidate"]
         }
@@ -334,7 +386,7 @@ export const generateTestCases = async (specs: ValidatedSpec[], settings?: AISet
   const { data, thinking, metrics } = await runAgenticWorkflow<TestCase[]>(
     AGENT_MODELS.AGENT2,
     "You are Agent 2 (Test Case Writer). Generate structured test cases.",
-    `Convert specs to test cases: ${JSON.stringify(specs)}`,
+    `Convert specs to test cases:\n${formattedSpecs}`,
     "testCases",
     schema,
     settings
@@ -347,26 +399,28 @@ export const generateTestCases = async (specs: ValidatedSpec[], settings?: AISet
  * Agent 3: Test Executor
  */
 export const executeTests = async (testCases: TestCase[], settings?: AISettings): Promise<{ results: ExecutionResult[], thinking: string, metrics: OrchestrationMetrics }> => {
+  const formattedCases = formatUntrustedInput("Test Cases to Execute", JSON.stringify(testCases));
+
   const schema: Record<string, unknown> = {
-    type: Type.OBJECT,
+    type: "OBJECT",
     properties: {
-      thought: { type: Type.STRING },
+      thought: { type: "STRING" },
       tool_call: {
-        type: Type.OBJECT,
+        type: "OBJECT",
         properties: {
-          name: { type: Type.STRING },
-          arguments: { type: Type.OBJECT }
+          name: { type: "STRING" },
+          arguments: { type: "OBJECT" }
         }
       },
       results: {
-        type: Type.ARRAY,
+        type: "ARRAY",
         items: {
-          type: Type.OBJECT,
+          type: "OBJECT",
           properties: {
-            testCaseId: { type: Type.STRING },
-            status: { type: Type.STRING },
-            logs: { type: Type.STRING },
-            timestamp: { type: Type.STRING },
+            testCaseId: { type: "STRING" },
+            status: { type: "STRING" },
+            logs: { type: "STRING" },
+            timestamp: { type: "STRING" },
           },
           required: ["testCaseId", "status", "logs", "timestamp"]
         }
@@ -378,7 +432,7 @@ export const executeTests = async (testCases: TestCase[], settings?: AISettings)
   const { data, thinking, metrics } = await runAgenticWorkflow<ExecutionResult[]>(
     AGENT_MODELS.AGENT3,
     "You are Agent 3 (Test Executor). Simulate execution and provide logs.",
-    `Execute test cases: ${JSON.stringify(testCases)}`,
+    `Execute test cases:\n${formattedCases}`,
     "results",
     schema,
     settings
@@ -391,11 +445,12 @@ export const executeTests = async (testCases: TestCase[], settings?: AISettings)
  * Simulated Jira Service
  */
 export const fetchJiraRequirement = async (issueKey: string): Promise<string> => {
-  logger.info(`Fetching Jira requirement: ${issueKey}`);
+  const sanitizedKey = sanitizeRequirements(issueKey);
+  logger.info(`Fetching Jira requirement: ${sanitizedKey}`);
   await new Promise(resolve => setTimeout(resolve, 800));
   const mockJiraData = {
-    key: issueKey,
-    summary: `Feature: Biometric Authentication for ${issueKey}`,
+    key: sanitizedKey,
+    summary: `Feature: Biometric Authentication for ${sanitizedKey}`,
     description: "The system must allow users to authenticate using Fingerprint or FaceID on supported mobile devices. Failure to authenticate should fallback to a 6-digit PIN. The UI must show a clear 'Secure Session' indicator.",
   };
   return `[JIRA SOURCE: ${mockJiraData.key}]\nTitle: ${mockJiraData.summary}\nDescription: ${mockJiraData.description}`;
@@ -405,8 +460,10 @@ export const fetchJiraRequirement = async (issueKey: string): Promise<string> =>
  * Simulated GitHub Service
  */
 export const createGithubIssue = async (testCaseId: string, logs: string): Promise<string> => {
-  logger.info(`Creating GitHub issue for test: ${testCaseId}. Logs: ${logs.substring(0, 50)}...`);
+  const sanitizedTcId = sanitizeRequirements(testCaseId);
+  const sanitizedLogs = sanitizeRequirements(logs);
+  logger.info(`Creating GitHub issue for test: ${sanitizedTcId}. Logs: ${sanitizedLogs.substring(0, 50)}...`);
   await new Promise(resolve => setTimeout(resolve, 1000));
   const issueNumber = Math.floor(Math.random() * 1000) + 100;
-  return `https://github.com/org/project/issues/${issueNumber}?testCase=${testCaseId}&logs=true`;
+  return `https://github.com/org/project/issues/${issueNumber}?testCase=${sanitizedTcId}&logs=true`;
 };

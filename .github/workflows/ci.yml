@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   build-and-test:
-    name: Build, lint, test, and typecheck
+    name: Build, lint, test, typecheck, and validate
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -37,14 +37,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Run tests
-        run: npm test -- --run
-
-      - name: Build
-        run: npm run build
+      - name: Run Canonical CI Checks
+        run: npm run ci

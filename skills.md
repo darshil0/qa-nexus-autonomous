@@ -232,7 +232,7 @@ export const skillRegistry: Record<string, Skill> = {
 
 ### Step 5: Update Documentation
 
-1. Add skill to this Skills.MD registry
+1. Add skill to this skills.md registry
 2. Update AGENT.md if the skill changes agent capabilities
 3. Add examples to README.md if relevant
 

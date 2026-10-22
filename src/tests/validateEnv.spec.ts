@@ -18,36 +18,11 @@ describe('validateEnv', () => {
     document.body.innerHTML = '';
   });
 
-  it('validates successfully when required env vars are valid', () => {
-    vi.stubEnv('VITE_GEMINI_API_KEY', 'valid_api_key_123456');
+  it('validates public env vars successfully', () => {
     expect(() => validateEnv()).not.toThrow();
   });
 
-  it('throws error and renders UI when required env var is missing', () => {
-    vi.stubEnv('VITE_GEMINI_API_KEY', '');
-    vi.stubEnv('DEV', true);
-
-    expect(() => validateEnv()).toThrow(/Missing or invalid environment variables/);
-    const rootElement = document.getElementById('root');
-    expect(rootElement?.innerHTML).toContain('Configuration Error');
-  });
-
-  it('throws error when required env var uses placeholder value', () => {
-    vi.stubEnv('VITE_GEMINI_API_KEY', 'your_gemini_api_key_here');
-    vi.stubEnv('DEV', true);
-
-    expect(() => validateEnv()).toThrow(/Still using placeholder value/);
-  });
-
-  it('throws error when required env var is too short', () => {
-    vi.stubEnv('VITE_GEMINI_API_KEY', 'short');
-    vi.stubEnv('DEV', true);
-
-    expect(() => validateEnv()).toThrow(/Value too short/);
-  });
-
-  it('logs warnings for optional missing env vars in dev mode', () => {
-    vi.stubEnv('VITE_GEMINI_API_KEY', 'valid_api_key_123456');
+  it('logs warnings for optional placeholder env vars in dev mode', () => {
     vi.stubEnv('VITE_SUPABASE_URL', 'your_supabase_url');
     vi.stubEnv('DEV', true);
 

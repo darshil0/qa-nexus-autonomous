@@ -1,12 +1,12 @@
 # QA Nexus Autonomous
 
-> A high-fidelity, multi-agent AI orchestrator powered by Google Gemini that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation and integrated execution tracking with full Jira/GitHub bidirectional synchronization.
+> A high-fidelity, multi-agent AI orchestrator powered by Google Gemini 2.5 that automates the end-to-end QA lifecycle—from intelligent requirements analysis and ambiguity detection to traceable test case generation, simulated test execution, Jira requirement fetching, and GitHub issue reporting.
 
 ![Version](https://img.shields.io/badge/version-3.3.0-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D24.0.0-339933.svg)
-![Release](https://img.shields.io/badge/release-oct%2001-blue.svg)
+![Release](https://img.shields.io/badge/release-v3.3.0-blue.svg)
 
 ---
 
@@ -32,7 +32,7 @@
 
 QA Nexus Autonomous is a React + TypeScript application for AI-assisted quality assurance orchestration. It brings together a set of specialized agents to analyze requirements, identify ambiguities, generate test cases, and execute them with full traceability.
 
-The system is designed to reduce manual QA overhead while preserving traceability from requirement to test and result.
+The system is designed to reduce manual QA overhead while preserving traceability from requirement to test and result. All Gemini API calls are securely routed through a server-side endpoint (`/api/gemini/generate`) with rate limiting, payload validation, model restriction, and error sanitization.
 
 ### Core workflow
 
@@ -45,14 +45,15 @@ The system is designed to reduce manual QA overhead while preserving traceabilit
 
 ## Key Features
 
-- Multi-agent QA orchestration with Google Gemini-powered reasoning.
+- Multi-agent QA orchestration powered by Google Gemini 2.5 (`gemini-2.5-pro-preview-05-06` and `gemini-2.5-flash-preview-04-17`).
+- Secure server-side API boundary ensuring private Gemini API keys never enter browser bundles.
 - Requirement analysis and ambiguity detection for incomplete or risky specs.
 - Structured test case generation with priority levels and linked requirement IDs.
 - Execution simulation with pass/fail reporting and failure reasoning.
 - Real-time health dashboard for metrics, latency, and token estimation.
-- Jira-based requirement fetching and GitHub issue creation flow.
+- Jira requirement fetching and GitHub issue reporting links.
 - JSON/CSV export utilities for reports and artifacts.
-- Local persistence and session state restoration.
+- Local persistence and session state restoration via LocalStorage or Supabase.
 - Modern glassmorphism UI built with React and Vite.
 
 ---
@@ -61,14 +62,15 @@ The system is designed to reduce manual QA overhead while preserving traceabilit
 
 ```mermaid
 flowchart TD
-    A[User input / requirements] --> B[Orchestrator UI]
-    B --> C[Gemini API]
-    C --> D[Requirements Reviewer]
-    D --> E[Test Case Writer]
-    E --> F[Test Executor]
-    F --> G[Reports & Health Dashboard]
-    D --> H[Jira / GitHub integrations]
-    G --> I[JSON / CSV export]
+    A[User Input / Requirements] --> B[Orchestrator UI]
+    B --> C[Server API Endpoint /api/gemini/generate]
+    C --> D[Gemini API]
+    D --> E[Requirements Reviewer]
+    E --> F[Test Case Writer]
+    F --> G[Test Executor]
+    G --> H[Reports & Health Dashboard]
+    E --> I[Jira / GitHub Integrations]
+    H --> J[JSON / CSV Export]
 ```
 
 The app is organized around a central workflow state in `src/hooks/useWorkflow.ts`, with tabs for orchestration, agent analysis, execution, reporting, settings, and health monitoring.
@@ -114,7 +116,7 @@ npm install
 
 # Create your environment file
 cp .env.example .env
-# Add your Gemini key to .env (and optional Supabase values if needed)
+# Add your server-side GEMINI_API_KEY to .env (and optional Supabase values if needed)
 
 # Start the app in development mode
 npm run dev
@@ -122,17 +124,20 @@ npm run dev
 
 ### Environment variables
 
-The project uses Vite environment variables. A sample file is provided at `.env.example`:
+The project separates private server-side variables from public client configuration. A sample file is provided at `.env.example`:
 
 ```dotenv
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
+# Server-side ONLY (Required)
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Client-side (Optional)
 VITE_SUPABASE_URL=your_supabase_url_here
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
 **Notes:**
 
-- `VITE_GEMINI_API_KEY` is **required** for the AI workflow to run.
+- `GEMINI_API_KEY` is **required** server-side for the AI workflow to run.
 - `VITE_SUPABASE_*` values are optional and used by persistence-related features.
 - Do not commit your real `.env` file (already configured in `.gitignore`).
 
@@ -155,11 +160,11 @@ The system will:
 
 ### Jira integration
 
-Use the Orchestrator tab to fetch a Jira issue by ID and use that requirement as the basis for the QA workflow.
+Use the Orchestrator tab to fetch requirement details by Jira issue key and use that content as the workflow requirement.
 
 ### GitHub reporting
 
-Execution results can be used to create or prepare GitHub issue summaries for failures and follow-up work.
+Execution results can be used to generate structured issue descriptions and links for tracking bugs on GitHub.
 
 ---
 
@@ -167,10 +172,10 @@ Execution results can be used to create or prepare GitHub issue summaries for fa
 
 - React 19.3 — UI framework
 - TypeScript 6 — type safety and application modeling
-- Vite 8.3 — local dev server and build tooling
+- Vite 8.3 — local dev server, build tooling, and API proxy middleware
 - Vitest 4.1 — unit and UI testing
 - ESLint 10 — linting and code quality
-- Google Gemini via `@google/genai` — AI orchestration and reasoning
+- Google Gemini 2.5 via `@google/genai` — server-side AI orchestration and reasoning
 - Recharts 3.10 — reporting and analytics charts
 - Lucide React — iconography
 
@@ -181,14 +186,20 @@ Execution results can be used to create or prepare GitHub issue summaries for fa
 Run the checks used by this repository:
 
 ```bash
-# Run the test suite
+# Run the test suite (single-run)
 npm test
 
-# Run the test suite in CI mode (single run)
-npm run test -- --run
+# Run the test suite in watch mode
+npm run test:watch
 
 # Run coverage reporting
 npm run test:coverage
+
+# Validate filename rules
+npm run validate-filenames
+
+# Check for secret exposure in production build
+npm run check-secrets
 
 # Type-check the app
 npm run typecheck
@@ -196,13 +207,10 @@ npm run typecheck
 # Lint the project
 npm run lint
 
-# Auto-fix linting issues
-npm run lint:fix
-
 # Build the production bundle
 npm run build
 
-# Run the full CI validation locally (recommended before submitting PRs)
+# Run full CI validation
 npm run ci
 ```
 
@@ -215,10 +223,12 @@ npm run ci
 ```
 
 This runs:
-1. Linting (`npm run lint`)
-2. Type checking (`npm run typecheck`)
-3. Unit tests in single-run mode (`npm test -- --run`)
-4. Production build (`npm run build`)
+1. Repository filename validation (`npm run validate-filenames`)
+2. Linting (`npm run lint`)
+3. Type checking (`npm run typecheck`)
+4. Unit tests (`npm test`)
+5. Production build (`npm run build`)
+6. Secret exposure check (`npm run check-secrets`)
 
 If all steps pass, your PR is ready for submission.
 
@@ -234,39 +244,6 @@ The repository uses GitHub Actions for automated validation on every push and pu
 - **Pull requests targeting `main` or `master`** — full CI validation
 - **Concurrency control** — cancels previous runs for the same branch to save resources
 
-### Pipeline stages
-
-1. **Checkout** — Fetches repository code
-2. **Node.js Setup** — Configures Node.js 24 with npm caching
-3. **Dependencies** — Installs dependencies via `npm ci`
-4. **Lint** — Validates code style and quality via ESLint
-5. **Typecheck** — Validates TypeScript types
-6. **Tests** — Runs unit and component tests via Vitest
-7. **Build** — Compiles production bundle via Vite
-
-### Troubleshooting CI failures
-
-#### Checkout failures
-If you see `fatal: cannot create directory...` errors:
-- Ensure all filenames in the `docs/` directory follow valid naming conventions
-- Avoid newlines or special characters in filenames
-- On Windows, keep paths under 260 characters
-
-#### Node.js version mismatches
-- The pipeline uses **Node.js 24**
-- Ensure your local Node.js version matches: `node --version`
-- Update Node.js if needed from [nodejs.org](https://nodejs.org)
-
-#### Dependency or cache issues
-- Delete `node_modules` and `package-lock.json` locally
-- Run `npm install` fresh
-- The CI pipeline uses `npm ci` for reproducible installs
-
-#### Test or build failures
-- Run `npm run ci` locally to replicate the exact CI flow
-- Check error messages carefully — they pinpoint the first failing step
-- Ensure `.env` variables are properly configured for tests (see `.env.example`)
-
 ---
 
 ## Project Structure
@@ -279,8 +256,12 @@ If you see `fatal: cannot create directory...` errors:
 ├── docs/
 │   ├── ARCHITECTURE.md            # System design and component overview
 │   ├── MIGRATION_GUIDE.md         # Upgrade and migration instructions
+│   ├── SUPABASE_VERIFICATION.md   # Supabase RLS and database access checklist
 │   └── Walkthrough.md             # Step-by-step user guide
 ├── public/                        # Static assets
+├── scripts/
+│   ├── check-secret-exposure.js   # Production bundle secret exposure check
+│   └── validate-filenames.js      # Cross-platform filename validation check
 ├── skills/
 │   ├── gemini-knowledge-base/     # AI knowledge base skill
 │   ├── requirements-reviewer/     # Requirements analysis skill
@@ -294,23 +275,28 @@ If you see `fatal: cannot create directory...` errors:
 │   │   └── tabs/                  # Tab-based UI sections
 │   ├── hooks/
 │   │   └── useWorkflow.ts         # Central workflow state management
+│   ├── server/
+│   │   └── geminiHandler.ts       # Secure Gemini API server endpoint handler
 │   ├── services/
 │   │   ├── agenticSkills.ts       # Agent skill orchestration
-│   │   ├── geminiService.ts       # Gemini API integration
+│   │   ├── geminiService.ts       # Gemini API client proxy integration
 │   │   ├── mcpService.ts          # MCP tool integration
-│   │   ├── memoryService.ts       # In-memory state management
-│   │   └── persistenceService.ts  # Supabase persistence
+│   │   ├── memoryService.ts       # In-memory session state
+│   │   └── persistenceService.ts  # Persistence integration
 │   ├── tests/                     # Unit and component tests
 │   ├── types/                     # TypeScript type definitions
 │   ├── utils/
 │   │   ├── exportUtils.ts         # JSON/CSV export utilities
 │   │   ├── logger.ts              # Logging utilities
-│   │   ├── sanitizeInput.ts       # Input sanitization
+│   │   ├── sanitizeInput.ts       # Input sanitization and prompt framing
 │   │   └── validateEnv.ts         # Environment variable validation
 │   ├── App.tsx                    # Main app component
 │   └── main.tsx                   # Application entry point
+├── supabase/
+│   └── migrations/                # Versioned SQL migrations for Supabase
 ├── .env.example                   # Environment variables template
 ├── .gitignore                     # Git ignore rules
+├── .nvmrc                         # Node runtime baseline configuration (24)
 ├── AGENT.md                       # Agent architecture guide
 ├── CHANGELOG.md                   # Version history and release notes
 ├── CONTRIBUTING.md                # Contribution guidelines
@@ -320,10 +306,10 @@ If you see `fatal: cannot create directory...` errors:
 ├── package.json                   # Project dependencies and scripts
 ├── package-lock.json              # Locked dependency versions
 ├── README.md                      # This file
-├── Skills.MD                      # Skill registry and capabilities
+├── skills.md                      # Skill registry and capabilities
 ├── tsconfig.json                  # TypeScript configuration
 ├── tsconfig.node.json             # TypeScript config for Node.js scripts
-├── vite.config.ts                 # Vite build configuration
+├── vite.config.ts                 # Vite build configuration with server plugin
 └── vitest.config.ts               # Vitest test configuration
 ```
 
@@ -332,8 +318,9 @@ If you see `fatal: cannot create directory...` errors:
 ## Documentation
 
 - [AGENT.md](AGENT.md) — agent architecture and engineering guidance
-- [Skills.MD](Skills.MD) — skill registry and capabilities overview
+- [skills.md](skills.md) — skill registry and capabilities overview
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system design and component overview
+- [docs/SUPABASE_VERIFICATION.md](docs/SUPABASE_VERIFICATION.md) — Supabase RLS and database access controls
 - [docs/Walkthrough.md](docs/Walkthrough.md) — step-by-step user experience guide
 - [docs/MIGRATION_GUIDE.md](docs/MIGRATION_GUIDE.md) — upgrade and migration instructions
 - [CONTRIBUTING.md](CONTRIBUTING.md) — local setup and contribution workflow
@@ -343,7 +330,7 @@ If you see `fatal: cannot create directory...` errors:
 
 ## Contributing
 
-We welcome contributions from the community.
+We welcome contributions from the community. Please review [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENT.md](AGENT.md) for full coding standards.
 
 1. Fork the repository.
 2. Create a feature branch: `git checkout -b feat/your-feature`.
@@ -354,9 +341,6 @@ We welcome contributions from the community.
    npm run ci
    ```
 6. Push to your fork and open a pull request against `main`.
-7. Follow the repository's coding standards and keep documentation in sync.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ---
 

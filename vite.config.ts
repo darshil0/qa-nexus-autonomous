@@ -1,12 +1,37 @@
-import { defineConfig } from 'vite';
+import { defineConfig, Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { handleGeminiApiRequest } from './src/server/geminiHandler.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+function geminiServerPlugin(): Plugin {
+  return {
+    name: 'gemini-server-plugin',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url === '/api/gemini/generate') {
+          void handleGeminiApiRequest(req, res);
+        } else {
+          next();
+        }
+      });
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url === '/api/gemini/generate') {
+          void handleGeminiApiRequest(req, res);
+        } else {
+          next();
+        }
+      });
+    }
+  };
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), geminiServerPlugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

@@ -86,7 +86,8 @@ export default ts.config(
             "node_modules",
             ".eslintrc.cjs",
             "eslint.config.js",
-            "coverage"
+            "coverage",
+            "scripts/**/*.js"
         ],
     }
 );
