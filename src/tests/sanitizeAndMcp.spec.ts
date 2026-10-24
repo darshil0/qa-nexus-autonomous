@@ -23,6 +23,20 @@ describe('sanitizeInput Security Hardening', () => {
     expect(formatted).toContain('=== BEGIN UNTRUSTED DATA (Jira Spec) ===');
     expect(formatted).toContain('=== END UNTRUSTED DATA (Jira Spec) ===');
   });
+
+  it('handles non-string, null, undefined, numeric, and control characters gracefully', () => {
+    expect(sanitizeRequirements(null)).toBe('');
+    expect(sanitizeRequirements(undefined)).toBe('');
+    expect(sanitizeRequirements(12345)).toBe('12345');
+    expect(sanitizeRequirements(true)).toBe('true');
+    expect(sanitizeRequirements({ foo: 'bar' })).toBe('');
+
+    const withControlChars = 'Hello\x00World\x08Test\x1F';
+    expect(sanitizeRequirements(withControlChars)).toBe('HelloWorldTest');
+
+    const withIframe = '<iframe src="http://evil.com"></iframe>Clean';
+    expect(sanitizeRequirements(withIframe)).toBe('Clean');
+  });
 });
 
 describe('MCP Service & Skills Security', () => {
