@@ -1,5 +1,8 @@
 # Production Deployment Guide
 
+**Version**: 3.3.0
+**Last Updated**: October 24, 2026
+
 This document describes how to deploy QA Nexus Autonomous in a production environment with its secure server-side Gemini API proxy.
 
 ## Architecture & Server Runtime

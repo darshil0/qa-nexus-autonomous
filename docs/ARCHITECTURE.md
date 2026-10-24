@@ -1,7 +1,7 @@
 # System Architecture
 
 **Version**: 3.3.0  
-**Last Updated**: October 1, 2026
+**Last Updated**: October 24, 2026
 
 This document describes the high-level architecture, component structure, and data flow of QA Nexus Autonomous.
 

@@ -1,7 +1,7 @@
 # Migration Guide
 
 **Version**: 3.3.0  
-**Last Updated**: October 1, 2026
+**Last Updated**: October 24, 2026
 
 This guide covers upgrading QA Nexus Autonomous between versions, handling breaking changes, and migrating workflows.
 
@@ -11,7 +11,7 @@ This guide covers upgrading QA Nexus Autonomous between versions, handling break
 
 ### Key Changes
 - Node.js requirement: 24.0.0 or higher
-- Stable Node setup action: actions/setup-node@v4 (previously v7)
+- Stable Node setup action: actions/setup-node@v4 (upgraded from v3)
 - CI/CD pipeline: Removed silent `--if-present` flags for stricter validation
 - Fixed corrupted documentation entries in Git history
 
@@ -142,10 +142,10 @@ If migrating from < 3.2.0:
 ## Dependency Upgrades
 
 ### Major Dependency Updates in 3.3.0
-- React: 19.3.0 (from 19.3.0) — no change
-- TypeScript: 6.0.3 (from 6.0.3) — no change
-- Vite: 8.3.2 (from 8.3.2) — no change
-- ESLint: 10.11.0 (from 10.11.0) — no change
+- React: 19.3.1 (from 19.3.0)
+- TypeScript: 6.0.3
+- Vite: 8.3.5 (from 8.3.2)
+- ESLint: 10.13.0 (from 10.11.0)
 
 ### Minor/Patch Updates
 ```bash
@@ -204,7 +204,7 @@ REACT_APP_SUPABASE_URL=https://...
 
 **New format (3.3.0):**
 ```bash
-VITE_GEMINI_API_KEY=sk-...
+GEMINI_API_KEY=your_gemini_api_key_here # Server-side ONLY
 VITE_SUPABASE_URL=https://...
 ```
 
@@ -217,7 +217,7 @@ cp .env .env.backup
 cp .env.example .env
 
 # 3. Update with new key names
-# VITE_GEMINI_API_KEY=<your-key-from-backup>
+# GEMINI_API_KEY=<your-key-from-backup> (Server-side ONLY)
 # VITE_SUPABASE_URL=<your-url-from-backup>
 
 # 4. Verify

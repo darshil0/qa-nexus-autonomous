@@ -2,7 +2,7 @@
 name: test-case-writer
 description: Generates structured test cases from reviewed requirements. Use when the user has specifications and needs "test cases", "test steps", or a "test suite".
 Version: 3.3.0
-Last Updated: June 24, 2026
+Last Updated: October 24, 2026
 ---
 
 # Test Case Writer
