@@ -256,8 +256,8 @@ The repository uses GitHub Actions for automated validation on every push and pu
 ├── docs/
 │   ├── ARCHITECTURE.md            # System design and component overview
 │   ├── MIGRATION_GUIDE.md         # Upgrade and migration instructions
-│   ├── SUPABASE_VERIFICATION.md   # Supabase RLS and database access checklist
-│   └── Walkthrough.md             # Step-by-step user guide
+│   ├── PRODUCTION_DEPLOYMENT.md   # Production deployment and API proxy guide
+│   └── SUPABASE_VERIFICATION.md   # Supabase RLS and database access checklist
 ├── public/                        # Static assets
 ├── scripts/
 │   ├── check-secret-exposure.js   # Production bundle secret exposure check
@@ -320,8 +320,8 @@ The repository uses GitHub Actions for automated validation on every push and pu
 - [AGENT.md](AGENT.md) — agent architecture and engineering guidance
 - [skills.md](skills.md) — skill registry and capabilities overview
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system design and component overview
+- [docs/PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md) — production deployment and API proxy guide
 - [docs/SUPABASE_VERIFICATION.md](docs/SUPABASE_VERIFICATION.md) — Supabase RLS and database access controls
-- [docs/Walkthrough.md](docs/Walkthrough.md) — step-by-step user experience guide
 - [docs/MIGRATION_GUIDE.md](docs/MIGRATION_GUIDE.md) — upgrade and migration instructions
 - [CONTRIBUTING.md](CONTRIBUTING.md) — local setup and contribution workflow
 - [CHANGELOG.md](CHANGELOG.md) — version history and release notes
@@ -350,5 +350,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-**Last Updated:** October 1, 2026  
+**Last Updated:** October 24, 2026
 **Version:** 3.3.0

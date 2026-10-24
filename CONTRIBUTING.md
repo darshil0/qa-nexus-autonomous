@@ -29,7 +29,7 @@ Thank you for your interest in contributing to QA Nexus Autonomous. We aim to ke
    ```bash
    cp .env.example .env
    ```
-   Add your `VITE_GEMINI_API_KEY` to `.env`. If you plan to use Supabase-backed persistence, also add:
+   Add your server-side `GEMINI_API_KEY` to `.env`. If you plan to use Supabase-backed persistence, also add:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
 
@@ -88,5 +88,5 @@ Please use the GitHub Issue tracker to report bugs, request enhancements, or dis
 
 ---
 
-**Last Updated**: October 1, 2026
+**Last Updated**: October 24, 2026
 **Version**: 3.3.0

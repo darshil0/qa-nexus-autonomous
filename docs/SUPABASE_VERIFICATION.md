@@ -1,5 +1,8 @@
 # Supabase Database Access & RLS Verification Guide
 
+**Version**: 3.3.0
+**Last Updated**: October 24, 2026
+
 This guide details the database access controls, Row Level Security (RLS) policies, and deployment verification steps for the QA Nexus Autonomous repository.
 
 ## Inventory of Database Objects

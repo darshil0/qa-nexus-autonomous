@@ -1,7 +1,7 @@
 # QA Nexus Gemini Skills Registry (v3.3.0)
 
 **Version**: 3.3.0
-**Last Updated**: October 1, 2026
+**Last Updated**: October 24, 2026
 
 This project implements a modular skills architecture for Google Gemini-powered QA orchestration. The system enables AI agents to access specialized capabilities through a standardized interface and supports the end-to-end QA lifecycle from requirements analysis to test execution and reporting.
 
@@ -111,7 +111,7 @@ All skills use YAML frontmatter for metadata:
 ---
 name: skill-name
 description: Brief description of what this skill does
-Version: 3.2.2
+Version: 3.3.0
 author: QA Nexus Team
 requires: 
   - python: ">=3.8"
@@ -165,7 +165,7 @@ Create `skills/my-skill/SKILL.md`:
 ---
 name: my-skill
 description: What this skill does
-Version: 3.2.2
+Version: 3.3.0
 ---
 
 # My Skill
@@ -243,7 +243,7 @@ export const skillRegistry: Record<string, Skill> = {
 All skills should be testable in isolation:
 
 ```typescript
-// src/__tests__/skills/mySkill.spec.ts
+// src/tests/agenticSkills.spec.ts
 
 import { mySkill } from '@/services/agenticSkills';
 import { expect, test } from 'vitest';
@@ -351,4 +351,4 @@ For questions about skills:
 
 **Maintained by**: Darshil  
 **License**: MIT  
-**Last Updated**: October 1, 2026
+**Last Updated**: October 24, 2026

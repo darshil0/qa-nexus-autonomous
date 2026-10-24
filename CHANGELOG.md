@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.3.0] - 2026-10-01
+## [3.3.0] - 2026-10-24
 ### Added
 - Added npm `overrides` in `package.json` for `eslint-plugin-react` to resolve peer dependency conflicts with ESLint 10, enabling standard `npm ci` installs without `--legacy-peer-deps`.
 - Added dedicated unit test suites for `exportUtils.spec.ts`, `validateEnv.spec.ts`, `ErrorBoundary.spec.tsx`, and `HeaderAndLogs.spec.tsx`, expanding test coverage across `src/`.
@@ -16,10 +16,12 @@ All notable changes to this project are documented in this file. The format is b
 - Enhanced `mcpService.ts` error handling to catch individual skill execution exceptions, missing or null request parameters, and return informative JSON-RPC error responses.
 - Optimized `vite.config.ts` vendor chunk splitting to include `react-is` in `react-vendor`.
 - Resolved all security vulnerabilities reported by `npm audit` (0 vulnerabilities remaining).
+- Removed dead link to non-existent `docs/Walkthrough.md` from `README.md`.
+- Corrected stale environment variable references (`VITE_GEMINI_API_KEY` -> server-side `GEMINI_API_KEY`) in `CONTRIBUTING.md` and `MIGRATION_GUIDE.md`.
 
 ### Changed
-- Upgraded core dependencies across the stack: `@google/genai` (2.25.0), `react`/`react-dom`/`react-is` (19.3.0), `recharts` (3.10.1), `vite` (8.3.2), `vitest` (4.1.11), `eslint` (10.11.0), `typescript-eslint` (8.71.0), `globals` (17.13.0).
-- Synchronized version references (3.3.0) across all documentation and codebase files.
+- Upgraded core dependencies across the stack: `@google/genai` (2.31.0), `react`/`react-dom`/`react-is` (19.3.1), `recharts` (3.10.1), `vite` (8.3.5), `vitest` (4.1.12), `eslint` (10.13.0), `typescript` (6.0.3), `typescript-eslint` (8.72.0).
+- Synchronized version references (3.3.0) and documentation dates across all repository files and skill definitions.
 
 ## [3.2.7] - 2026-06-24
 ### Changed
@@ -380,5 +382,5 @@ All notable changes to this project are documented in this file. The format is b
 
 ---
 
-**Last Updated**: October 1, 2026
+**Last Updated**: October 24, 2026
 **Version**: 3.3.0
